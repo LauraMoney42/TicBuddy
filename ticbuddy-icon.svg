@@ -1,0 +1,35 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D4E8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#006E8C;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00B4C8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#004B63;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded rect background -->
+  <rect width="1024" height="1024" fill="url(#tealGrad)" rx="224"/>
+
+  <!-- Awareness ribbon (two loops + center) -->
+  <g transform="translate(512, 370)" opacity="0.9">
+    <path d="M-10 0 C-60 -40, -200 -120, -200 -200 C-200 -280, -120 -300, -80 -260 C-40 -220, -10 -120, -10 0 Z" fill="white" opacity="0.95"/>
+    <path d="M10 0 C60 -40, 200 -120, 200 -200 C200 -280, 120 -300, 80 -260 C40 -220, 10 -120, 10 0 Z" fill="white" opacity="0.95"/>
+  </g>
+
+  <!-- Heart at center-bottom -->
+  <g transform="translate(512, 620)">
+    <path d="M 0 40 C -20 20, -80 -40, -80 -80 C -80 -120, -40 -140, 0 -100 C 40 -140, 80 -120, 80 -80 C 80 -40, 20 20, 0 40 Z"
+          fill="white" opacity="0.95"/>
+  </g>
+
+  <!-- Friendly sparkle dots -->
+  <circle cx="280" cy="260" r="18" fill="white" opacity="0.5"/>
+  <circle cx="744" cy="260" r="18" fill="white" opacity="0.5"/>
+  <circle cx="512" cy="180" r="12" fill="white" opacity="0.4"/>
+
+  <!-- Subtle top-left shine -->
+  <ellipse cx="340" cy="300" rx="180" ry="160" fill="white" opacity="0.06"/>
+</svg>
