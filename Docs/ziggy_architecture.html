@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ziggy Architecture</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f0f14;
+    color: #e8e8f0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+  h1 {
+    text-align: center;
+    font-family: -apple-system, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .subtitle {
+    text-align: center;
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 28px;
+  }
+
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .node {
+    width: 100%;
+    border-radius: 10px;
+    padding: 10px 14px;
+    position: relative;
+  }
+
+  .node-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    opacity: 0.7;
+  }
+
+  .node-title {
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .node-desc {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    opacity: 0.75;
+    line-height: 1.4;
+  }
+
+  /* Color themes */
+  .input    { background: #1a1f2e; border: 1px solid #2d3a5a; }
+  .input .node-label { color: #5b8dee; }
+  .input .node-title { color: #8ab4f8; }
+
+  .guard    { background: #1f1a2e; border: 1px solid #4a2d6a; }
+  .guard .node-label { color: #b57bee; }
+  .guard .node-title { color: #c98fff; }
+
+  .pii      { background: #2a1a1a; border: 2px solid #8b2020; }
+  .pii .node-label { color: #ff6b6b; }
+  .pii .node-title { color: #ff9999; }
+
+  .scope    { background: #1a2420; border: 2px solid #1f6b45; }
+  .scope .node-label { color: #4ec97a; }
+  .scope .node-title { color: #7fffb0; }
+
+  .embed    { background: #1a1f2a; border: 1px solid #2a4060; }
+  .embed .node-label { color: #60a0d0; }
+  .embed .node-title { color: #90c8f0; }
+
+  .rag      { background: #1f1f2a; border: 1px solid #404080; }
+  .rag .node-label { color: #8080e0; }
+  .rag .node-title { color: #a0a0ff; }
+
+  .claude   { background: #1a1f28; border: 2px solid #d97706; }
+  .claude .node-label { color: #f59e0b; }
+  .claude .node-title { color: #fcd34d; }
+
+  .outguard { background: #2a1a1a; border: 2px solid #8b2020; }
+  .outguard .node-label { color: #ff6b6b; }
+  .outguard .node-title { color: #ff9999; }
+
+  .voice    { background: #1a2020; border: 1px solid #2a5050; }
+  .voice .node-label { color: #4ec9c9; }
+  .voice .node-title { color: #7fffff; }
+
+  .output   { background: #1a2a1a; border: 1px solid #2a5a2a; }
+  .output .node-label { color: #4ec94e; }
+  .output .node-title { color: #7fff7f; }
+
+  /* Arrows */
+  .arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    padding: 2px 0;
+  }
+  .arrow-line {
+    width: 2px;
+    height: 14px;
+    background: #333;
+  }
+  .arrow-head {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid #333;
+  }
+  .arrow-label {
+    font-size: 9px;
+    color: #555;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    font-family: -apple-system, sans-serif;
+  }
+
+  /* Side exits */
+  .exit-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    padding: 2px 0;
+  }
+  .exit-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .exit-side {
+    width: 120px;
+    flex-shrink: 0;
+  }
+  .exit-connector {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .exit-h-line {
+    height: 2px;
+    width: 20px;
+    background: #8b2020;
+  }
+  .exit-box {
+    background: #2a1010;
+    border: 1px solid #6b1515;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-family: -apple-system, sans-serif;
+    font-size: 10px;
+    color: #ff7070;
+    line-height: 1.3;
+  }
+  .exit-box .exit-title {
+    font-weight: 700;
+    font-size: 10px;
+    color: #ff5555;
+    margin-bottom: 2px;
+  }
+
+  .exit-box-green {
+    background: #0d2010;
+    border: 1px solid #1a5c2a;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-family: -apple-system, sans-serif;
+    font-size: 10px;
+    color: #70c970;
+    line-height: 1.3;
+  }
+  .exit-box-green .exit-title {
+    font-weight: 700;
+    font-size: 10px;
+    color: #55dd55;
+    margin-bottom: 2px;
+  }
+
+  .exit-h-line-green {
+    height: 2px;
+    width: 20px;
+    background: #1f6b45;
+  }
+
+  /* Section dividers */
+  .phase-label {
+    font-family: -apple-system, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #444;
+    text-align: center;
+    padding: 8px 0 4px;
+    width: 100%;
+  }
+
+  /* Tag pills */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 5px;
+  }
+  .tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: -apple-system, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .tag-red { background: #3a1010; color: #ff7070; }
+  .tag-green { background: #0d2510; color: #70dd70; }
+  .tag-blue { background: #101a3a; color: #7090ff; }
+  .tag-yellow { background: #2a2010; color: #ffd060; }
+  .tag-purple { background: #1f1040; color: #c080ff; }
+  .tag-teal { background: #0d2525; color: #70d0d0; }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #333, transparent);
+    margin: 6px 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>⚡ ZIGGY — Full Pipeline</h1>
+<div class="subtitle">CBIT App · Request/Response Architecture</div>
+
+<div class="pipeline">
+
+  <!-- INPUT -->
+  <div class="phase-label">── INPUT ──</div>
+
+  <div class="node input">
+    <div class="node-label">Step 1 · Input</div>
+    <div class="node-title">User Speaks</div>
+    <div class="node-desc">Child or caregiver speaks into device microphone</div>
+  </div>
+
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node input">
+    <div class="node-label">Step 2 · Transcription</div>
+    <div class="node-title">Apple On-Device Speech Recognition</div>
+    <div class="node-desc">Audio → text, fully on-device, never leaves the phone</div>
+    <div class="tags">
+      <span class="tag tag-green">COPPA safe</span>
+      <span class="tag tag-green">no network call</span>
+      <span class="tag tag-green">zero latency</span>
+    </div>
+  </div>
+
+  <!-- INBOUND GUARD -->
+  <div class="phase-label">── INBOUND GUARDS ──</div>
+
+  <div class="exit-row">
+    <div class="exit-side">
+      <div class="exit-box">
+        <div class="exit-title">🚨 CRISIS EXIT</div>
+        Suicide / self-harm keywords detected → immediate crisis resources, conversation ends
+      </div>
+    </div>
+    <div class="exit-center">
+      <div class="node pii" style="width:100%">
+        <div class="node-label">Step 3 · Inbound Guard A</div>
+        <div class="node-title">PII Scrubber</div>
+        <div class="node-desc">Strips / masks before anything is sent to any external API</div>
+        <div class="tags">
+          <span class="tag tag-red">full names</span>
+          <span class="tag tag-red">addresses</span>
+          <span class="tag tag-red">phone / email</span>
+          <span class="tag tag-red">school names</span>
+          <span class="tag tag-red">doctor names</span>
+          <span class="tag tag-red">insurance IDs</span>
+        </div>
+      </div>
+    </div>
+    <div class="exit-side" style="width:100px">
+      <div class="exit-box">
+        <div class="exit-title">⚠️ LOG + STRIP</div>
+        PII detected → masked in transcript, flagged in admin log, processing continues
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="exit-row">
+    <div class="exit-side">
+      <div class="exit-box">
+        <div class="exit-title">🛑 OUT OF SCOPE</div>
+        Redirect response generated — no Claude call, no RAG, no cost
+      </div>
+    </div>
+    <div class="exit-center">
+      <div class="node scope" style="width:100%">
+        <div class="node-label">Step 4 · Inbound Guard B</div>
+        <div class="node-title">Out-of-Scope Classifier</div>
+        <div class="node-desc">Catches medical, legal, diagnostic, and irrelevant queries before RAG</div>
+        <div class="tags">
+          <span class="tag tag-red">medication names</span>
+          <span class="tag tag-red">dosage / mg</span>
+          <span class="tag tag-red">diagnose me</span>
+          <span class="tag tag-red">is this a tic</span>
+          <span class="tag tag-red">side effects</span>
+          <span class="tag tag-yellow">diet / weight</span>
+          <span class="tag tag-yellow">unrelated topics</span>
+        </div>
+      </div>
+    </div>
+    <div class="exit-side" style="width:100px">
+      <div class="exit-box-green">
+        <div class="exit-title">✅ IN SCOPE</div>
+        Passes to RAG pipeline — normal flow continues
+      </div>
+    </div>
+  </div>
+
+  <!-- RAG -->
+  <div class="phase-label">── RETRIEVAL ──</div>
+
+  <div class="node embed">
+    <div class="node-label">Step 5 · Embedding</div>
+    <div class="node-title">Voyage AI — Embed Query</div>
+    <div class="node-desc">Scrubbed + sanitized text → 1024-dim vector (voyage-3 model)</div>
+    <div class="tags">
+      <span class="tag tag-blue">inputType: query</span>
+      <span class="tag tag-blue">voyage-3</span>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node rag">
+    <div class="node-label">Step 6 · Retrieval</div>
+    <div class="node-title">Supabase pgvector — Filtered Semantic Search</div>
+    <div class="node-desc">Cosine similarity search filtered by session stage + age group + tic type metadata. Returns top 3–5 chunks.</div>
+    <div class="tags">
+      <span class="tag tag-purple">session_stage filter</span>
+      <span class="tag tag-purple">age_group filter</span>
+      <span class="tag tag-purple">tic_type filter</span>
+      <span class="tag tag-purple">top-k: 5</span>
+    </div>
+  </div>
+
+  <!-- CLAUDE -->
+  <div class="phase-label">── AI REASONING ──</div>
+
+  <div class="node claude">
+    <div class="node-label">Step 7 · Language Model</div>
+    <div class="node-title">Claude API — claude-sonnet-4-6</div>
+    <div class="node-desc">System prompt assembled with: Ziggy persona + age voice profile · Retrieved doc chunks (source grounding) · Session context (stage, tic, CR, history) · Conversation history · Sanitized user message</div>
+    <div class="tags">
+      <span class="tag tag-yellow">RAG grounded first</span>
+      <span class="tag tag-yellow">protocol rails</span>
+      <span class="tag tag-yellow">age-tuned voice</span>
+      <span class="tag tag-yellow">streaming</span>
+    </div>
+  </div>
+
+  <!-- OUTBOUND GUARD -->
+  <div class="phase-label">── OUTBOUND GUARDS ──</div>
+
+  <div class="exit-row">
+    <div class="exit-side">
+      <div class="exit-box">
+        <div class="exit-title">🔄 REGENERATE</div>
+        Blocked content detected → regenerate with stronger constraint prompt or fallback safe response
+      </div>
+    </div>
+    <div class="exit-center">
+      <div class="node outguard" style="width:100%">
+        <div class="node-label">Step 8 · Outbound Guard</div>
+        <div class="node-title">Response Safety Filter</div>
+        <div class="node-desc">Scans Claude's response before it ever reaches the user</div>
+        <div class="tags">
+          <span class="tag tag-red">medication names leaked</span>
+          <span class="tag tag-red">diagnostic language</span>
+          <span class="tag tag-red">PII echoed back</span>
+          <span class="tag tag-red">therapy claims</span>
+          <span class="tag tag-red">harmful content</span>
+          <span class="tag tag-yellow">check tone vs age</span>
+        </div>
+      </div>
+    </div>
+    <div class="exit-side" style="width:100px">
+      <div class="exit-box-green">
+        <div class="exit-title">✅ CLEAN</div>
+        Response passes all checks → proceeds to voice synthesis
+      </div>
+    </div>
+  </div>
+
+  <!-- VOICE OUTPUT -->
+  <div class="phase-label">── OUTPUT ──</div>
+
+  <div class="node voice">
+    <div class="node-label">Step 9 · Voice Synthesis</div>
+    <div class="node-title">ElevenLabs — Streaming TTS</div>
+    <div class="node-desc">Clean text → audio stream using age-appropriate custom Ziggy voice profile</div>
+    <div class="tags">
+      <span class="tag tag-teal">young child voice</span>
+      <span class="tag tag-teal">older child voice</span>
+      <span class="tag tag-teal">teen voice</span>
+      <span class="tag tag-teal">adult voice</span>
+      <span class="tag tag-teal">eleven_turbo_v2</span>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node output">
+    <div class="node-label">Step 10 · Delivery</div>
+    <div class="node-title">Audio Plays to User</div>
+    <div class="node-desc">Streamed audio plays in real time as tokens generate. Conversation history updated. Session state machine advanced if protocol milestone detected.</div>
+    <div class="tags">
+      <span class="tag tag-green">history updated</span>
+      <span class="tag tag-green">state machine tick</span>
+      <span class="tag tag-green">reward trigger check</span>
+    </div>
+  </div>
+
+  <div class="divider" style="margin-top:20px"></div>
+
+  <!-- LEGEND -->
+  <div style="width:100%; padding: 14px 0 4px;">
+    <div style="font-family:-apple-system,sans-serif; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#444; margin-bottom:10px; text-align:center;">Guard Layer Summary</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <div style="background:#1f0f0f; border:1px solid #5a1a1a; border-radius:8px; padding:8px;">
+        <div style="font-family:-apple-system,sans-serif; font-size:10px; font-weight:700; color:#ff7070; margin-bottom:4px;">🔴 Inbound PII Scrubber</div>
+        <div style="font-family:-apple-system,sans-serif; font-size:10px; color:#cc8080; line-height:1.4;">Runs on-device before any external API call. Masks real names, addresses, school/doctor names, IDs. Logs detection events.</div>
+      </div>
+      <div style="background:#0f1f0f; border:1px solid #1a5a1a; border-radius:8px; padding:8px;">
+        <div style="font-family:-apple-system,sans-serif; font-size:10px; font-weight:700; color:#70dd70; margin-bottom:4px;">🟢 Out-of-Scope Classifier</div>
+        <div style="font-family:-apple-system,sans-serif; font-size:10px; color:#80cc80; line-height:1.4;">Keyword + intent check. Catches meds, diagnosis requests, crisis language. Returns scripted safe response — no API cost.</div>
+      </div>
+      <div style="background:#1f0f0f; border:1px solid #5a1a1a; border-radius:8px; padding:8px;">
+        <div style="font-family:-apple-system,sans-serif; font-size:10px; font-weight:700; color:#ff7070; margin-bottom:4px;">🔴 Outbound Safety Filter</div>
+        <div style="font-family:-apple-system,sans-serif; font-size:10px; color:#cc8080; line-height:1.4;">Scans Claude response before delivery. Catches leaked meds, diagnostic claims, PII echoed back, therapy impersonation.</div>
+      </div>
+      <div style="background:#1a1020; border:1px solid #4a2a6a; border-radius:8px; padding:8px;">
+        <div style="font-family:-apple-system,sans-serif; font-size:10px; font-weight:700; color:#c080ff; margin-bottom:4px;">🟣 RAG Grounding</div>
+        <div style="font-family:-apple-system,sans-serif; font-size:10px; color:#a060cc; line-height:1.4;">Retrieved CBIT docs injected before Claude reasons. Clinical facts come from your vetted library — not model hallucination.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

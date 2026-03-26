@@ -15,6 +15,24 @@ class ChatViewModel: ObservableObject {
 
     private let claudeService = ClaudeService()
     private let dataService: TicDataService
+    private let sessionStore = CBITSessionStore.shared
+    private let usageLimiter = ChatUsageLimiter.shared
+    private let contentFilter = ZiggyContentFilter.shared
+    private let piiScrubber = ZiggyPIIScrubber.shared      // tb-rag-002: strip PII before API
+    private let outputFilter = ZiggyOutputFilter.shared    // tb-rag-004: scan response before delivery
+    private let ragService = ZiggyRAGService.shared        // tb-rag-001: CBIT knowledge retrieval
+    /// TTS service — shared singleton so the speaker toggle in ChatView binds live
+    let ttsService = ZiggyTTSService.shared
+
+    // Memory injection is loaded once per session start (lazy, on first send).
+    // Nil = first-ever session or no memories yet; non-nil = injected into system prompt.
+    private var sessionMemoryInjection: String? = nil
+    private var memoryLoadedForSession = false
+
+    // MARK: - Usage Limit State
+
+    /// Whether the child has hit their daily message limit.
+    @Published var isLimitReached: Bool = false
 
     init(dataService: TicDataService = .shared) {
         self.dataService = dataService
@@ -22,6 +40,48 @@ class ChatViewModel: ObservableObject {
         if messages.isEmpty {
             addWelcomeMessage()
         }
+    }
+
+    // MARK: - Active Child Helpers
+
+    /// UUID key for the child currently in session.
+    /// Uses active family unit child if available; falls back to legacy userProfile.id.
+    private var activeChildID: UUID {
+        dataService.familyUnit.activeChildID ?? dataService.userProfile.id
+    }
+
+    private var activeChildAge: Int {
+        dataService.familyUnit.activeChild?.userProfile.age ?? dataService.userProfile.age
+    }
+
+    /// True when the active child is under 13 — triggers COPPA mode on API calls (tb-mvp2-014).
+    private var activeChildIsCOPPA: Bool {
+        dataService.familyUnit.activeChild?.ageGroup.isCOPPAApplicable ?? false
+    }
+
+    private var activeChildName: String {
+        dataService.familyUnit.activeChild?.nickname ?? dataService.userProfile.name
+    }
+
+    /// Selects the correct Ziggy voice profile for the current session context.
+    /// Child active → profile based on their AgeGroup. No child → caregiver mode.
+    /// Exposed publicly so ChatView can adapt its header and quick-action chips (tb-mvp2-012).
+    var activeVoiceProfile: ZiggyVoiceProfile {
+        guard let child = dataService.familyUnit.activeChild else { return .caregiver }
+        return ZiggyVoiceProfileService.shared.profile(for: child.ageGroup)
+    }
+
+    /// Daily limit for the active child (0 = unlimited for caregiver/therapist mode).
+    private var activeDailyLimit: Int {
+        dataService.familyUnit.activeChild?.effectiveDailyLimit
+            ?? ChatUsageLimiter.defaultDailyLimit
+    }
+
+    /// Countdown message shown in chat header when ≤ countdownThreshold exchanges remain.
+    /// Returns nil when plenty remain or limit is unlimited.
+    /// Same text shown to both caregiver and child views per tb-mvp2-021 spec.
+    var countdownMessage: String? {
+        usageLimiter.countdownMessage(for: activeChildID, limit: activeDailyLimit)
     }
 
     // MARK: - Welcome Message
@@ -50,21 +110,110 @@ class ChatViewModel: ObservableObject {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
+        // CLIENT-SIDE SAFETY FILTER (tb-mvp2-020):
+        // Run BEFORE anything else — if the message is out-of-scope (medication question
+        // or mental health counseling), show Ziggy's warm redirect and stop here.
+        // The message never reaches Claude; no API call is made.
+        let filterResult = contentFilter.check(text)
+        if case .redirect(let redirectMsg) = filterResult {
+            inputText = ""
+            let redirectMessage = ChatMessage(role: .assistant, content: redirectMsg)
+            messages.append(redirectMessage)
+            saveHistory()
+            return
+        }
+
+        // Hard stop: child has hit their daily limit — no more messages today.
+        let childID = activeChildID
+        let limit = activeDailyLimit
+        if usageLimiter.isLimitReached(for: childID, limit: limit) {
+            isLimitReached = true
+            // Only show the wrap-up message once (not on every blocked tap)
+            if messages.last?.content.contains("See you then") == false {
+                let usedToday = usageLimiter.messagesUsedToday(for: childID)
+                let wrapUp = ChatMessage(
+                    role: .assistant,
+                    content: ChatUsageLimiter.limitReachedMessage(
+                        childName: activeChildName,
+                        messagesUsed: usedToday
+                    )
+                )
+                messages.append(wrapUp)
+                saveHistory()
+            }
+            return
+        }
+
         inputText = ""
         errorMessage = nil
 
         let userMessage = ChatMessage(role: .user, content: text)
         messages.append(userMessage)
 
+        // Count this message toward the daily limit
+        usageLimiter.incrementCount(for: childID)
+
         isLoading = true
 
         Task {
             do {
-                let response = try await claudeService.sendMessage(
-                    userMessage: text,
-                    conversationHistory: messages.dropLast(), // exclude the message we just added
-                    profile: dataService.userProfile
+                // Load memory injection once at the start of each session (first message only).
+                // Subsequent messages in the same session reuse the same injection block so it
+                // doesn't change mid-conversation or inflate the prompt on every turn.
+                if !memoryLoadedForSession {
+                    sessionMemoryInjection = sessionStore.buildMemoryInjection(for: activeChildID)
+                    memoryLoadedForSession = true
+                }
+
+                // Build usage-aware memory addendum (soft warning near limit, hard close at limit)
+                let usageAddendum = usageLimiter.systemPromptAddendum(for: childID, limit: limit)
+                let combinedInjection: String? = {
+                    switch (sessionMemoryInjection, usageAddendum) {
+                    case let (mem?, usage?): return mem + "\n\n" + usage
+                    case let (mem?, nil):    return mem
+                    case let (nil, usage?):  return usage
+                    case (nil, nil):         return nil
+                    }
+                }()
+
+                // tb-rag-002: Scrub PII from user message before sending to Claude proxy.
+                // The user sees their original text in the bubble; only the API receives scrubbed text.
+                let scrubbed = piiScrubber.scrub(text)
+                let apiUserMessage = scrubbed.scrubbed
+
+                // tb-rag-001: Fetch relevant CBIT knowledge chunks (best-effort, non-blocking).
+                // Uses the PII-scrubbed message + voice profile/phase filters for precision retrieval.
+                // Returns nil if RAG is unavailable; Claude responds from base knowledge only.
+                let ragBlock = await ragService.fetchContext(
+                    for: apiUserMessage,
+                    voiceProfile: activeVoiceProfile,
+                    phase: dataService.activeUserProfile.recommendedPhase,
+                    ticCategories: dataService.activeUserProfile.primaryTicCategories
                 )
+
+                // Merge RAG context into the combined injection block
+                let finalInjection: String? = {
+                    switch (combinedInjection, ragBlock) {
+                    case let (base?, rag?): return base + "\n\n" + rag
+                    case let (base?, nil):  return base
+                    case let (nil, rag?):   return rag
+                    case (nil, nil):        return nil
+                    }
+                }()
+
+                let response = try await claudeService.sendMessage(
+                    userMessage: apiUserMessage,
+                    conversationHistory: Array(messages.dropLast()),
+                    profile: dataService.activeUserProfile,
+                    voiceProfile: activeVoiceProfile,
+                    memoryInjection: finalInjection,
+                    isCOPPA: activeChildIsCOPPA
+                )
+
+                // If we just hit the limit after this message, mark it
+                if usageLimiter.isLimitReached(for: childID, limit: limit) {
+                    isLimitReached = true
+                }
 
                 // Check for auto-log intent
                 if let intent = claudeService.parseTicLogIntent(from: response) {
@@ -74,8 +223,21 @@ class ChatViewModel: ObservableObject {
                 }
 
                 let cleanedResponse = claudeService.cleanResponse(response)
-                let assistantMessage = ChatMessage(role: .assistant, content: cleanedResponse)
+
+                // tb-rag-004: Scan Claude's response before showing it to the user.
+                // If it contains prohibited content (medication, diagnosis, identity denial, etc.)
+                // replace it with a warm safe fallback — never show the blocked response.
+                let outputResult = outputFilter.filter(cleanedResponse)
+                let safeResponse = outputResult.displayMessage
+
+                let assistantMessage = ChatMessage(role: .assistant, content: safeResponse)
                 messages.append(assistantMessage)
+
+                // TTS: speak Ziggy's response if user has TTS enabled (tb-mvp2-011).
+                // Fire-and-forget — TTS failure never blocks the chat UI.
+                // Use safeResponse (post-output-filter) so we never speak a blocked response.
+                let voiceForTTS = activeVoiceProfile
+                ttsService.speak(text: safeResponse, voiceProfile: voiceForTTS)
 
                 saveHistory()
                 dataService.checkAndAdvancePhase()
@@ -129,6 +291,28 @@ class ChatViewModel: ObservableObject {
     func clearHistory() {
         messages = []
         UserDefaults.standard.removeObject(forKey: "ticbuddy_chat_history")
+        // Reset memory state so the next session picks up fresh injection
+        memoryLoadedForSession = false
+        sessionMemoryInjection = nil
         addWelcomeMessage()
+    }
+
+    // MARK: - Session Lifecycle
+
+    /// Called when the chat session ends (tab disappear or explicit clear).
+    /// Sends the session transcript to Claude for memory extraction and saves results locally.
+    /// Fire-and-forget — failures are swallowed silently inside CBITSessionStore.
+    func endSession() async {
+        // Only extract if there was real conversation (not just the welcome message)
+        guard messages.count > 2 else { return }
+        await sessionStore.extractAndSaveMemories(
+            from: messages,
+            childID: activeChildID,
+            childAge: activeChildAge,
+            using: claudeService
+        )
+        // Reset session state so the NEXT session reloads memories fresh
+        memoryLoadedForSession = false
+        sessionMemoryInjection = nil
     }
 }

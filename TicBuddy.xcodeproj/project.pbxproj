@@ -22,9 +22,46 @@
 		BC81FD345D703DF571DD9DFC /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89BB656CE186D212AE77C77 /* UserProfile.swift */; };
 		BECA973F64AAAB3F8DD311C1 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F3B3AF884F822A2B16AF1 /* HomeView.swift */; };
 		DBF7096ACEBDC35B850F6553 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408FE15906CCF6A5349C10B4 /* SettingsView.swift */; };
+		AA11BB22CC33DD44EE5501FF /* TTSVoicePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE5500FF /* TTSVoicePreviewView.swift */; };
 		E6E9EE01ABDF4C994C5F0CE2 /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA622FEF8B0C4AA7D7ED105F /* ClaudeService.swift */; };
 		F7B4F6C4851AE61AEE68D38D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA8AB570F10309CDA560F08B /* Assets.xcassets */; };
 		F7F201F165E896094C92F020 /* TicBuddyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 782A34C2B134480AAFA45339 /* TicBuddyApp.swift */; };
+		A5B6C7D8E9F0A5B6C7D8E9F0 /* KindCodeSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9A0B5C6D7E8F9A0 /* KindCodeSplashView.swift */; };
+		AA00112233445566778801BB /* FamilyUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00112233445566778800BB /* FamilyUnit.swift */; };
+		AA00112233445566778801CC /* SessionMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00112233445566778800CC /* SessionMemory.swift */; };
+		BB00112233445566778801BB /* CBITSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800BB /* CBITSessionStore.swift */; };
+		BB00112233445566778801CC /* COPPAComplianceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800CC /* COPPAComplianceService.swift */; };
+		BB00112233445566778801DD /* COPPAConsentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800DD /* COPPAConsentService.swift */; };
+		BB00112233445566778801EE /* ChatUsageLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800EE /* ChatUsageLimiter.swift */; };
+		BB00112233445566778801FF /* DailyInstructionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800FF /* DailyInstructionEngine.swift */; };
+		BB001122334455667788BB00 /* EveningCheckInService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB00 /* EveningCheckInService.swift */; };
+		BB001122334455667788BB11 /* FamilyPINService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB11 /* FamilyPINService.swift */; };
+		BB001122334455667788BB22 /* ZiggyContentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB22 /* ZiggyContentFilter.swift */; };
+		BB001122334455667788BB33 /* ZiggyTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB33 /* ZiggyTTSService.swift */; };
+		BB001122334455667788BB44 /* ZiggyVoiceProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB44 /* ZiggyVoiceProfileService.swift */; };
+		BB001122334455667788BB55 /* ZiggyPIIScrubber.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB55 /* ZiggyPIIScrubber.swift */; };
+		BB001122334455667788BB66 /* ZiggyOutputFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB66 /* ZiggyOutputFilter.swift */; };
+		CC001122334455667788CC01 /* ZiggyOutOfScopeClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC001122334455667700CC01 /* ZiggyOutOfScopeClassifier.swift */; };
+		CC00112233445566778801BB /* CaregiverHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800BB /* CaregiverHomeView.swift */; };
+		CC00112233445566778801CC /* COPPAConsentSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800CC /* COPPAConsentSheet.swift */; };
+		CC00112233445566778801DD /* DeviceConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800DD /* DeviceConfigView.swift */; };
+		CC00112233445566778801EE /* FamilyOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800EE /* FamilyOnboardingView.swift */; };
+		CC00112233445566778801FF /* FamilyManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800FF /* FamilyManagementView.swift */; };
+		DD00112233445566778801BB /* ChildModeAdolescentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD00112233445566778800BB /* ChildModeAdolescentView.swift */; };
+		DD00112233445566778801CC /* ChildModeOlderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD00112233445566778800CC /* ChildModeOlderView.swift */; };
+		DD00112233445566778801DD /* ChildModeYoungView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD00112233445566778800DD /* ChildModeYoungView.swift */; };
+		DD00112233445566778801EE /* RewardMilestoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD00112233445566778800EE /* RewardMilestoneSheet.swift */; };
+		EE00112233445566778801BB /* EveningCheckInSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE00112233445566778800BB /* EveningCheckInSheet.swift */; };
+		EE00112233445566778801CC /* NightlyRitualSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE00112233445566778800CC /* NightlyRitualSheet.swift */; };
+		FF00112233445566778801BB /* FamilyModeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00112233445566778800BB /* FamilyModeRouter.swift */; };
+		69F005DFB8EB4E899001DC16 /* WeeklySessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8F603E01474268BBA728D8 /* WeeklySessionService.swift */; };
+		1E21831007FD455388829A21 /* ZiggyWeeklyIntroSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54048696834845F296817B8C /* ZiggyWeeklyIntroSheet.swift */; };
+		AA001122334455667788BB02 /* CaregiverSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA001122334455667788BB01 /* CaregiverSessionStore.swift */; };
+		AA001122334455667788BB04 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA001122334455667788BB03 /* SpeechRecognizer.swift */; };
+		AA001122334455667788BB06 /* CaregiverOnboardingZiggyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA001122334455667788BB05 /* CaregiverOnboardingZiggyView.swift */; };
+		CC001122334455667788DD02 /* LegalDisclaimerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */; };
+		CC001122334455EE0002 /* ZiggyRAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC001122334455DD0002 /* ZiggyRAGService.swift */; };
+		FF001122334455AA00000002 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF001122334455AA00000001 /* APIConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +71,7 @@
 		351F3B3AF884F822A2B16AF1 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		3D4D8AEC8F785942B06C52F7 /* TicEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicEntry.swift; sourceTree = "<group>"; };
 		408FE15906CCF6A5349C10B4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE5500FF /* TTSVoicePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSVoicePreviewView.swift; sourceTree = "<group>"; };
 		4EB46BFA286DCA74505A40DD /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		5D6CACE3B1B8B20C28B1A604 /* WelcomeKindnessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeKindnessView.swift; sourceTree = "<group>"; };
 		782A34C2B134480AAFA45339 /* TicBuddyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicBuddyApp.swift; sourceTree = "<group>"; };
@@ -47,7 +85,43 @@
 		DA8AB570F10309CDA560F08B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E5AECC4EBDC91497D133B279 /* TicBuddy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TicBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA622FEF8B0C4AA7D7ED105F /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
+		FF001122334455AA00000001 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		F84BD3A0FD0620A66EAC970D /* TicDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicDataService.swift; sourceTree = "<group>"; };
+		B5C6D7E8F9A0B5C6D7E8F9A0 /* KindCodeSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindCodeSplashView.swift; sourceTree = "<group>"; };
+		AA00112233445566778800BB /* FamilyUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyUnit.swift; sourceTree = "<group>"; };
+		AA00112233445566778800CC /* SessionMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionMemory.swift; sourceTree = "<group>"; };
+		BB00112233445566778800BB /* CBITSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBITSessionStore.swift; sourceTree = "<group>"; };
+		BB00112233445566778800CC /* COPPAComplianceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAComplianceService.swift; sourceTree = "<group>"; };
+		BB00112233445566778800DD /* COPPAConsentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAConsentService.swift; sourceTree = "<group>"; };
+		BB00112233445566778800EE /* ChatUsageLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsageLimiter.swift; sourceTree = "<group>"; };
+		BB00112233445566778800FF /* DailyInstructionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyInstructionEngine.swift; sourceTree = "<group>"; };
+		BB001122334455667700BB00 /* EveningCheckInService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EveningCheckInService.swift; sourceTree = "<group>"; };
+		BB001122334455667700BB11 /* FamilyPINService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyPINService.swift; sourceTree = "<group>"; };
+		BB001122334455667700BB22 /* ZiggyContentFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyContentFilter.swift; sourceTree = "<group>"; };
+		BB001122334455667700BB33 /* ZiggyTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyTTSService.swift; sourceTree = "<group>"; };
+		BB001122334455667700BB44 /* ZiggyVoiceProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyVoiceProfileService.swift; sourceTree = "<group>"; };
+		BB001122334455667700BB55 /* ZiggyPIIScrubber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyPIIScrubber.swift; sourceTree = "<group>"; };
+		BB001122334455667700BB66 /* ZiggyOutputFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyOutputFilter.swift; sourceTree = "<group>"; };
+		CC001122334455667700CC01 /* ZiggyOutOfScopeClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyOutOfScopeClassifier.swift; sourceTree = "<group>"; };
+		CC00112233445566778800BB /* CaregiverHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverHomeView.swift; sourceTree = "<group>"; };
+		CC00112233445566778800CC /* COPPAConsentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAConsentSheet.swift; sourceTree = "<group>"; };
+		CC00112233445566778800DD /* DeviceConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceConfigView.swift; sourceTree = "<group>"; };
+		CC00112233445566778800EE /* FamilyOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyOnboardingView.swift; sourceTree = "<group>"; };
+		CC00112233445566778800FF /* FamilyManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyManagementView.swift; sourceTree = "<group>"; };
+		DD00112233445566778800BB /* ChildModeAdolescentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeAdolescentView.swift; sourceTree = "<group>"; };
+		DD00112233445566778800CC /* ChildModeOlderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeOlderView.swift; sourceTree = "<group>"; };
+		DD00112233445566778800DD /* ChildModeYoungView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeYoungView.swift; sourceTree = "<group>"; };
+		DD00112233445566778800EE /* RewardMilestoneSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardMilestoneSheet.swift; sourceTree = "<group>"; };
+		EE00112233445566778800BB /* EveningCheckInSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EveningCheckInSheet.swift; sourceTree = "<group>"; };
+		EE00112233445566778800CC /* NightlyRitualSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightlyRitualSheet.swift; sourceTree = "<group>"; };
+		FF00112233445566778800BB /* FamilyModeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyModeRouter.swift; sourceTree = "<group>"; };
+		FE8F603E01474268BBA728D8 /* WeeklySessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklySessionService.swift; sourceTree = "<group>"; };
+		54048696834845F296817B8C /* ZiggyWeeklyIntroSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyWeeklyIntroSheet.swift; sourceTree = "<group>"; };
+		AA001122334455667788BB01 /* CaregiverSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverSessionStore.swift; sourceTree = "<group>"; };
+		AA001122334455667788BB03 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
+		AA001122334455667788BB05 /* CaregiverOnboardingZiggyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverOnboardingZiggyView.swift; sourceTree = "<group>"; };
+		CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDisclaimerScreen.swift; sourceTree = "<group>"; };
+		CC001122334455DD0002 /* ZiggyRAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyRAGService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -56,9 +130,12 @@
 			children = (
 				14022C4F85D503DEC759A3A8 /* Calendar */,
 				70469651E2114A16BE4CE6A5 /* Chat */,
+				DD001122334455667788CCCC /* ChildMode */,
+				EE001122334455667788CCCC /* Evening */,
 				7C5E3B670FC65924377AC154 /* Home */,
 				E41D1230E4AF537D5FBC8125 /* Onboarding */,
 				C1E9DF338FF4362F3946CA93 /* Settings */,
+				FF00112233445566778800BB /* FamilyModeRouter.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -94,6 +171,7 @@
 				4EB46BFA286DCA74505A40DD /* Extensions.swift */,
 				98FB435ABA626A64070DABBE /* Info.plist */,
 				782A34C2B134480AAFA45339 /* TicBuddyApp.swift */,
+				B5C6D7E8F9A0B5C6D7E8F9A0 /* KindCodeSplashView.swift */,
 				E4B9474851FDD503B9D7C66B /* Models */,
 				FFFA72600546CA9E824786F4 /* Services */,
 				11C7539830F6FA4A66EEAA8F /* ViewModels */,
@@ -105,6 +183,8 @@
 		7C5E3B670FC65924377AC154 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				CC00112233445566778800BB /* CaregiverHomeView.swift */,
+				AA001122334455667788BB05 /* CaregiverOnboardingZiggyView.swift */,
 				351F3B3AF884F822A2B16AF1 /* HomeView.swift */,
 				312ED1A05C2EF95FB9E84476 /* ProgressView.swift */,
 			);
@@ -131,7 +211,9 @@
 			isa = PBXGroup;
 			children = (
 				169F057100115E870D7B326A /* CaregiversView.swift */,
+				CC00112233445566778800FF /* FamilyManagementView.swift */,
 				408FE15906CCF6A5349C10B4 /* SettingsView.swift */,
+				AA11BB22CC33DD44EE5500FF /* TTSVoicePreviewView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -139,6 +221,10 @@
 		E41D1230E4AF537D5FBC8125 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				CC00112233445566778800CC /* COPPAConsentSheet.swift */,
+				CC00112233445566778800DD /* DeviceConfigView.swift */,
+				CC00112233445566778800EE /* FamilyOnboardingView.swift */,
+				CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */,
 				B844254B8BD65A97BA744E3E /* OnboardingView.swift */,
 				5D6CACE3B1B8B20C28B1A604 /* WelcomeKindnessView.swift */,
 			);
@@ -149,6 +235,8 @@
 			isa = PBXGroup;
 			children = (
 				BB224F6CA6490708B217D6DC /* CompetingResponses.swift */,
+				AA00112233445566778800BB /* FamilyUnit.swift */,
+				AA00112233445566778800CC /* SessionMemory.swift */,
 				3D4D8AEC8F785942B06C52F7 /* TicEntry.swift */,
 				B89BB656CE186D212AE77C77 /* UserProfile.swift */,
 			);
@@ -158,11 +246,50 @@
 		FFFA72600546CA9E824786F4 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FF001122334455AA00000001 /* APIConfig.swift */,
+				BB00112233445566778800BB /* CBITSessionStore.swift */,
+				AA001122334455667788BB01 /* CaregiverSessionStore.swift */,
+				BB00112233445566778800EE /* ChatUsageLimiter.swift */,
 				EA622FEF8B0C4AA7D7ED105F /* ClaudeService.swift */,
+				BB00112233445566778800CC /* COPPAComplianceService.swift */,
+				BB00112233445566778800DD /* COPPAConsentService.swift */,
+				BB00112233445566778800FF /* DailyInstructionEngine.swift */,
+				BB001122334455667700BB00 /* EveningCheckInService.swift */,
+				BB001122334455667700BB11 /* FamilyPINService.swift */,
 				0F06DF9CD451CFE1544477B8 /* KeychainHelper.swift */,
+				AA001122334455667788BB03 /* SpeechRecognizer.swift */,
 				F84BD3A0FD0620A66EAC970D /* TicDataService.swift */,
+				BB001122334455667700BB22 /* ZiggyContentFilter.swift */,
+				BB001122334455667700BB33 /* ZiggyTTSService.swift */,
+				BB001122334455667700BB44 /* ZiggyVoiceProfileService.swift */,
+				BB001122334455667700BB55 /* ZiggyPIIScrubber.swift */,
+				BB001122334455667700BB66 /* ZiggyOutputFilter.swift */,
+				CC001122334455667700CC01 /* ZiggyOutOfScopeClassifier.swift */,
+				CC001122334455DD0002 /* ZiggyRAGService.swift */,
+				FE8F603E01474268BBA728D8 /* WeeklySessionService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		DD001122334455667788CCCC /* ChildMode */ = {
+			isa = PBXGroup;
+			children = (
+				DD00112233445566778800BB /* ChildModeAdolescentView.swift */,
+				DD00112233445566778800CC /* ChildModeOlderView.swift */,
+				DD00112233445566778800DD /* ChildModeYoungView.swift */,
+				DD00112233445566778800EE /* RewardMilestoneSheet.swift */,
+				54048696834845F296817B8C /* ZiggyWeeklyIntroSheet.swift */,
+			);
+			path = ChildMode;
+			sourceTree = "<group>";
+		};
+		EE001122334455667788CCCC /* Evening */ = {
+			isa = PBXGroup;
+			children = (
+				EE00112233445566778800BB /* EveningCheckInSheet.swift */,
+				EE00112233445566778800CC /* NightlyRitualSheet.swift */,
+			);
+			path = Evening;
 			sourceTree = "<group>";
 		};
 		"TEMP_D8DD3148-E8DD-403F-9C2C-9F69E784AD5A" /* Preview Content */ = {
@@ -250,15 +377,52 @@
 				95073885D89B21CF5F016CF4 /* Extensions.swift in Sources */,
 				BECA973F64AAAB3F8DD311C1 /* HomeView.swift in Sources */,
 				4B573A59180F43FF1C78F04F /* KeychainHelper.swift in Sources */,
+				A5B6C7D8E9F0A5B6C7D8E9F0 /* KindCodeSplashView.swift in Sources */,
 				A16EECB8945354B96992D018 /* OnboardingView.swift in Sources */,
 				63723E9002769736B897B48C /* ProgressView.swift in Sources */,
 				DBF7096ACEBDC35B850F6553 /* SettingsView.swift in Sources */,
+				AA11BB22CC33DD44EE5501FF /* TTSVoicePreviewView.swift in Sources */,
 				F7F201F165E896094C92F020 /* TicBuddyApp.swift in Sources */,
 				7F2DBF68DF1181AF7FEAC1B6 /* TicCalendarView.swift in Sources */,
 				48ADEB5FB1CE044BA099F9FC /* TicDataService.swift in Sources */,
 				1AAC28696A94AD697AD945A8 /* TicEntry.swift in Sources */,
 				BC81FD345D703DF571DD9DFC /* UserProfile.swift in Sources */,
 				3C34DE5C305BAD18189CD26D /* WelcomeKindnessView.swift in Sources */,
+				AA00112233445566778801BB /* FamilyUnit.swift in Sources */,
+				AA00112233445566778801CC /* SessionMemory.swift in Sources */,
+				BB00112233445566778801BB /* CBITSessionStore.swift in Sources */,
+				BB00112233445566778801CC /* COPPAComplianceService.swift in Sources */,
+				BB00112233445566778801DD /* COPPAConsentService.swift in Sources */,
+				BB00112233445566778801EE /* ChatUsageLimiter.swift in Sources */,
+				BB00112233445566778801FF /* DailyInstructionEngine.swift in Sources */,
+				BB001122334455667788BB00 /* EveningCheckInService.swift in Sources */,
+				BB001122334455667788BB11 /* FamilyPINService.swift in Sources */,
+				BB001122334455667788BB22 /* ZiggyContentFilter.swift in Sources */,
+				BB001122334455667788BB33 /* ZiggyTTSService.swift in Sources */,
+				BB001122334455667788BB44 /* ZiggyVoiceProfileService.swift in Sources */,
+				BB001122334455667788BB55 /* ZiggyPIIScrubber.swift in Sources */,
+				BB001122334455667788BB66 /* ZiggyOutputFilter.swift in Sources */,
+				CC001122334455667788CC01 /* ZiggyOutOfScopeClassifier.swift in Sources */,
+				CC001122334455EE0002 /* ZiggyRAGService.swift in Sources */,
+				FF001122334455AA00000002 /* APIConfig.swift in Sources */,
+				CC00112233445566778801BB /* CaregiverHomeView.swift in Sources */,
+				CC00112233445566778801CC /* COPPAConsentSheet.swift in Sources */,
+				CC00112233445566778801DD /* DeviceConfigView.swift in Sources */,
+				CC00112233445566778801EE /* FamilyOnboardingView.swift in Sources */,
+				CC00112233445566778801FF /* FamilyManagementView.swift in Sources */,
+				DD00112233445566778801BB /* ChildModeAdolescentView.swift in Sources */,
+				DD00112233445566778801CC /* ChildModeOlderView.swift in Sources */,
+				DD00112233445566778801DD /* ChildModeYoungView.swift in Sources */,
+				DD00112233445566778801EE /* RewardMilestoneSheet.swift in Sources */,
+				EE00112233445566778801BB /* EveningCheckInSheet.swift in Sources */,
+				EE00112233445566778801CC /* NightlyRitualSheet.swift in Sources */,
+				FF00112233445566778801BB /* FamilyModeRouter.swift in Sources */,
+				69F005DFB8EB4E899001DC16 /* WeeklySessionService.swift in Sources */,
+				1E21831007FD455388829A21 /* ZiggyWeeklyIntroSheet.swift in Sources */,
+				AA001122334455667788BB02 /* CaregiverSessionStore.swift in Sources */,
+				AA001122334455667788BB04 /* SpeechRecognizer.swift in Sources */,
+				AA001122334455667788BB06 /* CaregiverOnboardingZiggyView.swift in Sources */,
+				CC001122334455667788DD02 /* LegalDisclaimerScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

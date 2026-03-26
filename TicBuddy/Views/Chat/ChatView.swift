@@ -4,14 +4,23 @@
 import SwiftUI
 
 struct ChatView: View {
+    // Voice profile is determined automatically by ChatViewModel.activeVoiceProfile:
+    //   - child active → profile based on their AgeGroup
+    //   - no child (caregiver mode) → .caregiver
+    // No param needed — ViewModel reads from familyUnit state directly.
+
     @StateObject private var viewModel = ChatViewModel()
     @EnvironmentObject var dataService: TicDataService
     @State private var showTicLoggedBanner = false
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            ChatHeaderView(profile: dataService.userProfile)
+            // Header — voice profile-aware name/avatar + countdown (tb-mvp2-012)
+            ChatHeaderView(
+                profile: dataService.userProfile,
+                voiceProfile: viewModel.activeVoiceProfile,
+                countdownMessage: viewModel.countdownMessage
+            )
 
             // Messages
             ScrollViewReader { proxy in
@@ -52,11 +61,16 @@ struct ChatView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
 
-            // Quick action chips
-            QuickActionChipsView(viewModel: viewModel, dataService: dataService)
+            // Daily limit reached — swap input area for "come back tomorrow" banner
+            if viewModel.isLimitReached {
+                DailyLimitReachedView()
+            } else {
+                // Quick action chips
+                QuickActionChipsView(viewModel: viewModel, dataService: dataService)
 
-            // Input bar
-            ChatInputView(viewModel: viewModel)
+                // Input bar
+                ChatInputView(viewModel: viewModel)
+            }
         }
         .background(Color(.systemGroupedBackground))
         .onChange(of: viewModel.lastLoggedEntry?.id) { _ in
@@ -68,7 +82,12 @@ struct ChatView: View {
             }
         }
         .onAppear {
-            // Re-inject updated profile context
+            // Re-inject updated profile context on return to tab (no-op if session is mid-flight)
+        }
+        .onDisappear {
+            // Session ends when user leaves the chat tab — extract memories in background.
+            // CBITSessionStore silently swallows extraction failures, so this is safe.
+            Task { await viewModel.endSession() }
         }
     }
 }
@@ -77,30 +96,79 @@ struct ChatView: View {
 
 struct ChatHeaderView: View {
     let profile: UserProfile
+    var voiceProfile: ZiggyVoiceProfile = .olderChild  // tb-mvp2-012: profile-aware header
+    var countdownMessage: String? = nil
+    // Observe TTS service so speaker icon stays in sync with live state (tb-mvp2-011)
+    @ObservedObject var ttsService: ZiggyTTSService = .shared
 
     var body: some View {
         HStack {
             ZStack {
                 Circle()
-                    .fill(LinearGradient(colors: [Color(hex: "667EEA"), Color(hex: "764BA2")], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .fill(LinearGradient(
+                        colors: voiceProfile.avatarGradient,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
                     .frame(width: 44, height: 44)
-                Text("🧠")
+                Text(voiceProfile.avatarEmoji)
                     .font(.title3)
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("TicBuddy")
+                Text(voiceProfile.chatTitle)
                     .font(.headline.bold())
-                HStack(spacing: 4) {
-                    Circle().fill(.green).frame(width: 7, height: 7)
-                    Text("Here to help! • \(profile.recommendedPhase.title)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
+
+                // Show countdown when ≤5 exchanges remain; otherwise show profile subtitle.
+                // Same text for both caregiver and child views (tb-mvp2-021).
+                if let countdown = countdownMessage {
+                    HStack(spacing: 4) {
+                        Text(countdown)
+                            .font(.caption.bold())
+                            .foregroundColor(Color.orange)
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                } else {
+                    HStack(spacing: 4) {
+                        Circle().fill(.green).frame(width: 7, height: 7)
+                        Text(voiceProfile.chatSubtitle(phase: profile.recommendedPhase))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
                 }
             }
+            .animation(.easeInOut(duration: 0.3), value: countdownMessage)
 
             Spacer()
+
+            // TTS speaker toggle (tb-mvp2-011).
+            // speaker.wave.2.fill = TTS on; speaker.slash.fill = TTS off.
+            // Soft pulsing circle behind icon while Ziggy is actively speaking.
+            Button {
+                ttsService.isEnabled.toggle()
+                if !ttsService.isEnabled { ttsService.stopSpeaking() }
+            } label: {
+                ZStack {
+                    if ttsService.isSpeaking {
+                        Circle()
+                            .fill(Color(hex: "667EEA").opacity(0.15))
+                            .frame(width: 36, height: 36)
+                            .scaleEffect(ttsService.isSpeaking ? 1.2 : 1.0)
+                            .animation(
+                                .easeInOut(duration: 0.55).repeatForever(autoreverses: true),
+                                value: ttsService.isSpeaking
+                            )
+                    }
+                    Image(systemName: ttsService.isEnabled
+                          ? "speaker.wave.2.fill"
+                          : "speaker.slash.fill")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(ttsService.isEnabled ? Color(hex: "667EEA") : .secondary)
+                }
+                .frame(width: 40, height: 40)
+            }
+            .accessibilityLabel(ttsService.isEnabled ? "Mute Ziggy voice" : "Enable Ziggy voice")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
@@ -121,7 +189,7 @@ struct ChatBubbleView: View {
             if isUser { Spacer(minLength: 50) }
 
             if !isUser {
-                Text("🧠")
+                Text("⚡")
                     .font(.title3)
                     .padding(.bottom, 2)
             }
@@ -151,7 +219,7 @@ struct TypingIndicatorView: View {
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
-            Text("🧠").font(.title3)
+            Text("⚡").font(.title3)
 
             HStack(spacing: 5) {
                 ForEach(0..<3) { i in
@@ -197,19 +265,54 @@ struct TicLoggedBannerView: View {
     }
 }
 
+// MARK: - Daily Limit Reached Banner
+
+struct DailyLimitReachedView: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 10) {
+                Text("🌙")
+                    .font(.title2)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("You're done for today!")
+                        .font(.headline.bold())
+                    Text("Come back tomorrow — Ziggy will be here! 💙")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                LinearGradient(
+                    colors: [Color(hex: "667EEA").opacity(0.12), Color(hex: "764BA2").opacity(0.12)],
+                    startPoint: .leading, endPoint: .trailing
+                )
+            )
+            .overlay(
+                Rectangle()
+                    .fill(LinearGradient(colors: [Color(hex: "667EEA"), Color(hex: "764BA2")],
+                                        startPoint: .leading, endPoint: .trailing))
+                    .frame(height: 3),
+                alignment: .top
+            )
+        }
+        .background(Color(.systemBackground))
+        .shadow(color: .black.opacity(0.05), radius: 4, y: -2)
+    }
+}
+
 // MARK: - Quick Action Chips
 
 struct QuickActionChipsView: View {
     @ObservedObject var viewModel: ChatViewModel
     @ObservedObject var dataService: TicDataService
 
-    let quickMessages = [
-        "I just had a tic 😔",
-        "I caught my urge! ⚡️",
-        "I redirected it! 🌟",
-        "How do I redirect?",
-        "I need encouragement 💙"
-    ]
+    // tb-mvp2-012: chips adapt to the active Ziggy voice profile
+    private var quickMessages: [String] {
+        viewModel.activeVoiceProfile.quickActionChips
+    }
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -245,7 +348,7 @@ struct ChatInputView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            TextField("Tell TicBuddy what's happening...", text: $viewModel.inputText, axis: .vertical)
+            TextField(viewModel.activeVoiceProfile.inputPlaceholder, text: $viewModel.inputText, axis: .vertical)
                 .lineLimit(1...4)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)

@@ -20,6 +20,14 @@
 	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>PROXY_BASE_URL</key>
+	<string>https://ticbuddybackend-production.up.railway.app</string>
+	<key>AUTH_TOKEN</key>
+	<string>dev-token</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>TicBuddy uses the microphone so you can speak to Ziggy hands-free during caregiver and child sessions.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>TicBuddy uses speech recognition to convert your voice into text when you speak to Ziggy.</string>
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array/>
 	<key>UILaunchScreen</key>
