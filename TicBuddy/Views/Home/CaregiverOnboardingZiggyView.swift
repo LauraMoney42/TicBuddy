@@ -31,6 +31,9 @@ final class CaregiverOnboardingViewModel: ObservableObject {
     @Published var inputText: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    /// tb-mvp2-062: ID of the Ziggy message currently being revealed word-by-word.
+    /// nil = no streaming in progress; all messages show full text.
+    @Published var streamingMessageId: UUID? = nil
 
     // MARK: - Services
 
@@ -282,10 +285,18 @@ final class CaregiverOnboardingViewModel: ObservableObject {
                 )
 
                 let cleaned = claudeService.cleanResponse(response)
+
+                // tb-mvp2-062: pre-fetch TTS audio while typing dots are still showing.
+                // For OpenAI path this makes the network request; for AVSpeech it's a no-op.
+                // Typing indicator stays visible until both Claude text + TTS audio are ready.
+                await ttsService.prefetchAudio(text: cleaned, voiceProfile: voiceProfile)
+
+                // Both text + audio ready — reveal together.
                 let ziggyMsg = OnboardingMessage(role: .ziggy, content: cleaned)
                 messages.append(ziggyMsg)
+                streamingMessageId = ziggyMsg.id
+                ttsService.startPrefetchedPlayback()
 
-                ttsService.speak(text: cleaned, voiceProfile: voiceProfile)
             } catch {
                 errorMessage = error.localizedDescription
                 let errMsg = OnboardingMessage(
@@ -458,7 +469,12 @@ struct CaregiverOnboardingZiggyView: View {
                     ScrollView {
                         LazyVStack(spacing: 14) {
                             ForEach(viewModel.messages) { msg in
-                                OnboardingBubble(message: msg)
+                                // tb-mvp2-062: pass word-reveal count only for the actively
+                                // streaming message; all others receive nil (show full text).
+                                let wordCount: Int? = msg.id == viewModel.streamingMessageId
+                                    ? ttsService.revealedWordCount
+                                    : nil
+                                OnboardingBubble(message: msg, revealedWordCount: wordCount)
                                     .id(msg.id)
                             }
                             if viewModel.isLoading {
@@ -472,11 +488,9 @@ struct CaregiverOnboardingZiggyView: View {
                     }
                     .onChange(of: viewModel.messages.count) { _ in
                         withAnimation {
-                            if viewModel.isLoading {
-                                proxy.scrollTo("typing")
-                            } else {
-                                proxy.scrollTo(viewModel.messages.last?.id)
-                            }
+                            // tb-mvp2-062: scroll to the new message immediately (not "typing")
+                            // so the word-by-word reveal is visible from the first word.
+                            proxy.scrollTo(viewModel.messages.last?.id)
                         }
                     }
                     .onChange(of: viewModel.isLoading) { loading in
@@ -747,30 +761,33 @@ private struct MicButton: View {
 
 private struct OnboardingBubble: View {
     let message: OnboardingMessage
+    /// tb-mvp2-062: nil = show full text; N = show only first N words (word-by-word reveal).
+    var revealedWordCount: Int? = nil
 
     private var isZiggy: Bool { message.role == .ziggy }
+
+    /// Returns the portion of the message text to display based on current reveal state.
+    private var displayText: String {
+        guard let count = revealedWordCount, isZiggy, count > 0 else { return message.content }
+        let words = message.content.split(separator: " ", omittingEmptySubsequences: false)
+        guard count < words.count else { return message.content }
+        return words.prefix(count).joined(separator: " ")
+    }
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
             if isZiggy {
-                // Ziggy avatar chip
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(hex: "667EEA"), Color(hex: "764BA2")],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 28, height: 28)
-                    Text("⚡")
-                        .font(.system(size: 14))
-                }
-                .padding(.bottom, 2)
+                // Ziggy avatar chip — tb-mvp2-061: TicBuddy app icon
+                Image(uiImage: UIImage(named: "AppIcon") ?? UIImage())
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 28, height: 28)
+                    .clipShape(Circle())
+                    .padding(.bottom, 2)
             }
 
-            Text(message.content)
+            Text(displayText)
+                .animation(.easeIn(duration: 0.08), value: revealedWordCount)
                 .font(.system(size: 15, design: .rounded))
                 .foregroundColor(isZiggy ? .white : .white.opacity(0.9))
                 .padding(.horizontal, 14)
@@ -819,7 +836,7 @@ private struct OnboardingTypingIndicator: View {
                         )
                     )
                     .frame(width: 28, height: 28)
-                Text("⚡")
+                Text("😉")
                     .font(.system(size: 14))
             }
             .padding(.bottom, 2)

@@ -22,30 +22,16 @@ struct HomeView: View {
                     CBITPhaseCard(phase: profile.recommendedPhase, showDetail: $showPhaseDetail)
                         .padding(.horizontal, 16)
 
+                    // tb-mvp2-067: Quick tic counter — instant +1 tap, no form required.
+                    // CBIT homework = observe and tally tics throughout the day.
+                    QuickTicCounterCard(dataService: dataService, onDetailTap: { showAddTic = true })
+                        .padding(.horizontal, 16)
+
                     // Today's stats
                     TodayStatsCard(dataService: dataService)
                         .padding(.horizontal, 16)
 
-                    // Quick log button
-                    Button(action: { showAddTic = true }) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title2)
-                            Text("Log a Tic Now")
-                                .font(.headline.bold())
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(
-                            LinearGradient(colors: [Color(hex: "667EEA"), Color(hex: "764BA2")], startPoint: .leading, endPoint: .trailing)
-                        )
-                        .cornerRadius(16)
-                        .shadow(color: Color(hex: "667EEA").opacity(0.4), radius: 8, y: 4)
-                    }
-                    .padding(.horizontal, 16)
-
-                    // Competing response reminder (week 2+)
+                    // ── Competing response reminder (week 2+) ─────────────────
                     if profile.recommendedPhase != .week1Awareness {
                         CompetingResponseCard(profile: profile)
                             .padding(.horizontal, 16)
@@ -69,6 +55,94 @@ struct HomeView: View {
                 PhaseDetailView(phase: profile.recommendedPhase)
             }
         }
+    }
+}
+
+// MARK: - Quick Tic Counter (tb-mvp2-067)
+// Zero-friction tic tally widget: one tap = +1 tic logged for today.
+// Creates a TicEntry with sensible CBIT-session-1 defaults (outcome: .noticed)
+// so entries flow into the Calendar/DayLog without any form friction.
+// A secondary "Add detail →" link opens AddTicView for full categorisation.
+
+struct QuickTicCounterCard: View {
+    @ObservedObject var dataService: TicDataService
+    let onDetailTap: () -> Void
+
+    // Animated bounce on tap
+    @State private var bounce: Bool = false
+
+    private var todayCount: Int { dataService.entries(for: Date()).count }
+
+    var body: some View {
+        HStack(spacing: 0) {
+
+            // ── Left: Count Display ──────────────────────────────────────────
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Today's Tics")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.7))
+
+                Text("\(todayCount)")
+                    .font(.system(size: 52, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .scaleEffect(bounce ? 1.18 : 1.0)
+                    .animation(.spring(response: 0.25, dampingFraction: 0.45), value: bounce)
+                    .contentTransition(.numericText())
+
+                Button(action: onDetailTap) {
+                    Text("Add detail →")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundColor(.white.opacity(0.55))
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 20)
+
+            // ── Right: +1 Tap Button ─────────────────────────────────────────
+            Button(action: quickLog) {
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.18))
+                        .frame(width: 76, height: 76)
+                    Image(systemName: "plus")
+                        .font(.system(size: 30, weight: .bold))
+                        .foregroundColor(.white)
+                }
+            }
+            .padding(.trailing, 16)
+            .padding(.vertical, 16)
+        }
+        .frame(maxWidth: .infinity)
+        .background(
+            LinearGradient(
+                colors: [Color(hex: "667EEA"), Color(hex: "764BA2")],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
+        .cornerRadius(18)
+        .shadow(color: Color(hex: "667EEA").opacity(0.38), radius: 10, y: 4)
+    }
+
+    /// Instantly creates a TicEntry with CBIT Session-1 defaults (just noticing).
+    /// No form required — full detail can be added via onDetailTap.
+    private func quickLog() {
+        let entry = TicEntry(
+            date: Date(),
+            category: .motor,
+            motorType: .other,
+            outcome: .noticed,
+            urgeStrength: 3
+        )
+        dataService.addTicEntry(entry)
+
+        // Brief scale-bounce to confirm the tap registered
+        bounce = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { bounce = false }
+
+        // Haptic feedback
+        let impact = UIImpactFeedbackGenerator(style: .medium)
+        impact.impactOccurred()
     }
 }
 

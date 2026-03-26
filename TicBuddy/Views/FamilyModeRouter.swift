@@ -125,12 +125,11 @@ struct CaregiverTabView: View {
             }
         }
         .onAppear {
-            // Trigger onboarding on the first-ever caregiver launch
+            // tb-mvp2-064: navigate to home page first — do not auto-launch Ziggy on first open.
+            // Mark hasCompletedOnboarding true immediately so this never triggers the fullScreenCover.
+            // Ziggy onboarding remains accessible via the Ziggy tab or Lesson 1 tile.
             if !caregiverStore.hasCompletedOnboarding {
-                // Small delay so the tab UI renders before the cover appears
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    showCaregiverOnboarding = true
-                }
+                caregiverStore.hasCompletedOnboarding = true
             }
         }
     }
@@ -160,6 +159,12 @@ struct ChildModeRouter: View {
 
     // tb-mvp2-026: Weekly session auto-launch
     @State private var showWeeklyIntro = false
+    // tb-mvp2-059: Slide-based lesson shown after weekly intro when content exists for the session
+    @State private var showLesson = false
+    // tb-mvp2-098: Linear post-Session-1 flow (Scheduler → Tic Assessment). Single sheet,
+    // step state driven internally by PostSession1FlowView. First-run only.
+    @State private var showPostSession1Flow = false
+    @AppStorage("hasCompletedSession1Flow") private var hasCompletedSession1Flow = false
 
     private var child: ChildProfile? { dataService.familyUnit.activeChild }
 
@@ -201,7 +206,78 @@ struct ChildModeRouter: View {
                 ZiggyWeeklyIntroSheet(intro: intro) {
                     WeeklySessionService.shared.markLaunched(for: child.id)
                     showWeeklyIntro = false
+                    // tb-mvp2-059: if a lesson exists for this session stage, show it next.
+                    // Sessions without authored slides skip straight to child home + Ziggy chat.
+                    if let lesson = CBITLessonService.lesson(for: child.sessionStage) {
+                        if let slide0 = lesson.slides.first {
+                            let profile = ZiggyVoiceProfile.profile(for: child.ageGroup)
+                            // tb-mvp2-073 fix: await the prefetch BEFORE opening the sheet.
+                            // tb-mvp2-105: AppWalkthroughView pre-warms slide 0+1 cache on its
+                            // .onAppear — by the time the user reaches this tap, the cache is
+                            // already populated and await prefetch.value resolves in ~0ms.
+                            // The blocking pattern is kept as a safety fallback for edge cases
+                            // (cache cleared, first launch without walkthrough, etc.).
+                            // Timeout reduced 3s → 1s since a warm cache resolves instantly.
+                            Task { @MainActor in
+                                let prefetch = Task {
+                                    await ZiggyTTSService.shared.prefetchLessonSlide(
+                                        text: slide0.spokenText, // tb-mvp2-087: title+body, matches speakCurrentSlide
+                                        voiceProfile: profile,
+                                        slideIndex: 0
+                                    )
+                                }
+                                // Safety: cancel after 1s — cache hit resolves in ~0ms anyway
+                                Task {
+                                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                                    prefetch.cancel()
+                                }
+                                await prefetch.value
+                                showLesson = true
+                            }
+                        } else {
+                            // No slides — show immediately
+                            showLesson = true
+                        }
+                    }
                 }
+            }
+        }
+        // tb-mvp2-059: lesson sheet — shown after weekly intro when session has authored slides
+        // tb-mvp2-098: On first run (hasCompletedSession1Flow == false), completion triggers the
+        // linear post-Session-1 flow (Scheduler → Tic Assessment) via PostSession1FlowView.
+        // On replay, hierarchy is already filled so CTA just dismisses.
+        .sheet(isPresented: $showLesson) {
+            if let child = child,
+               let lesson = CBITLessonService.lesson(for: child.sessionStage) {
+                let voiceProfile = ZiggyVoiceProfile.profile(for: child.ageGroup)
+                // tb-mvp2-114: isFirstRun controls label only — destination is always
+                // the tic assessment so returning users can update their hierarchy.
+                let isFirstRun = !hasCompletedSession1Flow && child.ticHierarchy.isEmpty
+                LessonSlideView(
+                    lesson: lesson,
+                    voiceProfile: voiceProfile,
+                    // "Start Tic Assessment →" on first run; "Update Tics →" on replay.
+                    finalCTALabel: isFirstRun ? "Start Tic Assessment →" : "Update Tics →"
+                ) {
+                    // Always route to post-Session-1 flow (Scheduler → Tic Assessment).
+                    // asyncAfter avoids iOS 16 sheet presentation race condition.
+                    showLesson = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        showPostSession1Flow = true
+                    }
+                }
+            }
+        }
+        // tb-mvp2-098: Post-Session-1 linear flow — Scheduler → Tic Assessment.
+        // Single sheet; internal step enum drives navigation between the two screens.
+        // Marks hasCompletedSession1Flow = true on completion so replay never re-enters.
+        .sheet(isPresented: $showPostSession1Flow) {
+            if let child = child {
+                PostSession1FlowView(child: child) {
+                    hasCompletedSession1Flow = true
+                    showPostSession1Flow = false
+                }
+                .environmentObject(dataService)
             }
         }
         .onAppear {
@@ -215,6 +291,40 @@ struct ChildModeRouter: View {
         }
     }
 
+}
+
+// MARK: - Post-Session-1 Linear Flow
+
+/// tb-mvp2-098: Container view that drives the linear first-run flow after Session 1:
+///   Step 1 — SessionSchedulerView: user picks day + time for weekly sessions
+///   Step 2 — TicIntakeAssessmentView: user documents their tics
+///
+/// Hosted in a single sheet from ChildModeRouter. Internal `postSession1Step` state
+/// advances forward only; user cannot skip either step on first run.
+/// `onComplete` fires when intake finishes — caller marks hasCompletedSession1Flow = true.
+private struct PostSession1FlowView: View {
+    @EnvironmentObject var dataService: TicDataService
+    let child: ChildProfile
+    let onComplete: () -> Void
+
+    /// tb-mvp2-098: Step enum drives navigation within the single-sheet flow.
+    private enum PostSession1Step { case scheduling, ticAssessment }
+    @State private var step: PostSession1Step = .scheduling
+
+    var body: some View {
+        switch step {
+        case .scheduling:
+            // onContinue advances to tic assessment without dismissing the sheet
+            SessionSchedulerView {
+                step = .ticAssessment
+            }
+        case .ticAssessment:
+            TicIntakeAssessmentView(child: child) {
+                onComplete()
+            }
+            .environmentObject(dataService)
+        }
+    }
 }
 
 // MARK: - Exit Child Mode Button

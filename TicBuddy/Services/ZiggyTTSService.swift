@@ -30,6 +30,12 @@ final class ZiggyTTSService: ObservableObject {
     /// TTSVoicePreviewView observes this to show an inline error banner.
     @Published var previewError: String? = nil
 
+    /// tb-mvp2-062: Words revealed so far in the currently-streaming message.
+    /// OnboardingBubble observes this to reveal text word-by-word in sync with audio.
+    @Published var revealedWordCount: Int = 0
+    /// tb-mvp2-062: Total words in the currently-streaming message.
+    @Published var streamingWordCount: Int = 0
+
     /// Master TTS toggle — persisted across launches.
     /// Changing this immediately affects subsequent Ziggy responses.
     @Published var isEnabled: Bool {
@@ -47,6 +53,16 @@ final class ZiggyTTSService: ObservableObject {
     private var currentSpeakTask: Task<Void, Never>?
     /// On-device fallback synthesizer — used when ElevenLabs proxy is unreachable. (tb-mvp2-043)
     private let synthesizer = AVSpeechSynthesizer()
+    // tb-mvp2-062: Prefetch state for typing-indicator → bubble-reveal flow
+    private var prefetchedAudioData: Data?
+    private var prefetchedText: String = ""
+    private var prefetchedVoiceProfile: ZiggyVoiceProfile = .caregiver
+    private var wordRevealTimer: Timer?
+
+    // tb-mvp2-073: Lesson slide audio cache — keyed by slide index.
+    // Background-fetched while current slide plays; consumed instantly on Next tap.
+    private var lessonAudioCache: [Int: Data] = [:]
+    private var lessonPrefetchTasks: [Int: Task<Void, Never>] = [:]
 
     private init() {
         // Default to stored preference; first-time = false (opt-in)
@@ -73,6 +89,54 @@ final class ZiggyTTSService: ObservableObject {
         }
     }
 
+    /// tb-mvp2-070: Lesson-mode speak — always fires regardless of isEnabled.
+    /// tb-mvp2-073: Checks the lesson audio cache first for instant playback.
+    /// If the audio for `slideIndex` was pre-fetched, it plays immediately with zero
+    /// network latency. Falls through to live fetch / AVSpeech if not cached.
+    func speakLesson(text: String, voiceProfile: ZiggyVoiceProfile, slideIndex: Int = -1) {
+        let cleanText = prepareForSpeech(text)
+        guard !cleanText.isEmpty else { return }
+        currentSpeakTask?.cancel()
+        stopSpeaking()
+
+        // Check cache first — instant playback if available
+        if slideIndex >= 0, let cached = lessonAudioCache[slideIndex] {
+            currentSpeakTask = Task { await playAudio(data: cached) }
+        } else {
+            currentSpeakTask = Task { await performSpeak(text: cleanText, voiceProfile: voiceProfile) }
+        }
+    }
+
+    /// tb-mvp2-073: Pre-fetches audio for a future lesson slide in the background.
+    /// Call immediately after starting playback of the current slide so the next
+    /// slide's audio is ready before the user taps Next.
+    /// No-ops if already cached or if proxy is not configured (AVSpeech needs no prefetch).
+    func prefetchLessonSlide(text: String, voiceProfile: ZiggyVoiceProfile, slideIndex: Int) async {
+        guard APIConfig.isConfigured else { return }  // AVSpeech path needs no prefetch
+        guard lessonAudioCache[slideIndex] == nil else { return }  // already cached
+        guard lessonPrefetchTasks[slideIndex] == nil else { return } // already in-flight
+
+        let cleanText = prepareForSpeech(text)
+        guard !cleanText.isEmpty else { return }
+
+        let task = Task {
+            if let data = try? await fetchAudio(text: cleanText, voiceProfile: voiceProfile) {
+                lessonAudioCache[slideIndex] = data
+            }
+            lessonPrefetchTasks.removeValue(forKey: slideIndex)
+        }
+        lessonPrefetchTasks[slideIndex] = task
+        await task.value
+    }
+
+    /// tb-mvp2-073: Clears the lesson audio cache and cancels in-flight prefetch tasks.
+    /// Call from LessonSlideView.onDisappear to free memory when the lesson is dismissed.
+    func clearLessonCache() {
+        lessonPrefetchTasks.values.forEach { $0.cancel() }
+        lessonPrefetchTasks.removeAll()
+        lessonAudioCache.removeAll()
+    }
+
     /// tb-mvp2-049: Preview — plays a sample using an explicit voice + speed, bypassing
     /// profile mapping. Used by TTSVoicePreviewView to audition voices in real time.
     /// Always fires regardless of isEnabled — preview is always intentional.
@@ -91,7 +155,50 @@ final class ZiggyTTSService: ObservableObject {
         audioPlayer?.stop()
         audioPlayer = nil
         if synthesizer.isSpeaking { synthesizer.stopSpeaking(at: .immediate) }
+        stopWordRevealTimer()
         isSpeaking = false
+    }
+
+    // MARK: - Prefetch + Reveal API (tb-mvp2-062)
+
+    /// Step 1 of the typing-indicator → word-reveal flow.
+    /// Pre-fetches TTS audio from the Railway proxy while the typing dots are still showing.
+    /// Falls through to nil (AVSpeech) when proxy is not configured or fetch fails.
+    func prefetchAudio(text: String, voiceProfile: ZiggyVoiceProfile) async {
+        guard isEnabled else { return }
+        let cleanText = prepareForSpeech(text)
+        guard !cleanText.isEmpty else { return }
+        prefetchedText = cleanText
+        prefetchedVoiceProfile = voiceProfile
+        // Attempt network fetch; nil = fall back to AVSpeech in startPrefetchedPlayback()
+        prefetchedAudioData = APIConfig.isConfigured
+            ? (try? await fetchAudio(text: cleanText, voiceProfile: voiceProfile))
+            : nil
+    }
+
+    /// Step 2 of the typing-indicator → word-reveal flow.
+    /// Call immediately after appending the Ziggy message to the messages array.
+    /// Starts audio and drives revealedWordCount forward one word per spoken interval.
+    func startPrefetchedPlayback() {
+        guard isEnabled, !prefetchedText.isEmpty else { return }
+        let text = prefetchedText
+        let voiceProfile = prefetchedVoiceProfile
+        let audioData = prefetchedAudioData
+
+        currentSpeakTask?.cancel()
+        stopSpeaking()
+
+        let wordCount = max(1, text.split(separator: " ").count)
+        streamingWordCount = wordCount
+        revealedWordCount = 1   // show first word immediately as bubble appears
+
+        currentSpeakTask = Task {
+            if let data = audioData, !Task.isCancelled {
+                await playAudio(data: data, wordCount: wordCount)
+            } else if !Task.isCancelled {
+                await speakWithSystemTTS(text: text, voiceProfile: voiceProfile)
+            }
+        }
     }
 
     // MARK: - Private: Network + Playback
@@ -191,6 +298,15 @@ final class ZiggyTTSService: ObservableObject {
         utterance.volume = 1.0
 
         isSpeaking = true
+
+        // tb-mvp2-062: rate-based word reveal. AVSpeechUtteranceDefaultSpeechRate = 0.5
+        // maps to ~2.5 words/sec at normal English pace. Scale linearly with utterance.rate.
+        if streamingWordCount > 0 {
+            let wordsPerSec = max(1.0, Double(utterance.rate) * 5.0)
+            let interval = 1.0 / wordsPerSec
+            startWordRevealTimer(interval: interval, total: streamingWordCount)
+        }
+
         synthesizer.speak(utterance)
 
         // Poll until the synthesizer finishes (AVSpeechSynthesizer has no async API).
@@ -201,7 +317,34 @@ final class ZiggyTTSService: ObservableObject {
                 break
             }
         }
+        stopWordRevealTimer()
+        if streamingWordCount > 0 { revealedWordCount = streamingWordCount }
         isSpeaking = false
+    }
+
+    // MARK: - Word Reveal Timer (tb-mvp2-062)
+
+    private func startWordRevealTimer(interval: TimeInterval, total: Int) {
+        stopWordRevealTimer()
+        wordRevealTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+            // Discard timer param to avoid Swift 6 Sendable data-race warning.
+            // Use self.wordRevealTimer for invalidation instead.
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                if self.revealedWordCount < total {
+                    self.revealedWordCount += 1
+                }
+                if self.revealedWordCount >= total {
+                    self.wordRevealTimer?.invalidate()
+                    self.wordRevealTimer = nil
+                }
+            }
+        }
+    }
+
+    private func stopWordRevealTimer() {
+        wordRevealTimer?.invalidate()
+        wordRevealTimer = nil
     }
 
     // MARK: - Network
@@ -258,7 +401,8 @@ final class ZiggyTTSService: ObservableObject {
 
     // MARK: - Playback
 
-    private func playAudio(data: Data) async {
+    /// wordCount > 0 enables tb-mvp2-062 word-by-word reveal timer synced to audio duration.
+    private func playAudio(data: Data, wordCount: Int = 0) async {
         do {
             // tb-mvp2-043: use .playback, not .ambient.
             // .ambient respects the iOS mute/silent switch — Ziggy's voice was completely
@@ -279,6 +423,14 @@ final class ZiggyTTSService: ObservableObject {
             audioPlayer = player
 
             isSpeaking = true
+
+            // tb-mvp2-062: schedule word reveal timer proportional to audio duration.
+            // Interval = total_duration / word_count gives one word revealed per spoken word.
+            if wordCount > 0 {
+                let interval = max(0.08, player.duration / Double(wordCount))
+                startWordRevealTimer(interval: interval, total: wordCount)
+            }
+
             player.play()
 
             // Poll for completion (AVAudioPlayer has no async API).
@@ -290,6 +442,8 @@ final class ZiggyTTSService: ObservableObject {
         } catch {
             print("[ZiggyTTS] Playback error: \(error.localizedDescription)")
         }
+        stopWordRevealTimer()
+        if wordCount > 0 { revealedWordCount = wordCount }   // ensure fully revealed on finish
         isSpeaking = false
     }
 
@@ -315,6 +469,11 @@ final class ZiggyTTSService: ObservableObject {
             scalar.value != 0x200D     // zero-width joiner (emoji sequence combiner)
         })
         clean = String(filteredScalars)
+        // tb-mvp2-083: Phonetic substitutions — fix TTS mispronunciations before sending.
+        // "CBIT" → "C-BIT": hyphen forces Nova/TTS engines to read each letter separately
+        // rather than trying to pronounce it as a word ("suh-bit" or "cee-bit").
+        // Applied here so display text in slides/chat is unchanged — only the spoken string differs.
+        clean = clean.replacingOccurrences(of: "CBIT", with: "C-BIT")
         // Remove [LOG_TIC: ...] tags Ziggy sometimes appends
         clean = clean.replacingOccurrences(of: #"\[LOG_TIC:[^\]]+\]"#, with: "", options: .regularExpression)
         // Unwrap **bold** and *italic* markers (keep the text, drop the asterisks)
@@ -324,9 +483,10 @@ final class ZiggyTTSService: ObservableObject {
         // Collapse multiple whitespace/newlines into a single space
         clean = clean.components(separatedBy: .newlines).joined(separator: " ")
         clean = clean.replacingOccurrences(of: #"\s{2,}"#, with: " ", options: .regularExpression)
-        // Truncate to 500 chars max (proxy enforces this too; trim here for UX)
-        if clean.count > 500 {
-            clean = String(clean.prefix(497)) + "..."
+        // tb-mvp2-120: Raised limit to 4000 chars to match backend — 500 was chopping
+        // lesson slides mid-sentence (slide 5 body alone exceeds 461 chars pre-truncation).
+        if clean.count > 4000 {
+            clean = String(clean.prefix(3997)) + "..."
         }
         return clean.trimmingCharacters(in: .whitespacesAndNewlines)
     }

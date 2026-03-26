@@ -13,6 +13,13 @@ class ChatViewModel: ObservableObject {
     @Published var lastLoggedEntry: TicEntry? = nil
     @Published var errorMessage: String? = nil
 
+    // tb-mvp2-062: Word-by-word text reveal synced to TTS.
+    // streamingMessageId — the assistant message currently being revealed (nil = none).
+    // streamingText      — the portion of that message revealed so far.
+    // ChatBubbleView shows streamingText (+ cursor) instead of message.content while active.
+    @Published var streamingMessageId: UUID? = nil
+    @Published var streamingText: String = ""
+
     private let claudeService = ClaudeService()
     private let dataService: TicDataService
     private let sessionStore = CBITSessionStore.shared
@@ -65,8 +72,11 @@ class ChatViewModel: ObservableObject {
 
     /// Selects the correct Ziggy voice profile for the current session context.
     /// Child active → profile based on their AgeGroup. No child → caregiver mode.
+    /// tb-mvp2-117: selfUser has no child profiles by design — route to .adolescent,
+    /// not .caregiver, so chips/prompt address the teen as "you" not as a parent.
     /// Exposed publicly so ChatView can adapt its header and quick-action chips (tb-mvp2-012).
     var activeVoiceProfile: ZiggyVoiceProfile {
+        if dataService.familyUnit.accountType == .selfUser { return .adolescent }
         guard let child = dataService.familyUnit.activeChild else { return .caregiver }
         return ZiggyVoiceProfileService.shared.profile(for: child.ageGroup)
     }
@@ -92,7 +102,7 @@ class ChatViewModel: ObservableObject {
         let welcome = ChatMessage(
             role: .assistant,
             content: """
-            Hi \(profile.name.isEmpty ? "there" : profile.name)! 👋 I'm TicBuddy, your tic-fighting sidekick! 🦸
+            Hi \(profile.name.isEmpty ? "there" : profile.name)! 👋 I'm Ziggy, your tic-fighting sidekick! 🦸
 
             \(phase.goalText)
 
@@ -102,6 +112,17 @@ class ChatViewModel: ObservableObject {
             """
         )
         messages.append(welcome)
+    }
+
+    // MARK: - Contextual Seed (tb-mvp2-102)
+
+    /// Pre-populates the input and auto-sends when Ziggy is opened from a contextual
+    /// lesson CTA (e.g. "Ask Ziggy →" on the What's Next slide).
+    /// No-ops if the chat already has a real exchange — prevents double-sending on re-appear.
+    func seedAndSend(_ prompt: String) {
+        guard messages.count <= 1 else { return }   // ≤ 1 = only the welcome message
+        inputText = prompt
+        sendMessage()
     }
 
     // MARK: - Send Message
@@ -239,6 +260,9 @@ class ChatViewModel: ObservableObject {
                 let voiceForTTS = activeVoiceProfile
                 ttsService.speak(text: safeResponse, voiceProfile: voiceForTTS)
 
+                // tb-mvp2-062: Reveal words in sync with TTS playback (TTS-enabled only).
+                startWordReveal(text: safeResponse, messageId: assistantMessage.id)
+
                 saveHistory()
                 dataService.checkAndAdvancePhase()
 
@@ -252,6 +276,48 @@ class ChatViewModel: ObservableObject {
             }
 
             isLoading = false
+        }
+    }
+
+    // MARK: - Word-by-Word Reveal (tb-mvp2-062)
+
+    /// Reveals `text` word-by-word for `messageId`'s bubble, timed to match TTS playback.
+    ///
+    /// Rate: 160 WPM — calibrated to OpenAI nova at speed 1.05. Words appear in sync with
+    /// what the user hears. Only active when TTS is enabled; otherwise the full message is
+    /// already visible and no animation is needed.
+    ///
+    /// Each reveal block checks `streamingMessageId == messageId` before writing, so a new
+    /// message that interrupts mid-reveal cleanly takes over without stale writes.
+    private func startWordReveal(text: String, messageId: UUID) {
+        guard ttsService.isEnabled else { return }
+
+        let words = text.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+        guard !words.isEmpty else { return }
+
+        // Show the first word immediately so the bubble never flashes empty.
+        streamingMessageId = messageId
+        streamingText = words[0]
+
+        // 160 WPM → 0.375 s per word. Matches OpenAI nova at speed 1.05 closely enough
+        // that words appear on screen around the time TTS speaks them.
+        let interval: TimeInterval = 60.0 / 160.0
+
+        for i in 1 ..< words.count {
+            let delay = interval * Double(i)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self, self.streamingMessageId == messageId else { return }
+                self.streamingText = words[0 ... i].joined(separator: " ")
+            }
+        }
+
+        // Clear streaming state after the last word + a short linger so the cursor
+        // doesn't vanish exactly when the final word is spoken.
+        let totalDuration = interval * Double(words.count) + 0.4
+        DispatchQueue.main.asyncAfter(deadline: .now() + totalDuration) { [weak self] in
+            guard let self, self.streamingMessageId == messageId else { return }
+            self.streamingMessageId = nil
+            self.streamingText = ""
         }
     }
 

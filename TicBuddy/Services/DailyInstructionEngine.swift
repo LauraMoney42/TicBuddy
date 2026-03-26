@@ -86,36 +86,54 @@ enum DailyInstructionEngine {
         switch stage {
 
         // ─── Session 1: Foundation / Awareness ──────────────────────────────
+        // tb-mvp2-039: Session 1 = awareness training ONLY. No competing response introduction.
+        // Homework = catch-counting. Age-appropriate urge names for little kids.
+        // tb-mvp2-081: Aligned copy with updated Lesson 1 framing ("tic detective",
+        // "catch before it happens"). Removed clinical coaching note that was
+        // accidentally surfacing as a numbered user step.
         case .session1:
-            // tb-mvp2-039: Session 1 = awareness training ONLY. No competing response introduction.
-            // Homework = catch-counting. Age-appropriate urge names for little kids.
             return DailyInstruction(
-                title: "Today: Awareness Building 👀",
+                title: isSelfUser ? "Today's Practice: Be a Tic Detective 🔍" : "Today's Practice: Tic Detective 🔍",
                 focus: isSelfUser
-                    ? "Discover the body signal (premonitory urge) that fires before each tic."
-                    : "Help \(name) discover the body signal (premonitory urge) that fires before each tic.",
+                    ? "Try to catch the urge — that little signal — BEFORE the tic fires."
+                    : "Help \(name) notice the premonitory urge — the signal right before each tic.",
                 steps: isFullSessionDay
                     ? [
                         "Find a calm 15–20 min with no distractions.",
-                        "Learn the premonitory urge in plain terms: 'The Tingle', 'Your Body's Secret Warning', or 'The Uh-Oh Feeling' — it's the feeling right before the tic fires.",
-                        "Frame it as a superpower: \"Every time you feel that signal before the tic, that's a CATCH — and catches are your superpower.\"",
-                        "Spend 5 min listing \(namePos) tics — don't judge, just name them.",
-                        "Pick ONE tic to focus on this week (most frequent or most noticeable).",
-                        "Session 1 homework: count catches each day and log in TicBuddy.",
-                        "DO NOT introduce a competing response yet — that's Session 2. This week is pure awareness."
+                        isSelfUser
+                            ? "Get to know the urge: it might feel like a tingle, an itch, pressure, or just a sense that 'something's building.' That feeling right before the tic? That's the signal."
+                            : "Introduce the premonitory urge: 'Right before the tic fires, there's a feeling — a tingle, itch, or pressure. That's \(namePos) secret signal.'",
+                        isSelfUser
+                            ? "Every time you notice the signal before the tic fires, that's a CATCH. Catches are your superpower — they mean your brain's awareness is waking up."
+                            : "Frame catches as wins: 'Every time you feel that signal before the tic fires, that's a CATCH — and that's \(namePos) superpower.'",
+                        "Spend 5 min naming \(namePos) tics — motor vs vocal, what they look and feel like.",
+                        // tb-mvp2-095: Replaced "Pick ONE tic" (Session 2 CR framing) with
+                        // Tic Assessment CTA — Session 1 is awareness-only, no tic selection for CR yet.
+                        isSelfUser
+                            ? "Complete your Tic Assessment in TicBuddy if you haven't yet — it only takes a few minutes and gives Ziggy a map of your tics."
+                            : "Complete \(namePos) Tic Assessment in TicBuddy if you haven't yet — it maps all the tics and unlocks the next phase.",
+                        isSelfUser
+                            ? "Homework: tap the tic counter on the Home screen each time you catch a tic. Keep going all week."
+                            : "Homework: \(name) taps the tic counter on the Home screen each time they catch one. Log every day."
                       ]
                     : [
-                        "Quick daily drill — 5 min max.",
-                        "Check in: \"Did you feel the Tingle / warning feeling before any tics today? How many catches?\"",
-                        "If yes: celebrate — \"That IS your superpower! 💪\"",
-                        "If no: that's completely normal — awareness builds over days. \"Keep your detective eyes open!\"",
-                        "Log \(namePos) catch count in TicBuddy."
+                        "Quick daily check-in — 5 min max.",
+                        isSelfUser
+                            ? "Ask yourself: did you feel the signal (the urge) before any tics today? Even once counts."
+                            : "Ask \(name): 'Did you feel the signal — the tingle or pressure — before any tics today?'",
+                        isSelfUser
+                            ? "If yes — that's a catch. Your brain is building the awareness muscle. Keep going."
+                            : "If yes: celebrate it. 'That IS your superpower — your brain is waking up to the signal! 💪'",
+                        isSelfUser
+                            ? "If no — completely normal. Awareness builds over days. Keep your detective eyes open."
+                            : "If no: totally normal. Awareness grows gradually. 'Keep your detective eyes open!'",
+                        "Log \(namePos) catch count in TicBuddy before you forget."
                       ],
                 coachingTip: isFullSessionDay
-                    ? "Session 1 = noticing ONLY. No competing responses yet — not even as a preview. Introducing them too early derails awareness training. The catch-count homework is the whole point."
+                    ? "Week 1 = awareness only. No competing responses — not even as a preview. Introducing them too early short-circuits awareness training. The catch-count habit is the entire goal this week."
                     : isSelfUser
-                        ? "Keep daily drills short and positive. When you wonder 'what do I do when I feel the tingle?' — for now, just notice it and count it. You'll learn the next move in Session 2."
-                        : "Keep daily drills short and positive. If \(name) asks 'what do I do when I feel the tingle?', say: 'For now, just notice it and count it — we learn the next move next week!'",
+                        ? "Short and positive. If you wonder 'what do I do when I feel the urge?' — for now, just notice it and count it. The next move comes in Week 2."
+                        : "Keep it short and positive. If \(name) asks 'what do I do when I feel the urge?', say: 'Right now, just notice it and count it — we learn the next move next week.'",
                 estimatedMinutes: isFullSessionDay ? 20 : 5,
                 emoji: "🔍",
                 isFullSessionDay: isFullSessionDay

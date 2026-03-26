@@ -292,6 +292,32 @@ struct NameAgeStepView: View {
                         .frame(width: 36)
                 }
                 .padding(.horizontal, 30)
+
+                // tb-mvp2-063: soft caregiver nudge for ages 13–15.
+                // Non-blocking — user can continue alone; we just encourage caregiver involvement.
+                if profile.age >= 13 && profile.age <= 15 {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: "person.2.fill")
+                            .font(.system(size: 18))
+                            .foregroundColor(Color(hex: "FFD700"))
+                            .padding(.top, 2)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("A caregiver can help!")
+                                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                                .foregroundColor(.white)
+                            Text("We recommend having a caregiver help you get started — it makes CBIT way more effective! You can still continue on your own.")
+                                .font(.system(size: 13, design: .rounded))
+                                .foregroundColor(.white.opacity(0.85))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .padding(14)
+                    .background(Color.white.opacity(0.15))
+                    .cornerRadius(16)
+                    .padding(.horizontal, 30)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .animation(.easeInOut(duration: 0.25), value: profile.age)
+                }
             }
         }
     }

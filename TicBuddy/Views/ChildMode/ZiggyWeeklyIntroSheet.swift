@@ -42,7 +42,7 @@ struct ZiggyWeeklyIntroSheet: View {
                     Circle()
                         .fill(Color.white.opacity(0.15))
                         .frame(width: 100, height: 100)
-                    Text("⚡")
+                    Text("😉")
                         .font(.system(size: 56))
                 }
                 .scaleEffect(showContent ? 1.0 : 0.7)
@@ -108,7 +108,7 @@ struct ZiggyWeeklyIntroSheet: View {
                 // ── Ziggy speech bubble (typewriter) ─────────────────────
                 ScrollView {
                     HStack(alignment: .top, spacing: 12) {
-                        Text("⚡")
+                        Text("😉")
                             .font(.system(size: 24))
                             .padding(.top, 2)
 

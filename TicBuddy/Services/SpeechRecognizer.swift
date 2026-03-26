@@ -9,6 +9,12 @@
 // `onFinalTranscript` closure fires when recording ends with final text.
 //
 // Stops ZiggyTTSService playback before recording to avoid mic feedback.
+//
+// tb-mvp2-046: Simulator support
+//   AVAudioEngine.inputNode has no hardware mic in the Simulator — startRecording()
+//   would silently stall or crash on the audio tap. We now detect the simulator
+//   early and set `simulatorUnsupported = true` so any observing view can show an
+//   appropriate alert rather than leaving the user confused by a frozen mic button.
 
 import Foundation
 import Speech
@@ -24,6 +30,9 @@ final class SpeechRecognizer: ObservableObject {
     /// True when the user chose "keep mic on" toggle mode
     @Published var isMicLocked: Bool = false
     @Published var permissionStatus: SpeechPermissionStatus = .unknown
+    /// tb-mvp2-046: Set to true when startRecording() is called on the Simulator.
+    /// Observe this in any mic-bearing view to show a "requires physical device" alert.
+    @Published var simulatorUnsupported: Bool = false
 
     // MARK: - Callbacks
 
@@ -69,6 +78,13 @@ final class SpeechRecognizer: ObservableObject {
     /// withCheckedContinuation across actor boundaries. Making the function nonisolated avoids
     /// the assertion entirely; MainActor.run is used explicitly for the state write.
     nonisolated func requestPermissions() async {
+        // tb-mvp2-046: Skip permission dialogs in simulator — recording won't work anyway.
+        // Mark authorized so the mic button doesn't get stuck re-requesting indefinitely.
+        #if targetEnvironment(simulator)
+        await MainActor.run { permissionStatus = .authorized }
+        return
+        #endif
+
         // Step 1: speech recognition — bridges Obj-C callback to Swift async.
         // nonisolated: the callback fires on whatever thread Apple chooses (usually background).
         // withCheckedContinuation is safe here because no actor state is accessed in the closure.
@@ -101,6 +117,14 @@ final class SpeechRecognizer: ObservableObject {
     // MARK: - Recording
 
     func startRecording() {
+        // tb-mvp2-046: AVAudioEngine has no hardware input in the iOS Simulator.
+        // Attempting to install a tap on inputNode causes a silent stall or crash.
+        // Publish the flag so the calling view can show a helpful alert instead.
+        #if targetEnvironment(simulator)
+        simulatorUnsupported = true
+        return
+        #endif
+
         guard !isRecording else { return }
         guard permissionStatus == .authorized else {
             Task { await requestPermissions() }
@@ -175,6 +199,13 @@ final class SpeechRecognizer: ObservableObject {
     /// Toggle mic-lock mode ON/OFF.
     /// When turning ON: starts recording. When turning OFF: stops recording.
     func toggleMicLock() {
+        // tb-mvp2-046: Don't flip isMicLocked in simulator — startRecording will no-op
+        // and the mic button would be stuck in an "on" visual state with nothing recording.
+        #if targetEnvironment(simulator)
+        simulatorUnsupported = true
+        return
+        #endif
+
         if isMicLocked {
             isMicLocked = false
             stopRecording(fireCallback: true)

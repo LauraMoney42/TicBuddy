@@ -107,7 +107,10 @@ struct SharedFamilyData: Codable {
 
 struct TicHierarchyEntry: Codable, Identifiable {
     var id: UUID = UUID()
-    var ticName: String                  // e.g. "Eye Blink", "Throat Clearing"
+    var ticName: String                  // canonical type name e.g. "Eye Blink"
+    /// tb-mvp2-082: Optional user-given nickname e.g. "The Flutter", "My Blurt".
+    /// When set, shown as the primary label throughout the app.
+    var nickname: String = ""
     var category: TicCategory            // .motor or .vocal
     var distressRating: Int              // 1–10; drives hierarchy ordering
     var frequencyPerDay: Int             // estimated daily occurrences
@@ -121,6 +124,9 @@ struct TicHierarchyEntry: Codable, Identifiable {
     // Outcome tracking across sessions
     var baselineDistress: Int = 0        // distress rating when CR was introduced
     var currentDistress: Int = 0         // most recent rating (updated each session)
+
+    /// Display name: nickname if set, otherwise the canonical ticName.
+    var displayName: String { nickname.isEmpty ? ticName : nickname }
 }
 
 // MARK: - Age Group

@@ -56,7 +56,7 @@ enum ZiggyVoiceProfile: String, CaseIterable {
         case .youngChild:  return "Ziggy Jr. 🌈"
         case .olderChild:  return "Ziggy 💪"
         case .adolescent:  return "Ziggy 🎯"
-        case .caregiver:   return "Ziggy ⚡"
+        case .caregiver:   return "Ziggy"
         }
     }
 
@@ -81,9 +81,9 @@ enum ZiggyVoiceProfile: String, CaseIterable {
     var avatarEmoji: String {
         switch self {
         case .youngChild:  return "🌈"
-        case .olderChild:  return "⚡️"
+        case .olderChild:  return "😉"
         case .adolescent:  return "🎯"
-        case .caregiver:   return "⚡"
+        case .caregiver:   return "😉"
         }
     }
 
@@ -101,9 +101,9 @@ enum ZiggyVoiceProfile: String, CaseIterable {
     var chatTitle: String {
         switch self {
         case .youngChild:  return "Ziggy Jr. 🌈"
-        case .olderChild:  return "Ziggy ⚡️"
+        case .olderChild:  return "Ziggy"
         case .adolescent:  return "Ziggy"
-        case .caregiver:   return "Ziggy ⚡"
+        case .caregiver:   return "Ziggy"
         }
     }
 
@@ -201,8 +201,11 @@ enum ZiggyVoiceProfile: String, CaseIterable {
 
         case .adolescent:
             return """
-            VOICE PROFILE: Ziggy (ages 13–17)
+            VOICE PROFILE: Ziggy (ages 13–17 / self-user)
             - You are Ziggy, a knowledgeable and supportive tic-training coach
+            - tb-mvp2-117: You are speaking DIRECTLY to the person who HAS tics — always use
+              "you" and "your tics". NEVER say "your child", "your kid", or refer to a third party.
+              This user is managing their own tics, not a parent managing someone else's.
             - Tone: peer-like, genuine, and direct — NOT patronizing, NOT overly enthusiastic
             - 4–5 sentences per reply — substantive but not overwhelming
             - Minimal emojis — use them sparingly and authentically, never performatively
@@ -238,10 +241,11 @@ final class ZiggyVoiceProfileService: @unchecked Sendable {
     private init() {}
 
     /// Returns the correct voice profile for the current session context.
+    /// tb-mvp2-117: selfUser has no child profiles by design — must not fall through
+    /// to .caregiver. Route to .adolescent so Ziggy addresses the teen/adult as "you".
     func activeProfile(familyUnit: FamilyUnit) -> ZiggyVoiceProfile {
-        guard let child = familyUnit.activeChild else {
-            return .caregiver
-        }
+        if familyUnit.accountType == .selfUser { return .adolescent }
+        guard let child = familyUnit.activeChild else { return .caregiver }
         return ZiggyVoiceProfile.profile(for: child.ageGroup)
     }
 

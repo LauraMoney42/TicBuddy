@@ -35,6 +35,8 @@
 		BB00112233445566778801EE /* ChatUsageLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800EE /* ChatUsageLimiter.swift */; };
 		BB00112233445566778801FF /* DailyInstructionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800FF /* DailyInstructionEngine.swift */; };
 		BB001122334455667788BB00 /* EveningCheckInService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB00 /* EveningCheckInService.swift */; };
+		TB096AAA000000000001 /* SessionSchedulerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB096AAA000000000002 /* SessionSchedulerService.swift */; };
+		TB096BBB000000000001 /* SessionSchedulerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB096BBB000000000002 /* SessionSchedulerView.swift */; };
 		BB001122334455667788BB11 /* FamilyPINService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB11 /* FamilyPINService.swift */; };
 		BB001122334455667788BB22 /* ZiggyContentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB22 /* ZiggyContentFilter.swift */; };
 		BB001122334455667788BB33 /* ZiggyTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB33 /* ZiggyTTSService.swift */; };
@@ -62,6 +64,11 @@
 		CC001122334455667788DD02 /* LegalDisclaimerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */; };
 		CC001122334455EE0002 /* ZiggyRAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC001122334455DD0002 /* ZiggyRAGService.swift */; };
 		FF001122334455AA00000002 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF001122334455AA00000001 /* APIConfig.swift */; };
+		TB059AAA000000000001 /* LessonSlide.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059AAA000000000002 /* LessonSlide.swift */; };
+		TB059BBB000000000001 /* CBITLessonService.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059BBB000000000002 /* CBITLessonService.swift */; };
+		TB059CCC000000000001 /* LessonSlideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059CCC000000000002 /* LessonSlideView.swift */; };
+		TB065AAA000000000001 /* AppWalkthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB065AAA000000000002 /* AppWalkthroughView.swift */; };
+		TB039AAA000000000001 /* TicIntakeAssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB039AAA000000000002 /* TicIntakeAssessmentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,6 +103,8 @@
 		BB00112233445566778800EE /* ChatUsageLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsageLimiter.swift; sourceTree = "<group>"; };
 		BB00112233445566778800FF /* DailyInstructionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyInstructionEngine.swift; sourceTree = "<group>"; };
 		BB001122334455667700BB00 /* EveningCheckInService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EveningCheckInService.swift; sourceTree = "<group>"; };
+		TB096AAA000000000002 /* SessionSchedulerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSchedulerService.swift; sourceTree = "<group>"; };
+		TB096BBB000000000002 /* SessionSchedulerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSchedulerView.swift; sourceTree = "<group>"; };
 		BB001122334455667700BB11 /* FamilyPINService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyPINService.swift; sourceTree = "<group>"; };
 		BB001122334455667700BB22 /* ZiggyContentFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyContentFilter.swift; sourceTree = "<group>"; };
 		BB001122334455667700BB33 /* ZiggyTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyTTSService.swift; sourceTree = "<group>"; };
@@ -122,6 +131,11 @@
 		AA001122334455667788BB05 /* CaregiverOnboardingZiggyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverOnboardingZiggyView.swift; sourceTree = "<group>"; };
 		CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDisclaimerScreen.swift; sourceTree = "<group>"; };
 		CC001122334455DD0002 /* ZiggyRAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyRAGService.swift; sourceTree = "<group>"; };
+		TB059AAA000000000002 /* LessonSlide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonSlide.swift; sourceTree = "<group>"; };
+		TB059BBB000000000002 /* CBITLessonService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBITLessonService.swift; sourceTree = "<group>"; };
+		TB059CCC000000000002 /* LessonSlideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonSlideView.swift; sourceTree = "<group>"; };
+		TB065AAA000000000002 /* AppWalkthroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWalkthroughView.swift; sourceTree = "<group>"; };
+		TB039AAA000000000002 /* TicIntakeAssessmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicIntakeAssessmentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -133,11 +147,29 @@
 				DD001122334455667788CCCC /* ChildMode */,
 				EE001122334455667788CCCC /* Evening */,
 				7C5E3B670FC65924377AC154 /* Home */,
+				TB059DDD000000000001 /* Lessons */,
+				TB096CCC000000000001 /* Sessions */,
 				E41D1230E4AF537D5FBC8125 /* Onboarding */,
 				C1E9DF338FF4362F3946CA93 /* Settings */,
 				FF00112233445566778800BB /* FamilyModeRouter.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		TB096CCC000000000001 /* Sessions */ = {
+			isa = PBXGroup;
+			children = (
+				TB096BBB000000000002 /* SessionSchedulerView.swift */,
+			);
+			path = Sessions;
+			sourceTree = "<group>";
+		};
+		TB059DDD000000000001 /* Lessons */ = {
+			isa = PBXGroup;
+			children = (
+				TB059CCC000000000002 /* LessonSlideView.swift */,
+			);
+			path = Lessons;
 			sourceTree = "<group>";
 		};
 		11C7539830F6FA4A66EEAA8F /* ViewModels */ = {
@@ -221,12 +253,14 @@
 		E41D1230E4AF537D5FBC8125 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				TB065AAA000000000002 /* AppWalkthroughView.swift */,
 				CC00112233445566778800CC /* COPPAConsentSheet.swift */,
 				CC00112233445566778800DD /* DeviceConfigView.swift */,
 				CC00112233445566778800EE /* FamilyOnboardingView.swift */,
 				CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */,
 				B844254B8BD65A97BA744E3E /* OnboardingView.swift */,
 				5D6CACE3B1B8B20C28B1A604 /* WelcomeKindnessView.swift */,
+				TB039AAA000000000002 /* TicIntakeAssessmentView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -236,6 +270,7 @@
 			children = (
 				BB224F6CA6490708B217D6DC /* CompetingResponses.swift */,
 				AA00112233445566778800BB /* FamilyUnit.swift */,
+				TB059AAA000000000002 /* LessonSlide.swift */,
 				AA00112233445566778800CC /* SessionMemory.swift */,
 				3D4D8AEC8F785942B06C52F7 /* TicEntry.swift */,
 				B89BB656CE186D212AE77C77 /* UserProfile.swift */,
@@ -247,6 +282,7 @@
 			isa = PBXGroup;
 			children = (
 				FF001122334455AA00000001 /* APIConfig.swift */,
+				TB059BBB000000000002 /* CBITLessonService.swift */,
 				BB00112233445566778800BB /* CBITSessionStore.swift */,
 				AA001122334455667788BB01 /* CaregiverSessionStore.swift */,
 				BB00112233445566778800EE /* ChatUsageLimiter.swift */,
@@ -255,6 +291,7 @@
 				BB00112233445566778800DD /* COPPAConsentService.swift */,
 				BB00112233445566778800FF /* DailyInstructionEngine.swift */,
 				BB001122334455667700BB00 /* EveningCheckInService.swift */,
+				TB096AAA000000000002 /* SessionSchedulerService.swift */,
 				BB001122334455667700BB11 /* FamilyPINService.swift */,
 				0F06DF9CD451CFE1544477B8 /* KeychainHelper.swift */,
 				AA001122334455667788BB03 /* SpeechRecognizer.swift */,
@@ -423,6 +460,13 @@
 				AA001122334455667788BB04 /* SpeechRecognizer.swift in Sources */,
 				AA001122334455667788BB06 /* CaregiverOnboardingZiggyView.swift in Sources */,
 				CC001122334455667788DD02 /* LegalDisclaimerScreen.swift in Sources */,
+				TB059AAA000000000001 /* LessonSlide.swift in Sources */,
+				TB059BBB000000000001 /* CBITLessonService.swift in Sources */,
+				TB059CCC000000000001 /* LessonSlideView.swift in Sources */,
+				TB065AAA000000000001 /* AppWalkthroughView.swift in Sources */,
+				TB039AAA000000000001 /* TicIntakeAssessmentView.swift in Sources */,
+				TB096AAA000000000001 /* SessionSchedulerService.swift in Sources */,
+				TB096BBB000000000001 /* SessionSchedulerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

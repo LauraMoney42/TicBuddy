@@ -56,8 +56,12 @@ enum TicVocalType: String, Codable, CaseIterable, Identifiable {
 }
 
 enum TicCategory: String, Codable, CaseIterable {
-    case motor = "Motor"
-    case vocal = "Vocal"
+    case motor   = "Motor"
+    case vocal   = "Vocal"
+    // tb-mvp2-108: Complex tics combine motor + vocal in one coordinated sequence
+    // (e.g. hands to face + scream). Stored as a single hierarchy entry so CBIT
+    // treats the full sequence as one addressable behaviour.
+    case complex = "Complex"
 }
 
 // MARK: - Tic Outcome

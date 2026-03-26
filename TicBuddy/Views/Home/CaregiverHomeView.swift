@@ -25,6 +25,9 @@ struct CaregiverHomeView: View {
     @State private var showZiggyChat = false        // tb-mvp2-006 / tb-mvp2-010
     @State private var showPracticeLog = false      // tb-mvp2-016
     @State private var showNightlyRitual = false    // tb-mvp2-018
+    @State private var showLesson1 = false          // tb-mvp2-066
+    @State private var showIntakeAssessment = false // tb-mvp2-039
+    @State private var showQuickTicLog = false      // tb-mvp2-067
 
     private var family: FamilyUnit { dataService.familyUnit }
     private var shared: SharedFamilyData { family.sharedData }
@@ -71,6 +74,15 @@ struct CaregiverHomeView: View {
                     )
                     .padding(.horizontal, 16)
 
+                    // ── Next Session Card (tb-mvp2-096) ────────────────────────
+                    // Shown once the user has scheduled their weekly session.
+                    // tb-mvp2-125: caregiver-only — solo teen users must not see
+                    // read-ahead or future session scheduling controls.
+                    if !isSelfUser {
+                        NextSessionCard()
+                            .padding(.horizontal, 16)
+                    }
+
                     // ── Daily Instruction Card (tb-mvp2-005) ──────────────────
                     DailyInstructionCard(
                         instruction: DailyInstructionEngine.instruction(
@@ -84,12 +96,26 @@ struct CaregiverHomeView: View {
                     .padding(.horizontal, 16)
 
                     // ── Today's Practice Card ──────────────────────────────────
+                    // tb-mvp2-081: pass sessionStage so Week 1 shows awareness copy,
+                    // not CR copy (no competing response exists yet in Session 1).
                     TodayPracticeCard(
                         sharedData: shared,
+                        sessionStage: focusedChild?.sessionStage ?? shared.currentSessionStage,
                         isSelfUser: isSelfUser,
                         onLogPractice: { status in
                             logPractice(status)
                         }
+                    )
+                    .padding(.horizontal, 16)
+
+                    // ── Quick Tic Counter (tb-mvp2-067) ───────────────────────
+                    // Zero-friction CBIT homework: one tap logs a .noticed tic entry.
+                    // Count refreshes live from dataService.ticEntries filtered to today.
+                    // Reuses QuickTicCounterCard from HomeView.swift; "Add detail →"
+                    // opens TicCalendarView so the user can edit category/outcome.
+                    QuickTicCounterCard(
+                        dataService: dataService,
+                        onDetailTap: { showQuickTicLog = true }
                     )
                     .padding(.horizontal, 16)
 
@@ -98,8 +124,12 @@ struct CaregiverHomeView: View {
                         ActiveTicCard(tic: targetTic, childName: focusedChild?.displayName ?? "", isSelfUser: isSelfUser)
                             .padding(.horizontal, 16)
                     } else if let child = focusedChild, child.ticHierarchy.isEmpty {
-                        EmptyTicHierarchyCard(childName: child.displayName, isSelfUser: isSelfUser)
-                            .padding(.horizontal, 16)
+                        EmptyTicHierarchyCard(
+                            childName: child.displayName,
+                            isSelfUser: isSelfUser,
+                            onStartAssessment: { showIntakeAssessment = true }
+                        )
+                        .padding(.horizontal, 16)
                     }
 
                     // ── Reward Points Card ─────────────────────────────────────
@@ -120,8 +150,10 @@ struct CaregiverHomeView: View {
                     }
 
                     // ── Read Ahead Card (tb-mvp2-026) ─────────────────────────
-                    // Shows caregiver what's coming up in the next CBIT session
-                    if let child = focusedChild {
+                    // Shows caregiver what's coming up in the next CBIT session.
+                    // tb-mvp2-125: caregiver-only — solo teen users must not see
+                    // future session content.
+                    if !isSelfUser, let child = focusedChild {
                         let readAhead = WeeklySessionService.shared.caregiverReadAhead(
                             currentStage: child.sessionStage
                         )
@@ -129,16 +161,55 @@ struct CaregiverHomeView: View {
                             .padding(.horizontal, 16)
                     }
 
-                    // ── Quick Actions ──────────────────────────────────────────
-                    CaregiverQuickActions(
-                        childName: focusedChild?.displayName ?? "your child",
-                        hasTherapist: shared.hasTherapist,
-                        isSelfUser: isSelfUser,
-                        onZiggy: { showZiggyChat = true },
-                        onAdvanceSession: { showAdvanceSession = true },
-                        onResources: { showResources = true },
-                        onPracticeLog: { showPracticeLog = true }
-                    )
+                    // ── Lesson 1 Replay Tile (tb-mvp2-066) ────────────────────
+                    // Always visible — lets user re-watch Session 1 slides at any time.
+                    if let lesson1 = CBITLessonService.lesson(for: .session1) {
+                        Lesson1ReplayCard {
+                            // tb-mvp2-073 fix: await prefetch before opening sheet.
+                            if let slide0 = lesson1.slides.first {
+                                Task { @MainActor in
+                                    let prefetch = Task {
+                                        await ZiggyTTSService.shared.prefetchLessonSlide(
+                                            text: slide0.spokenText, // tb-mvp2-087: title+body, matches speakCurrentSlide
+                                            voiceProfile: .caregiver,
+                                            slideIndex: 0
+                                        )
+                                    }
+                                    Task { try? await Task.sleep(nanoseconds: 3_000_000_000); prefetch.cancel() }
+                                    await prefetch.value
+                                    showLesson1 = true
+                                }
+                            } else {
+                                showLesson1 = true
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                    }
+
+                    // ── CBIT Resources button ──────────────────────────────────
+                    Button { showResources = true } label: {
+                        HStack(spacing: 12) {
+                            Text(shared.hasTherapist ? "🩺" : "📖")
+                                .font(.system(size: 24))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(shared.hasTherapist ? "Therapist Notes" : "CBIT Resources")
+                                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                                    .foregroundColor(.primary)
+                                Text(shared.hasTherapist ? "Pre-session prep" : (isSelfUser ? "Your resources" : "For caregivers"))
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.bold())
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(16)
+                        .background(Color.orange.opacity(0.08))
+                        .cornerRadius(14)
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.orange.opacity(0.2), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
                     .padding(.horizontal, 16)
 
                     Spacer(minLength: 100)
@@ -149,14 +220,18 @@ struct CaregiverHomeView: View {
             .navigationTitle(caregiverGreeting)
             .navigationBarTitleDisplayMode(.large)
             // tb-mvp2-006: Session advancement confirmation sheet
+            // tb-mvp2-125: caregiver-only — solo teen users must not be able to
+            // advance their own session stage (controlled by caregiver or therapist).
             .sheet(isPresented: $showAdvanceSession) {
-                SessionAdvanceConfirmSheet(
-                    currentStage: focusedChild?.sessionStage ?? shared.currentSessionStage,
-                    childName: focusedChild?.displayName ?? "your child",
-                    isSelfUser: isSelfUser
-                ) { confirmed in
-                    if confirmed { advanceSessionStage() }
-                    showAdvanceSession = false
+                if !isSelfUser {
+                    SessionAdvanceConfirmSheet(
+                        currentStage: focusedChild?.sessionStage ?? shared.currentSessionStage,
+                        childName: focusedChild?.displayName ?? "your child",
+                        isSelfUser: isSelfUser
+                    ) { confirmed in
+                        if confirmed { advanceSessionStage() }
+                        showAdvanceSession = false
+                    }
                 }
             }
             // tb-mvp2-006: CBIT resources + therapist prep sheet
@@ -173,6 +248,32 @@ struct CaregiverHomeView: View {
             .sheet(isPresented: $showPracticeLog) {
                 TicCalendarView()
                     .environmentObject(dataService)
+            }
+            // tb-mvp2-067: Quick tic counter → full log view
+            .sheet(isPresented: $showQuickTicLog) {
+                TicCalendarView()
+                    .environmentObject(dataService)
+            }
+            // tb-mvp2-066: Lesson 1 replay
+            // tb-mvp2-123: onFinished routes to tic assessment (same pattern as FamilyModeRouter).
+            .sheet(isPresented: $showLesson1) {
+                if let lesson = CBITLessonService.lesson(for: .session1) {
+                    LessonSlideView(lesson: lesson, voiceProfile: .caregiver, finalCTALabel: "Update Tics →") {
+                        showLesson1 = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showIntakeAssessment = true
+                        }
+                    }
+                }
+            }
+            // tb-mvp2-039: Session 1 tic intake assessment
+            .sheet(isPresented: $showIntakeAssessment) {
+                if let child = focusedChild {
+                    TicIntakeAssessmentView(child: child) {
+                        showIntakeAssessment = false
+                    }
+                    .environmentObject(dataService)
+                }
             }
             // tb-mvp2-018: Nightly ritual guide
             .sheet(isPresented: $showNightlyRitual) {
@@ -457,8 +558,13 @@ private struct DailyInstructionCard: View {
 
 private struct TodayPracticeCard: View {
     let sharedData: SharedFamilyData
+    /// tb-mvp2-081: used to gate Week 1 awareness copy vs. CR copy
+    var sessionStage: CBITSessionStage = .session1
     var isSelfUser: Bool = false
     let onLogPractice: (PracticeStatus) -> Void
+
+    /// tb-mvp2-081: Session 1 is awareness-only — no competing response yet.
+    private var isWeek1: Bool { sessionStage == .session1 }
 
     private var todayKey: String {
         ISO8601DateFormatter().string(from: Calendar.current.startOfDay(for: Date()))
@@ -480,30 +586,59 @@ private struct TodayPracticeCard: View {
             }
 
             if todayStatus == nil {
-                // tb-mvp2-034: self-users log their own practice, not a child's
-                Text(isSelfUser
-                     ? "Have you practiced your competing response today?"
-                     : "Has your child practiced their competing response today?")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                if isWeek1 {
+                    // tb-mvp2-081: Week 1 — awareness training, no CR exists yet.
+                    // Ask about catching tic urges, not about a competing response.
+                    Text(isSelfUser
+                         ? "Have you been catching your tic urges today?"
+                         : "Has your child been noticing their tic urges today?")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
 
-                // Quick-log buttons
-                HStack(spacing: 10) {
-                    PracticeLogButton(
-                        label: "Full Session ✅",
-                        color: .green,
-                        action: { onLogPractice(.fullPractice) }
-                    )
-                    PracticeLogButton(
-                        label: "Partial 🌤",
-                        color: .orange,
-                        action: { onLogPractice(.partial) }
-                    )
-                    PracticeLogButton(
-                        label: "Hard Day 💙",
-                        color: Color(hex: "667EEA"),
-                        action: { onLogPractice(.hardDay) }
-                    )
+                    HStack(spacing: 10) {
+                        PracticeLogButton(
+                            label: "Yes, caught some 👀",
+                            color: .green,
+                            action: { onLogPractice(.fullPractice) }
+                        )
+                        PracticeLogButton(
+                            label: "Still learning 🌱",
+                            color: .orange,
+                            action: { onLogPractice(.partial) }
+                        )
+                        PracticeLogButton(
+                            label: "Tough day 💙",
+                            color: Color(hex: "667EEA"),
+                            action: { onLogPractice(.hardDay) }
+                        )
+                    }
+                } else {
+                    // Week 2+: competing response practice is active
+                    // tb-mvp2-034: self-users log their own practice, not a child's
+                    Text(isSelfUser
+                         ? "Have you practiced your competing response today?"
+                         : "Has your child practiced their competing response today?")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+
+                    // Quick-log buttons
+                    HStack(spacing: 10) {
+                        PracticeLogButton(
+                            label: "Full Session ✅",
+                            color: .green,
+                            action: { onLogPractice(.fullPractice) }
+                        )
+                        PracticeLogButton(
+                            label: "Partial 🌤",
+                            color: .orange,
+                            action: { onLogPractice(.partial) }
+                        )
+                        PracticeLogButton(
+                            label: "Hard Day 💙",
+                            color: Color(hex: "667EEA"),
+                            action: { onLogPractice(.hardDay) }
+                        )
+                    }
                 }
             } else {
                 // Already logged — show encouraging message
@@ -526,6 +661,14 @@ private struct TodayPracticeCard: View {
     }
 
     private func encouragementText(for status: PracticeStatus) -> String {
+        // tb-mvp2-081: Week 1 is awareness-only — no CR, different affirmations.
+        if isWeek1 {
+            switch status {
+            case .fullPractice: return "Nice — you're catching urges! 👀 That awareness is exactly what CBIT builds on."
+            case .partial:      return "Still learning — that's completely normal in Week 1. 🌱 Keep noticing."
+            case .hardDay:      return "Tough day — that's okay. 💙 Awareness takes practice. Tomorrow is a fresh start."
+            }
+        }
         switch status {
         case .fullPractice: return "Full practice logged — incredible work! 🌟 Consistent practice is how CBIT works."
         case .partial:      return "Partial practice logged — every bit counts. 🌤 Showing up is half the battle."
@@ -729,21 +872,43 @@ private struct DistressProgressRow: View {
 private struct EmptyTicHierarchyCard: View {
     let childName: String
     var isSelfUser: Bool = false
+    /// tb-mvp2-039: tap to open TicIntakeAssessmentView sheet
+    var onStartAssessment: (() -> Void)? = nil
 
     var body: some View {
-        HStack(spacing: 14) {
-            Text("📋")
-                .font(.system(size: 36))
-            VStack(alignment: .leading, spacing: 4) {
-                Text("No tic hierarchy yet")
-                    .font(.headline.bold())
-                // tb-mvp2-034: self-users add their own tics, not a child's
-                Text(isSelfUser
-                     ? "Add your tics in your profile to track treatment progress."
-                     : "Add \(childName.isEmpty ? "your child's" : childName + "'s") tics in their profile to track treatment progress.")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 14) {
+                Text("📋")
+                    .font(.system(size: 36))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("No tic hierarchy yet")
+                        .font(.headline.bold())
+                    // tb-mvp2-034: self-users add their own tics, not a child's
+                    Text(isSelfUser
+                         ? "Add your tics in your profile to track treatment progress."
+                         : "Add \(childName.isEmpty ? "your child's" : childName + "'s") tics in their profile to track treatment progress.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            // tb-mvp2-039: CTA to launch the Session 1 tic intake assessment
+            if let onStart = onStartAssessment {
+                Button(action: onStart) {
+                    Label("Start Tic Assessment", systemImage: "clipboard.fill")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(hex: "667EEA"), Color(hex: "764BA2")],
+                                startPoint: .leading, endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(12)
+                }
             }
         }
         .padding(18)
@@ -1376,6 +1541,52 @@ struct EveningReminderSettingsView: View {
         components.hour = hour
         components.minute = minute
         return Calendar.current.date(from: components) ?? Date()
+    }
+}
+
+// MARK: - Lesson 1 Replay Card (tb-mvp2-066)
+
+private struct Lesson1ReplayCard: View {
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "667EEA"), Color(hex: "764BA2")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 44, height: 44)
+                    Image(systemName: "play.rectangle.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(.white)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Lesson 1: CBIT Foundations")
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        .foregroundColor(.primary)
+                    Text("7 slides · Read by Ziggy · Tap to replay")
+                        .font(.system(size: 13, design: .rounded))
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.secondary)
+            }
+            .padding(16)
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(16)
+        }
+        .buttonStyle(.plain)
     }
 }
 

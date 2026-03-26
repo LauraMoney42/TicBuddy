@@ -9,6 +9,11 @@ struct ChatView: View {
     //   - no child (caregiver mode) → .caregiver
     // No param needed — ViewModel reads from familyUnit state directly.
 
+    /// tb-mvp2-102: Optional pre-seeded user prompt sent automatically on first open.
+    /// Used when entering Ziggy from a contextual lesson CTA (e.g. "Ask Ziggy →" on
+    /// the What's Next slide). Nil = normal cold-start.
+    var seedPrompt: String? = nil
+
     @StateObject private var viewModel = ChatViewModel()
     @EnvironmentObject var dataService: TicDataService
     @State private var showTicLoggedBanner = false
@@ -27,8 +32,15 @@ struct ChatView: View {
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach(viewModel.messages) { message in
-                            ChatBubbleView(message: message)
-                                .id(message.id)
+                            // tb-mvp2-062: pass streamingText for the active reveal message;
+                            // nil for all others so they show their full stored content.
+                            ChatBubbleView(
+                                message: message,
+                                streamingText: viewModel.streamingMessageId == message.id
+                                    ? viewModel.streamingText
+                                    : nil
+                            )
+                            .id(message.id)
                         }
 
                         if viewModel.isLoading {
@@ -53,6 +65,12 @@ struct ChatView: View {
                         withAnimation { proxy.scrollTo("typing", anchor: .bottom) }
                     }
                 }
+                // tb-mvp2-062: keep the growing bubble in view as words are revealed.
+                .onChange(of: viewModel.streamingText) { _ in
+                    if let lastID = viewModel.messages.last?.id {
+                        proxy.scrollTo(lastID, anchor: .bottom)
+                    }
+                }
             }
 
             // Tic logged banner
@@ -65,9 +83,7 @@ struct ChatView: View {
             if viewModel.isLimitReached {
                 DailyLimitReachedView()
             } else {
-                // Quick action chips
-                QuickActionChipsView(viewModel: viewModel, dataService: dataService)
-
+                // tb-mvp2-115: Removed QuickActionChipsView — quick actions removed per UX cleanup.
                 // Input bar
                 ChatInputView(viewModel: viewModel)
             }
@@ -83,6 +99,13 @@ struct ChatView: View {
         }
         .onAppear {
             // Re-inject updated profile context on return to tab (no-op if session is mid-flight)
+            // tb-mvp2-102: auto-send seed prompt when entering from a contextual lesson entry point.
+            // Small delay lets the sheet finish its presentation animation before Ziggy responds.
+            if let prompt = seedPrompt {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    viewModel.seedAndSend(prompt)
+                }
+            }
         }
         .onDisappear {
             // Session ends when user leaves the chat tab — extract memories in background.
@@ -181,20 +204,33 @@ struct ChatHeaderView: View {
 
 struct ChatBubbleView: View {
     let message: ChatMessage
+    /// tb-mvp2-062: When non-nil, this is the partially-revealed text shown instead of
+    /// the full message.content. Nil = render the complete stored message (default).
+    var streamingText: String? = nil
+
+    @State private var cursorVisible: Bool = true
 
     var isUser: Bool { message.role == .user }
+    var isStreaming: Bool { streamingText != nil }
+
+    /// The text to display — streaming slice while revealing, full content otherwise.
+    private var displayText: String {
+        streamingText ?? message.content
+    }
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
             if isUser { Spacer(minLength: 50) }
 
             if !isUser {
-                Text("⚡")
+                Text("😉")
                     .font(.title3)
                     .padding(.bottom, 2)
             }
 
-            Text(message.content)
+            // tb-mvp2-062: show revealed words; append blinking cursor while streaming.
+            // Using Text concatenation so the cursor doesn't affect layout width.
+            (Text(displayText) + (isStreaming && cursorVisible ? Text(" ▌").foregroundColor(.secondary.opacity(0.6)) : Text("")))
                 .font(.body)
                 .foregroundColor(isUser ? .white : .primary)
                 .padding(.horizontal, 14)
@@ -206,6 +242,16 @@ struct ChatBubbleView: View {
                 )
                 .cornerRadius(18, corners: isUser ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight])
                 .shadow(color: .black.opacity(0.07), radius: 3, y: 1)
+                // Blink the cursor at ~1 Hz while streaming
+                .onAppear {
+                    guard isStreaming else { return }
+                    withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                        cursorVisible = false
+                    }
+                }
+                .onChange(of: isStreaming) { nowStreaming in
+                    if !nowStreaming { cursorVisible = true }
+                }
 
             if !isUser { Spacer(minLength: 50) }
         }
@@ -219,7 +265,7 @@ struct TypingIndicatorView: View {
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
-            Text("⚡").font(.title3)
+            Text("😉").font(.title3)
 
             HStack(spacing: 5) {
                 ForEach(0..<3) { i in
