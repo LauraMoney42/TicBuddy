@@ -590,10 +590,10 @@ private struct TodayPracticeCard: View {
     // tb-mvp2-143: Supportive messages shown when user picks 😐.
     // Daily rotation: deterministic per calendar day so it doesn't flicker on re-render.
     private let kindMessages = [
-        "Tough days happen. Just showing up is enough. 💙",
-        "Not every day feels great — and that's completely normal. You're still here. That counts.",
-        "Even on hard days, noticing your tics is a win. You're doing more than you think.",
-        "Some days are just like that. Tomorrow's a fresh start. 💜"
+        "Tough days happen. Just showing up is enough. 🩵",
+        "Not every day feels great — and that's completely normal. You're still here. That counts. 🩵",
+        "Even on hard days, noticing your tics is a win. You're doing more than you think. 🩵",
+        "Some days are just like that. Tomorrow's a fresh start. 🩵"
     ]
     private var kindMessage: String {
         kindMessages[abs(Calendar.current.component(.day, from: Date())) % kindMessages.count]
@@ -604,7 +604,7 @@ private struct TodayPracticeCard: View {
     private let goodMessages = [
         "Good job! You're still learning — and that's exactly where you should be. 💜",
         "Nice work today! Every bit of practice adds up. Keep going. 🌟",
-        "You're making progress, even when it doesn't feel like it. 💙",
+        "Keep it up! 💪",
         "Solid day! Showing up and trying is what matters most. 🎯"
     ]
     private var goodMessage: String {
@@ -636,8 +636,11 @@ private struct TodayPracticeCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             // tb-mvp2-145: calendar icon restored; PracticeStatusBadge removed.
-            Text("📅 Today")
+            // tb-mvp2-151: renamed to "How's tic catching going today?" centered.
+            Text("📅 How's tic catching going today?")
                 .font(.headline.bold())
+                .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
 
             // tb-mvp2-143: Mood picker — three tappable emoji pills, selection highlighted purple.
             // tb-mvp2-145: centered, larger emojis (.system(size: 44)), no trailing Spacer.
