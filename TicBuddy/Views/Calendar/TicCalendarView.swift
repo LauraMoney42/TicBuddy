@@ -240,7 +240,7 @@ struct DaySummaryView: View {
                 }
             } else {
                 HStack(spacing: 16) {
-                    StatPill(value: entries.count, label: "Total", color: .orange)
+                    StatPill(value: entries.count, label: "Total", color: Color(hex: "764BA2"))
                     StatPill(value: caught, label: "Caught ⚡️", color: .yellow)
                     StatPill(value: redirected, label: "Redirected 🌟", color: .green)
                 }

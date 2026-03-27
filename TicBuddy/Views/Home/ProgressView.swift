@@ -186,7 +186,7 @@ struct DayBarView: View {
     var body: some View {
         VStack(spacing: 4) {
             if day.total > 0 {
-                Text("\(day.total)").font(.system(size: 10, weight: .bold)).foregroundColor(.secondary)
+                Text("\(day.total)").font(.system(size: 10, weight: .bold)).foregroundColor(Color(hex: "764BA2"))
             }
 
             GeometryReader { geo in
