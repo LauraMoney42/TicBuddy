@@ -611,7 +611,7 @@ private struct TodayPracticeCard: View {
         goodMessages[abs(Calendar.current.component(.day, from: Date())) % goodMessages.count]
     }
 
-    // tb-mvp2-146: Extra-enthusiastic messages for 😁 (big grin) — a genuinely great day.
+    // tb-mvp2-146: Extra-enthusiastic messages for 😎 (big grin) — a genuinely great day.
     private let greatMessages = [
         "YES!! That's what we're talking about! You're crushing it today! 🎉",
         "Amazing day! This is exactly the energy that makes progress happen. Keep it UP! 🚀",
@@ -644,7 +644,7 @@ private struct TodayPracticeCard: View {
             // Tap again to deselect. Shows a kind message when 😐 is chosen.
             HStack(spacing: 16) {
                 Spacer()
-                ForEach(["😐", "😊", "😁"], id: \.self) { emoji in
+                ForEach(["😐", "😊", "😎"], id: \.self) { emoji in
                     Button {
                         withAnimation(.easeInOut(duration: 0.15)) {
                             selectedMood = selectedMood == emoji ? nil : emoji
@@ -692,8 +692,8 @@ private struct TodayPracticeCard: View {
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
-            // tb-mvp2-146: extra-enthusiastic message for 😁 (big grin).
-            if selectedMood == "😁" {
+            // tb-mvp2-146: extra-enthusiastic message for 😎 (big grin).
+            if selectedMood == "😎" {
                 Text(greatMessage)
                     .font(.subheadline.bold())
                     .foregroundColor(Color(hex: "764BA2"))
