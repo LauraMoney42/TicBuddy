@@ -611,19 +611,15 @@ private struct TodayPracticeCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                // tb-mvp2-143: Renamed from "📅 Today's Practice" → "Today"
-                Text("Today")
-                    .font(.headline.bold())
-                Spacer()
-                if let status = todayStatus {
-                    PracticeStatusBadge(status: status)
-                }
-            }
+            // tb-mvp2-145: calendar icon restored; PracticeStatusBadge removed.
+            Text("📅 Today")
+                .font(.headline.bold())
 
             // tb-mvp2-143: Mood picker — three tappable emoji pills, selection highlighted purple.
+            // tb-mvp2-145: centered, larger emojis (.system(size: 44)), no trailing Spacer.
             // Tap again to deselect. Shows a kind message when 😐 is chosen.
-            HStack(spacing: 10) {
+            HStack(spacing: 16) {
+                Spacer()
                 ForEach(["😐", "😊", "😁"], id: \.self) { emoji in
                     Button {
                         withAnimation(.easeInOut(duration: 0.15)) {
@@ -631,9 +627,9 @@ private struct TodayPracticeCard: View {
                         }
                     } label: {
                         Text(emoji)
-                            .font(.title2)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
+                            .font(.system(size: 44))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
                             .background(
                                 selectedMood == emoji
                                     ? Color(hex: "667EEA").opacity(0.15)
@@ -725,11 +721,7 @@ private struct TodayPracticeCard: View {
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Button("Change today's log") {
-                    onLogPractice(todayStatus == .fullPractice ? .partial : .fullPractice)
-                }
-                .font(.caption.bold())
-                .foregroundColor(Color(hex: "667EEA"))
+                // tb-mvp2-145: "Change today's log" button removed — user taps an emoji to update.
             }
         }
         .padding(18)
