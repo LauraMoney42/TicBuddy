@@ -32,15 +32,9 @@ struct ChatView: View {
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach(viewModel.messages) { message in
-                            // tb-mvp2-062: pass streamingText for the active reveal message;
-                            // nil for all others so they show their full stored content.
-                            ChatBubbleView(
-                                message: message,
-                                streamingText: viewModel.streamingMessageId == message.id
-                                    ? viewModel.streamingText
-                                    : nil
-                            )
-                            .id(message.id)
+                            // tb-mvp2-140: no streaming text passed — full message shown immediately.
+                            ChatBubbleView(message: message)
+                                .id(message.id)
                         }
 
                         if viewModel.isLoading {
@@ -65,12 +59,7 @@ struct ChatView: View {
                         withAnimation { proxy.scrollTo("typing", anchor: .bottom) }
                     }
                 }
-                // tb-mvp2-062: keep the growing bubble in view as words are revealed.
-                .onChange(of: viewModel.streamingText) { _ in
-                    if let lastID = viewModel.messages.last?.id {
-                        proxy.scrollTo(lastID, anchor: .bottom)
-                    }
-                }
+                // tb-mvp2-140: streamingText scroll handler removed — no word-by-word reveal.
             }
 
             // Tic logged banner
@@ -204,19 +193,10 @@ struct ChatHeaderView: View {
 
 struct ChatBubbleView: View {
     let message: ChatMessage
-    /// tb-mvp2-062: When non-nil, this is the partially-revealed text shown instead of
-    /// the full message.content. Nil = render the complete stored message (default).
-    var streamingText: String? = nil
-
-    @State private var cursorVisible: Bool = true
+    // tb-mvp2-140: streamingText / cursorVisible removed — full message displayed immediately,
+    // no word-by-word reveal, no blinking cursor. TypingIndicatorView handles the "thinking" state.
 
     var isUser: Bool { message.role == .user }
-    var isStreaming: Bool { streamingText != nil }
-
-    /// The text to display — streaming slice while revealing, full content otherwise.
-    private var displayText: String {
-        streamingText ?? message.content
-    }
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
@@ -228,9 +208,7 @@ struct ChatBubbleView: View {
                     .padding(.bottom, 2)
             }
 
-            // tb-mvp2-062: show revealed words; append blinking cursor while streaming.
-            // Using Text concatenation so the cursor doesn't affect layout width.
-            (Text(displayText) + (isStreaming && cursorVisible ? Text(" ▌").foregroundColor(.secondary.opacity(0.6)) : Text("")))
+            Text(message.content)
                 .font(.body)
                 .foregroundColor(isUser ? .white : .primary)
                 .padding(.horizontal, 14)
@@ -242,16 +220,6 @@ struct ChatBubbleView: View {
                 )
                 .cornerRadius(18, corners: isUser ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight])
                 .shadow(color: .black.opacity(0.07), radius: 3, y: 1)
-                // Blink the cursor at ~1 Hz while streaming
-                .onAppear {
-                    guard isStreaming else { return }
-                    withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-                        cursorVisible = false
-                    }
-                }
-                .onChange(of: isStreaming) { nowStreaming in
-                    if !nowStreaming { cursorVisible = true }
-                }
 
             if !isUser { Spacer(minLength: 50) }
         }
