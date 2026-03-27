@@ -1,5 +1,5 @@
 // TicBuddy — NightlyRitualSheet.swift
-// tb-mvp2-018: Caregiver-facing nightly ritual guide (5-10 min), shown after child
+// tb-mvp2-018: Caregiver-facing nightly debrief guide (5-10 min), shown after child
 // submits their evening check-in.
 //
 // Three phases per CBIT protocol:
@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-// MARK: - Nightly Ritual Sheet
+// MARK: - Nightly Debrief Sheet
 
 struct NightlyRitualSheet: View {
     @EnvironmentObject var dataService: TicDataService
@@ -26,6 +26,9 @@ struct NightlyRitualSheet: View {
     @State private var phase1Done = false
     @State private var phase2Done = false
     @State private var phase3Done = false
+
+    // tb-mvp2-138: Solo teen mode — all caregiver-framed copy is replaced when true.
+    private var isSelfUser: Bool { dataService.familyUnit.accountType == .selfUser }
 
     private var isSunday: Bool {
         Calendar.current.component(.weekday, from: Date()) == 1
@@ -43,11 +46,11 @@ struct NightlyRitualSheet: View {
                     case .overview:
                         overviewSection
                     case .phase1:
-                        Phase1View(childName: childName, checkIn: checkIn) {
+                        Phase1View(childName: childName, checkIn: checkIn, isSelfUser: isSelfUser) {
                             withAnimation { phase1Done = true; currentPhase = .phase2 }
                         }
                     case .phase2:
-                        Phase2View(childName: childName, totalPoints: totalPoints, checkIn: checkIn) {
+                        Phase2View(childName: childName, totalPoints: totalPoints, checkIn: checkIn, isSelfUser: isSelfUser) {
                             withAnimation { phase2Done = true; currentPhase = .phase3 }
                         }
                     case .phase3:
@@ -57,18 +60,18 @@ struct NightlyRitualSheet: View {
                             }
                         }
                     case .weeklyReview:
-                        WeeklyReviewView(childName: childName, dataService: dataService) {
+                        WeeklyReviewView(childName: childName, dataService: dataService, isSelfUser: isSelfUser) {
                             withAnimation { currentPhase = .complete }
                         }
                     case .complete:
-                        RitualCompleteView(childName: childName) { dismiss() }
+                        RitualCompleteView(childName: childName, isSelfUser: isSelfUser) { dismiss() }
                     }
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle(currentPhase == .overview ? "🌙 Nightly Ritual" : currentPhase.title)
+            .navigationTitle(currentPhase == .overview ? "🌙 Nightly Recap" : currentPhase.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -90,12 +93,12 @@ struct NightlyRitualSheet: View {
 
             // Phase list
             VStack(spacing: 12) {
-                Text("Tonight's ritual")
+                Text("Tonight's recap")
                     .font(.headline.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 PhaseRow(
-                    number: 1, title: "Brief Debrief",
+                    number: 1, title: "Quick Recap",
                     duration: "2–3 min", isDone: phase1Done,
                     description: "One question, reflect back, no evaluation"
                 )
@@ -126,7 +129,7 @@ struct NightlyRitualSheet: View {
             Button {
                 withAnimation { currentPhase = .phase1 }
             } label: {
-                Text("Start ritual →")
+                Text("Start recap →")
                     .font(.system(size: 17, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
@@ -149,8 +152,8 @@ enum RitualPhase {
 
     var title: String {
         switch self {
-        case .overview:     return "🌙 Nightly Ritual"
-        case .phase1:       return "Phase 1: Brief Debrief"
+        case .overview:     return "🌙 Nightly Recap"
+        case .phase1:       return "Phase 1: Quick Recap"
         case .phase2:       return "Phase 2: Reward Update"
         case .phase3:       return "Phase 3: Calendar"
         case .weeklyReview: return "Sunday Weekly Review"
@@ -164,13 +167,19 @@ enum RitualPhase {
 private struct Phase1View: View {
     let childName: String
     let checkIn: EveningCheckInSummary
+    // tb-mvp2-138: solo teen mode — show self-reflection prompts, hide caregiver coaching.
+    let isSelfUser: Bool
     let onDone: () -> Void
 
     private var openingQuestion: String {
         switch checkIn.moodEmoji {
-        case "😊": return "You seemed to have a pretty good day — what was the best part?"
-        case "😣": return "Looks like today was tough. What was the hardest moment?"
-        default:   return "How did today feel overall? What stood out?"
+        case "😊": return isSelfUser
+            ? "Sounds like a good day! What was the best part?"
+            : "You seemed to have a pretty good day — what was the best part?"
+        case "😣": return isSelfUser
+            ? "Sounds like today was rough. What was the hardest moment?"
+            : "Looks like today was tough. What was the hardest moment?"
+        default: return "How did today feel overall? What stood out?"
         }
     }
 
@@ -180,7 +189,7 @@ private struct Phase1View: View {
 
             RitualCard {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Opening Question")
+                    Text(isSelfUser ? "Reflection Prompt" : "Opening Question")
                         .font(.caption.bold())
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
@@ -192,13 +201,22 @@ private struct Phase1View: View {
 
                     Divider()
 
-                    GuidanceRow(emoji: "👂", text: "Listen fully before responding. Let \(childName) finish their thought.")
-                    GuidanceRow(emoji: "🪞", text: "Reflect back what you heard: \"So it sounds like...\"")
-                    GuidanceRow(emoji: "🚫", text: "No evaluation. No \"you should have...\" Acknowledge only.")
+                    if isSelfUser {
+                        // tb-mvp2-138: Solo teen — self-reflection prompts, no caregiver coaching.
+                        GuidanceRow(emoji: "🧘", text: "Take a moment — what's actually on your mind right now?")
+                        GuidanceRow(emoji: "✍️", text: "No right answer. Just be honest with yourself.")
+                    } else {
+                        GuidanceRow(emoji: "👂", text: "Listen fully before responding. Let \(childName) finish their thought.")
+                        GuidanceRow(emoji: "🪞", text: "Reflect back what you heard: \"So it sounds like...\"")
+                        GuidanceRow(emoji: "🚫", text: "No evaluation. No \"you should have...\" Acknowledge only.")
+                    }
                 }
             }
 
-            CoachingTip(text: "Children who feel heard without judgment are 3× more likely to open up tomorrow. The goal is connection, not problem-solving.")
+            // tb-mvp2-138: CoachingTip is caregiver-only — hidden for solo teen.
+            if !isSelfUser {
+                CoachingTip(text: "Children who feel heard without judgment are 3× more likely to open up tomorrow. The goal is connection, not problem-solving.")
+            }
 
             PhaseNextButton(label: "Phase 1 done →", action: onDone)
         }
@@ -211,6 +229,8 @@ private struct Phase2View: View {
     let childName: String
     let totalPoints: Int
     let checkIn: EveningCheckInSummary
+    // tb-mvp2-138: solo teen mode — first-person framing, no caregiver coaching prompts.
+    let isSelfUser: Bool
     let onDone: () -> Void
 
     var body: some View {
@@ -233,23 +253,39 @@ private struct Phase2View: View {
                     Divider()
 
                     if checkIn.practiceDoneToday {
-                        GuidanceRow(emoji: "🎯",
-                            text: "\(childName) practiced today! Name exactly what you saw: \"I noticed you pressed your fingers together instead of twitching — that's the move.\"")
-                        GuidanceRow(emoji: "💡",
-                            text: "Specific praise matters more than general praise. Point to the exact behavior.")
+                        if isSelfUser {
+                            // tb-mvp2-138: Teen owns their success — no caregiver narration.
+                            GuidanceRow(emoji: "🎯",
+                                text: "You practiced today! Own it — what did you do? Name the exact move.")
+                        } else {
+                            GuidanceRow(emoji: "🎯",
+                                text: "\(childName) practiced today! Name exactly what you saw: \"I noticed you pressed your fingers together instead of twitching — that's the move.\"")
+                            GuidanceRow(emoji: "💡",
+                                text: "Specific praise matters more than general praise. Point to the exact behavior.")
+                        }
                     } else {
                         GuidanceRow(emoji: "💙",
-                            text: "No practice today — that's okay. Tics wax and wane. Acknowledge the check-in itself: \"Thanks for being honest.\"")
+                            text: isSelfUser
+                                ? "No practice today — that's okay. Tics wax and wane. What got in the way?"
+                                : "No practice today — that's okay. Tics wax and wane. Acknowledge the check-in itself: \"Thanks for being honest.\"")
                         GuidanceRow(emoji: "🔄",
-                            text: "Ask: \"Is there anything that made practicing hard today? No pressure — just curious.\"")
+                            text: isSelfUser
+                                ? "Is there anything that made it hard? No pressure — just notice it."
+                                : "Ask: \"Is there anything that made practicing hard today? No pressure — just curious.\"")
                     }
 
-                    GuidanceRow(emoji: "👦",
-                        text: "Let \(childName) lead: \"Do you want to tell me about your points, or should I?\"")
+                    // tb-mvp2-138: "Let childName lead" prompt is caregiver-only — teen sees points directly.
+                    if !isSelfUser {
+                        GuidanceRow(emoji: "👦",
+                            text: "Let \(childName) lead: \"Do you want to tell me about your points, or should I?\"")
+                    }
                 }
             }
 
-            CoachingTip(text: "Child-led reward conversations build intrinsic motivation. When the child narrates their own success, they own it.")
+            // tb-mvp2-138: CoachingTip is caregiver-only — hidden for solo teen.
+            if !isSelfUser {
+                CoachingTip(text: "Child-led reward conversations build intrinsic motivation. When the child narrates their own success, they own it.")
+            }
 
             PhaseNextButton(label: "Phase 2 done →", action: onDone)
         }
@@ -335,6 +371,8 @@ private struct Phase3View: View {
 private struct WeeklyReviewView: View {
     let childName: String
     let dataService: TicDataService
+    // tb-mvp2-138: solo teen mode — self-directed review, no caregiver framing.
+    let isSelfUser: Bool
     let onDone: () -> Void
 
     private var weekSummary: (full: Int, partial: Int, hard: Int, total: Int) {
@@ -378,14 +416,23 @@ private struct WeeklyReviewView: View {
                         .textCase(.uppercase)
                         .tracking(0.5)
 
-                    GuidanceRow(emoji: "📈", text: "What progress did you notice this week — even tiny improvements?")
+                    GuidanceRow(emoji: "📈", text: isSelfUser
+                        ? "What progress did YOU notice this week — even tiny improvements?"
+                        : "What progress did you notice this week — even tiny improvements?")
                     GuidanceRow(emoji: "🧩", text: "Were there any patterns? (Time of day, stress, certain situations?)")
-                    GuidanceRow(emoji: "🎯", text: "What's the plan for next week? Same CR, or is it time to discuss with a therapist?")
-                    GuidanceRow(emoji: "🏆", text: "Name one specific thing \(childName) did well this week. Be exact.")
+                    GuidanceRow(emoji: "🎯", text: isSelfUser
+                        ? "What's the plan for next week? Same CR, or do you want to discuss with a therapist?"
+                        : "What's the plan for next week? Same CR, or is it time to discuss with a therapist?")
+                    GuidanceRow(emoji: "🏆", text: isSelfUser
+                        ? "Name one thing YOU did well this week. Be honest."
+                        : "Name one specific thing \(childName) did well this week. Be exact.")
                 }
             }
 
-            CoachingTip(text: "Weekly reviews work best when they feel collaborative, not evaluative. Aim for a 4:1 ratio of positive observations to concerns.")
+            // tb-mvp2-138: CoachingTip is caregiver-only — hidden for solo teen.
+            if !isSelfUser {
+                CoachingTip(text: "Weekly reviews work best when they feel collaborative, not evaluative. Aim for a 4:1 ratio of positive observations to concerns.")
+            }
 
             PhaseNextButton(label: "Weekly review done →", action: onDone)
         }
@@ -396,6 +443,8 @@ private struct WeeklyReviewView: View {
 
 private struct RitualCompleteView: View {
     let childName: String
+    // tb-mvp2-138: solo teen mode — completion message speaks directly to the teen.
+    let isSelfUser: Bool
     let onDone: () -> Void
 
     var body: some View {
@@ -403,9 +452,11 @@ private struct RitualCompleteView: View {
             Spacer()
             Text("🌙")
                 .font(.system(size: 72))
-            Text("Ritual complete!")
+            Text("Recap complete!")
                 .font(.system(size: 24, weight: .bold, design: .rounded))
-            Text("Great job showing up for \(childName) tonight. Consistent connection is the bedrock of CBIT success.")
+            Text(isSelfUser
+                 ? "Great job showing up for yourself tonight. That's the whole game."
+                 : "Great job showing up for \(childName) tonight. Consistent connection is the bedrock of CBIT success.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
