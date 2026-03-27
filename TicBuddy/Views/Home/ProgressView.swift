@@ -163,7 +163,7 @@ struct WeekBarChart: View {
             // Legend
             HStack(spacing: 16) {
                 LegendDot(color: .green, label: "Redirected 🌟")
-                LegendDot(color: .yellow, label: "Caught ⚡️")
+                LegendDot(color: Color(hex: "764BA2"), label: "Caught ⚡️")
                 LegendDot(color: .orange.opacity(0.6), label: "Noticed 👀")
             }
             .font(.caption)
@@ -193,15 +193,18 @@ struct DayBarView: View {
                 VStack(spacing: 0) {
                     Spacer()
                     // Stacked bar: redirected (bottom) + caught + noticed (top)
+                    // tb-mvp2-141: .offset(y: -1) lifts bars 1pt higher in the GeometryReader frame.
                     VStack(spacing: 0) {
                         Rectangle().fill(Color.orange.opacity(0.6))
                             .frame(height: geo.size.height * noticedFrac)
-                        Rectangle().fill(Color.yellow)
+                        // tb-mvp2-141: "Caught" color changed yellow → purple to match app palette.
+                        Rectangle().fill(Color(hex: "764BA2"))
                             .frame(height: geo.size.height * caughtFrac)
                         Rectangle().fill(Color.green)
                             .frame(height: geo.size.height * redirectedFrac)
                     }
                     .cornerRadius(4)
+                    .offset(y: -1)
                 }
             }
 
