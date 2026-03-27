@@ -22,7 +22,7 @@ enum CBITSessionStage: Int, Codable, CaseIterable {
 
     var title: String {
         switch self {
-        case .session1: return "Lesson 1: Foundation"   // tb-mvp2-132
+        case .session1: return "Lesson 1: CBIT Foundations"   // tb-mvp2-142
         case .session2: return "Session 2: Your First Tool"
         case .session3: return "Session 3: Deepen & Troubleshoot"
         case .session4: return "Session 4: Consolidate"

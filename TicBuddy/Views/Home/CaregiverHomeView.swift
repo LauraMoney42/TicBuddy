@@ -67,11 +67,35 @@ struct CaregiverHomeView: View {
                     }
 
                     // ── Session Stage Card ─────────────────────────────────────
-                    CaregiverSessionCard(
-                        stage: focusedChild?.sessionStage ?? shared.currentSessionStage,
-                        childName: focusedChild?.displayName ?? "your child",
-                        isSelfUser: isSelfUser
-                    )
+                    // tb-mvp2-142: Card is tappable for Session 1 — launches LessonSlideView.
+                    // Future sessions will author their own lessons; gate on .session1 for now.
+                    let cardStage = focusedChild?.sessionStage ?? shared.currentSessionStage
+                    Button {
+                        if cardStage == .session1,
+                           let lesson1 = CBITLessonService.lesson(for: .session1),
+                           let slide0 = lesson1.slides.first {
+                            Task { @MainActor in
+                                let prefetch = Task {
+                                    await ZiggyTTSService.shared.prefetchLessonSlide(
+                                        text: slide0.spokenText,
+                                        voiceProfile: isSelfUser ? .adolescent : .caregiver,
+                                        slideIndex: 0
+                                    )
+                                }
+                                Task { try? await Task.sleep(nanoseconds: 1_000_000_000); prefetch.cancel() }
+                                await prefetch.value
+                                showLesson1 = true
+                            }
+                        }
+                    } label: {
+                        CaregiverSessionCard(
+                            stage: cardStage,
+                            childName: focusedChild?.displayName ?? "your child",
+                            isSelfUser: isSelfUser,
+                            isLessonAvailable: cardStage == .session1
+                        )
+                    }
+                    .buttonStyle(.plain)
                     .padding(.horizontal, 16)
 
                     // ── Next Session Card (tb-mvp2-096) ────────────────────────
@@ -161,32 +185,9 @@ struct CaregiverHomeView: View {
                             .padding(.horizontal, 16)
                     }
 
-                    // ── Lesson 1 Replay Tile (tb-mvp2-066) ────────────────────
-                    // Always visible — lets user re-watch Session 1 slides at any time.
-                    if let lesson1 = CBITLessonService.lesson(for: .session1) {
-                        Lesson1ReplayCard {
-                            // tb-mvp2-073 fix: await prefetch before opening sheet.
-                            if let slide0 = lesson1.slides.first {
-                                Task { @MainActor in
-                                    let prefetch = Task {
-                                        await ZiggyTTSService.shared.prefetchLessonSlide(
-                                            text: slide0.spokenText, // tb-mvp2-087: title+body, matches speakCurrentSlide
-                                            voiceProfile: .caregiver,
-                                            slideIndex: 0
-                                        )
-                                    }
-                                    Task { try? await Task.sleep(nanoseconds: 3_000_000_000); prefetch.cancel() }
-                                    await prefetch.value
-                                    showLesson1 = true
-                                }
-                            } else {
-                                showLesson1 = true
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                    }
-
                     // ── CBIT Resources button ──────────────────────────────────
+                    // tb-mvp2-142: Lesson 1 Replay Tile removed — lesson now launched by
+                    // tapping the Session Stage Card at the top of the screen.
                     Button { showResources = true } label: {
                         HStack(spacing: 12) {
                             Text(shared.hasTherapist ? "🩺" : "📖")
@@ -376,6 +377,8 @@ private struct CaregiverSessionCard: View {
     let stage: CBITSessionStage
     let childName: String
     var isSelfUser: Bool = false
+    // tb-mvp2-142: When true, shows a "Tap to view lesson →" hint so users discover the tap target.
+    var isLessonAvailable: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -394,19 +397,35 @@ private struct CaregiverSessionCard: View {
 
                 Spacer()
 
-                // Spacing badge
-                VStack(spacing: 2) {
-                    Text(stage.spacingDescription)
-                        .font(.caption.bold())
-                        .foregroundColor(.white)
-                    Text("sessions")
-                        .font(.system(size: 10))
-                        .foregroundColor(.white.opacity(0.75))
+                // tb-mvp2-142: Show lesson CTA badge when lesson is available, spacing badge otherwise.
+                if isLessonAvailable {
+                    HStack(spacing: 4) {
+                        Text("View lesson")
+                            .font(.caption.bold())
+                            .foregroundColor(.white)
+                        Image(systemName: "play.circle.fill")
+                            .font(.caption.bold())
+                            .foregroundColor(.white)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.2))
+                    .cornerRadius(10)
+                } else {
+                    // Spacing badge (future sessions without a lesson yet)
+                    VStack(spacing: 2) {
+                        Text(stage.spacingDescription)
+                            .font(.caption.bold())
+                            .foregroundColor(.white)
+                        Text("sessions")
+                            .font(.system(size: 10))
+                            .foregroundColor(.white.opacity(0.75))
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.2))
+                    .cornerRadius(10)
                 }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(Color.white.opacity(0.2))
-                .cornerRadius(10)
             }
 
             // Progress dots (8 sessions)
@@ -1415,7 +1434,7 @@ private struct EveningCheckInBanner: View {
     }
 }
 
-// MARK: - Nightly Ritual Card (tb-mvp2-018)
+// MARK: - Nightly Debrief Card (tb-mvp2-018)
 // Shown when child has submitted their evening check-in.
 
 private struct NightlyRitualCard: View {
