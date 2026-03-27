@@ -143,19 +143,6 @@ struct CaregiverHomeView: View {
                     )
                     .padding(.horizontal, 16)
 
-                    // ── Active Tic + CR Card ───────────────────────────────────
-                    if let targetTic = focusedChild?.currentTargetTic {
-                        ActiveTicCard(tic: targetTic, childName: focusedChild?.displayName ?? "", isSelfUser: isSelfUser)
-                            .padding(.horizontal, 16)
-                    } else if let child = focusedChild, child.ticHierarchy.isEmpty {
-                        EmptyTicHierarchyCard(
-                            childName: child.displayName,
-                            isSelfUser: isSelfUser,
-                            onStartAssessment: { showIntakeAssessment = true }
-                        )
-                        .padding(.horizontal, 16)
-                    }
-
                     // ── Reward Points Card ─────────────────────────────────────
                     RewardPointsCard(points: shared.rewardPoints)
                         .padding(.horizontal, 16)
@@ -183,6 +170,20 @@ struct CaregiverHomeView: View {
                         )
                         CaregiverReadAheadCard(content: readAhead)
                             .padding(.horizontal, 16)
+                    }
+
+                    // ── Active Tic + CR Card ───────────────────────────────────
+                    // Moved here (between Reward Points and CBIT Resources) per user request.
+                    if let targetTic = focusedChild?.currentTargetTic {
+                        ActiveTicCard(tic: targetTic, childName: focusedChild?.displayName ?? "", isSelfUser: isSelfUser)
+                            .padding(.horizontal, 16)
+                    } else if let child = focusedChild, child.ticHierarchy.isEmpty {
+                        EmptyTicHierarchyCard(
+                            childName: child.displayName,
+                            isSelfUser: isSelfUser,
+                            onStartAssessment: { showIntakeAssessment = true }
+                        )
+                        .padding(.horizontal, 16)
                     }
 
                     // ── CBIT Resources button ──────────────────────────────────
@@ -598,6 +599,29 @@ private struct TodayPracticeCard: View {
         kindMessages[abs(Calendar.current.component(.day, from: Date())) % kindMessages.count]
     }
 
+    // tb-mvp2-145: Encouraging messages shown when user picks 😊 (middle emoji).
+    // Same daily rotation pattern as kindMessages.
+    private let goodMessages = [
+        "Good job! You're still learning — and that's exactly where you should be. 💜",
+        "Nice work today! Every bit of practice adds up. Keep going. 🌟",
+        "You're making progress, even when it doesn't feel like it. 💙",
+        "Solid day! Showing up and trying is what matters most. 🎯"
+    ]
+    private var goodMessage: String {
+        goodMessages[abs(Calendar.current.component(.day, from: Date())) % goodMessages.count]
+    }
+
+    // tb-mvp2-146: Extra-enthusiastic messages for 😁 (big grin) — a genuinely great day.
+    private let greatMessages = [
+        "YES!! That's what we're talking about! You're crushing it today! 🎉",
+        "Amazing day! This is exactly the energy that makes progress happen. Keep it UP! 🚀",
+        "Look at you go!! Days like this are what CBIT is all about. You're incredible. ⭐️",
+        "That big grin says it all — you showed up and nailed it today. SO proud of you! 🏆"
+    ]
+    private var greatMessage: String {
+        greatMessages[abs(Calendar.current.component(.day, from: Date())) % greatMessages.count]
+    }
+
     /// tb-mvp2-081: Session 1 is awareness-only — no competing response yet.
     private var isWeek1: Bool { sessionStage == .session1 }
 
@@ -655,6 +679,24 @@ private struct TodayPracticeCard: View {
                 Text(kindMessage)
                     .font(.subheadline)
                     .foregroundColor(Color(hex: "667EEA"))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+
+            // tb-mvp2-145: encouraging message for the middle emoji (😊).
+            if selectedMood == "😊" {
+                Text(goodMessage)
+                    .font(.subheadline)
+                    .foregroundColor(Color(hex: "667EEA"))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+
+            // tb-mvp2-146: extra-enthusiastic message for 😁 (big grin).
+            if selectedMood == "😁" {
+                Text(greatMessage)
+                    .font(.subheadline.bold())
+                    .foregroundColor(Color(hex: "764BA2"))
                     .fixedSize(horizontal: false, vertical: true)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
