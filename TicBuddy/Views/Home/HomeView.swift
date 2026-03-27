@@ -135,6 +135,7 @@ struct QuickTicCounterCard: View {
             urgeStrength: 3
         )
         dataService.addTicEntry(entry)
+        dataService.awardPoints(1)  // tb-mvp2-144: catch-a-tic urge = 1 pt (same as .noticed in ChildMode)
 
         // Brief scale-bounce to confirm the tap registered
         bounce = true
