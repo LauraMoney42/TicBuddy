@@ -147,6 +147,20 @@ struct CaregiverHomeView: View {
                     RewardPointsCard(points: shared.rewardPoints)
                         .padding(.horizontal, 16)
 
+                    // ── Active Tic + CR Card ───────────────────────────────────
+                    // tb-mvp2-147: moved immediately after Reward Points (before Evening/Read Ahead).
+                    if let targetTic = focusedChild?.currentTargetTic {
+                        ActiveTicCard(tic: targetTic, childName: focusedChild?.displayName ?? "", isSelfUser: isSelfUser)
+                            .padding(.horizontal, 16)
+                    } else if let child = focusedChild, child.ticHierarchy.isEmpty {
+                        EmptyTicHierarchyCard(
+                            childName: child.displayName,
+                            isSelfUser: isSelfUser,
+                            onStartAssessment: { showIntakeAssessment = true }
+                        )
+                        .padding(.horizontal, 16)
+                    }
+
                     // ── Evening Check-In Card (tb-mvp2-018) ───────────────────
                     // Shown when child has submitted today's check-in or it's past reminder time
                     if let checkIn = dataService.todayEveningCheckIn() {
@@ -170,20 +184,6 @@ struct CaregiverHomeView: View {
                         )
                         CaregiverReadAheadCard(content: readAhead)
                             .padding(.horizontal, 16)
-                    }
-
-                    // ── Active Tic + CR Card ───────────────────────────────────
-                    // Moved here (between Reward Points and CBIT Resources) per user request.
-                    if let targetTic = focusedChild?.currentTargetTic {
-                        ActiveTicCard(tic: targetTic, childName: focusedChild?.displayName ?? "", isSelfUser: isSelfUser)
-                            .padding(.horizontal, 16)
-                    } else if let child = focusedChild, child.ticHierarchy.isEmpty {
-                        EmptyTicHierarchyCard(
-                            childName: child.displayName,
-                            isSelfUser: isSelfUser,
-                            onStartAssessment: { showIntakeAssessment = true }
-                        )
-                        .padding(.horizontal, 16)
                     }
 
                     // ── CBIT Resources button ──────────────────────────────────
