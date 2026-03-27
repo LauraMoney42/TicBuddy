@@ -583,6 +583,21 @@ private struct TodayPracticeCard: View {
     var isSelfUser: Bool = false
     let onLogPractice: (PracticeStatus) -> Void
 
+    // tb-mvp2-143: Ephemeral mood picker state — not persisted to data model.
+    @State private var selectedMood: String? = nil
+
+    // tb-mvp2-143: Supportive messages shown when user picks 😐.
+    // Daily rotation: deterministic per calendar day so it doesn't flicker on re-render.
+    private let kindMessages = [
+        "Tough days happen. Just showing up is enough. 💙",
+        "Not every day feels great — and that's completely normal. You're still here. That counts.",
+        "Even on hard days, noticing your tics is a win. You're doing more than you think.",
+        "Some days are just like that. Tomorrow's a fresh start. 💜"
+    ]
+    private var kindMessage: String {
+        kindMessages[abs(Calendar.current.component(.day, from: Date())) % kindMessages.count]
+    }
+
     /// tb-mvp2-081: Session 1 is awareness-only — no competing response yet.
     private var isWeek1: Bool { sessionStage == .session1 }
 
@@ -597,12 +612,55 @@ private struct TodayPracticeCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("📅 Today's Practice")
+                // tb-mvp2-143: Renamed from "📅 Today's Practice" → "Today"
+                Text("Today")
                     .font(.headline.bold())
                 Spacer()
                 if let status = todayStatus {
                     PracticeStatusBadge(status: status)
                 }
+            }
+
+            // tb-mvp2-143: Mood picker — three tappable emoji pills, selection highlighted purple.
+            // Tap again to deselect. Shows a kind message when 😐 is chosen.
+            HStack(spacing: 10) {
+                ForEach(["😐", "😊", "😁"], id: \.self) { emoji in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            selectedMood = selectedMood == emoji ? nil : emoji
+                        }
+                    } label: {
+                        Text(emoji)
+                            .font(.title2)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                selectedMood == emoji
+                                    ? Color(hex: "667EEA").opacity(0.15)
+                                    : Color(.secondarySystemBackground)
+                            )
+                            .cornerRadius(20)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(
+                                        selectedMood == emoji
+                                            ? Color(hex: "667EEA").opacity(0.5)
+                                            : Color.clear,
+                                        lineWidth: 1.5
+                                    )
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+                Spacer()
+            }
+
+            if selectedMood == "😐" {
+                Text(kindMessage)
+                    .font(.subheadline)
+                    .foregroundColor(Color(hex: "667EEA"))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
             if todayStatus == nil {

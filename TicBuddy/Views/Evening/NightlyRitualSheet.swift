@@ -88,8 +88,8 @@ struct NightlyRitualSheet: View {
     private var overviewSection: some View {
         VStack(spacing: 20) {
 
-            // Child's check-in card
-            CheckInSummaryCard(checkIn: checkIn, childName: childName)
+            // Child's check-in card (tb-mvp2-138: isSelfUser flips header to "Your check-in")
+            CheckInSummaryCard(checkIn: checkIn, childName: childName, isSelfUser: isSelfUser)
 
             // Phase list
             VStack(spacing: 12) {
@@ -483,6 +483,8 @@ private struct RitualCompleteView: View {
 private struct CheckInSummaryCard: View {
     let checkIn: EveningCheckInSummary
     let childName: String
+    // tb-mvp2-138: solo teen sees "Your check-in" instead of "childName's check-in".
+    var isSelfUser: Bool = false
 
     private var energyLabel: String {
         switch checkIn.energyLevel {
@@ -494,7 +496,7 @@ private struct CheckInSummaryCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("\(childName)'s check-in")
+            Text(isSelfUser ? "Your check-in" : "\(childName)'s check-in")
                 .font(.caption.bold())
                 .foregroundColor(.secondary)
                 .textCase(.uppercase)

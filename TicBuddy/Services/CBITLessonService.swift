@@ -125,6 +125,18 @@ enum CBITLessonService {
             //     emoji: "💙"
             // ),
 
+            // tb-mvp2-085: Closing handoff slide — intentional bridge to tic assessment.
+            // CTA on this slide routes to TicIntakeAssessmentView (see FamilyModeRouter).
+            // Gradient cycles back to teal (index 8 % 8 = 0 → palette wraps) — bookends the welcome slide.
+            // tb-mvp2-136: Reordered to id:9 (before "What's Next" which is now the final slide).
+            LessonSlide(
+                id: 9,
+                title: "Let's Map Your Tics",
+                // tb-mvp2-113: Removed "Once you're done" daily check-in paragraph — duplicate of What's Next slide.
+                body: "Now that you know what tics are, let's make a list of yours.\n\nYou'll document each tic — what it looks like, how often it happens, and how it feels. This becomes your personal tic map, and it's the foundation for everything we'll do together.\n\nTap below when you're ready — it only takes a few minutes!",
+                audioHint: "Warm and forward-looking. Pause before 'Tap below when you're ready'. Light emphasis on 'your personal tic map'.",
+                emoji: "🗺️"
+            ),
             // tb-mvp2-079: "What's Next" — homework to catch tic urges + log via counter.
             // tb-mvp2-102: ziggyPrompt seeds a contextual Ziggy chat for users unsure
             // whether they can feel the premonitory urge. Shows "Ask Ziggy →" CTA on this slide only.
@@ -143,18 +155,6 @@ enum CBITLessonService {
                 // tb-mvp2-134: Added goal-setting + personal reward prompts per user request.
                 audioHint: "Energetic and encouraging. Pause after 'that's it'. The daily check-in line is a direct call to action. End on a warm, forward-looking note for the Session 2 reminder.",
                 emoji: "🎯"
-            ),
-            // tb-mvp2-085: Closing handoff slide — intentional bridge to tic assessment.
-            // CTA on this slide routes to TicIntakeAssessmentView (see FamilyModeRouter).
-            // Gradient cycles back to teal (index 8 % 8 = 0 → palette wraps) — bookends the welcome slide.
-            // tb-mvp2-136: Reordered to id:9 (before "What's Next" which is now the final slide).
-            LessonSlide(
-                id: 9,
-                title: "Let's Map Your Tics",
-                // tb-mvp2-113: Removed "Once you're done" daily check-in paragraph — duplicate of What's Next slide.
-                body: "Now that you know what tics are, let's make a list of yours.\n\nYou'll document each tic — what it looks like, how often it happens, and how it feels. This becomes your personal tic map, and it's the foundation for everything we'll do together.\n\nTap below when you're ready — it only takes a few minutes!",
-                audioHint: "Warm and forward-looking. Pause before 'Tap below when you're ready'. Light emphasis on 'your personal tic map'.",
-                emoji: "🗺️"
             )
         ]
     )

@@ -55,7 +55,7 @@ enum ZiggyVoiceProfile: String, CaseIterable {
         switch self {
         case .youngChild:  return "Ziggy Jr. 🌈"
         case .olderChild:  return "Ziggy 💪"
-        case .adolescent:  return "Ziggy 🎯"
+        case .adolescent:  return "Ziggy"
         case .caregiver:   return "Ziggy"
         }
     }
@@ -82,7 +82,7 @@ enum ZiggyVoiceProfile: String, CaseIterable {
         switch self {
         case .youngChild:  return "🌈"
         case .olderChild:  return "😉"
-        case .adolescent:  return "🎯"
+        case .adolescent:  return "😎"
         case .caregiver:   return "😉"
         }
     }
