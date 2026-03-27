@@ -218,8 +218,12 @@ final class ZiggyTTSService: ObservableObject {
         } catch {
             // tb-mvp2-043: proxy failed — fall back to on-device AVSpeechSynthesizer.
             // Common causes: AUTH_TOKEN mismatch (401), OPENAI_API_KEY missing on proxy (503), no network.
+            // tb-mvp2-129: capture isCancelled immediately at catch entry — a race between
+            // fetchAudio throwing and the guard running could otherwise suppress AVSpeech
+            // even when the task was NOT cancelled (e.g. network timeout on a long slide).
+            let wasCancelled = Task.isCancelled
             print("[ZiggyTTS] Proxy unavailable (\(voiceProfile.rawValue)): \(error.localizedDescription) — using system TTS fallback")
-            guard !Task.isCancelled else { return }
+            guard !wasCancelled else { return }
             await speakWithSystemTTS(text: text, voiceProfile: voiceProfile)
         }
     }
@@ -474,6 +478,11 @@ final class ZiggyTTSService: ObservableObject {
         // rather than trying to pronounce it as a word ("suh-bit" or "cee-bit").
         // Applied here so display text in slides/chat is unchanged — only the spoken string differs.
         clean = clean.replacingOccurrences(of: "CBIT", with: "C-BIT")
+        // tb-mvp2-131: "pts" / "pt" abbreviations → full words so Nova reads them correctly.
+        // Word-boundary regex prevents false matches inside longer words (e.g. "option", "script").
+        // Order matters: expand "pts" before "pt" so "pts" isn't partially matched first.
+        clean = clean.replacingOccurrences(of: #"\bpts\b"#, with: "points", options: .regularExpression)
+        clean = clean.replacingOccurrences(of: #"\bpt\b"#,  with: "point",  options: .regularExpression)
         // Remove [LOG_TIC: ...] tags Ziggy sometimes appends
         clean = clean.replacingOccurrences(of: #"\[LOG_TIC:[^\]]+\]"#, with: "", options: .regularExpression)
         // Unwrap **bold** and *italic* markers (keep the text, drop the asterisks)

@@ -16,7 +16,12 @@ struct LessonSlideView: View {
     /// (routes to intake) or "Continue →" (replay, hierarchy already filled).
     /// tb-mvp2-094: Default updated from "Chat with Ziggy" — no longer a valid CTA for Session 1.
     var finalCTALabel: String = "Start Tic Assessment →"
-    /// Called when the user taps the final-slide CTA button.
+    /// tb-mvp2-136: When set, the assessment CTA fires on the slide with this title rather than
+    /// the last slide. Allows "What's Next" to be the final slide (dismiss/done) while
+    /// "Let's Map Your Tics" keeps the "Start Tic Assessment →" action.
+    /// nil = legacy behaviour (CTA fires on last slide).
+    var ctaSlideTitle: String? = nil
+    /// Called when the user taps the assessment CTA button (or Done on the last slide).
     let onFinished: () -> Void
 
     @StateObject private var ttsService = ZiggyTTSService.shared
@@ -30,6 +35,12 @@ struct LessonSlideView: View {
 
     private var currentSlide: LessonSlide { lesson.slides[currentIndex] }
     private var isLastSlide: Bool { currentIndex == lesson.slides.count - 1 }
+    /// tb-mvp2-136: True when the current slide should show the assessment CTA.
+    /// If ctaSlideTitle is set, fires on that slide; otherwise falls back to last slide.
+    private var isCTASlide: Bool {
+        if let title = ctaSlideTitle { return currentSlide.title == title }
+        return isLastSlide
+    }
     private var progress: Double { Double(currentIndex + 1) / Double(lesson.slides.count) }
 
     // tb-mvp2-118: Replaced dark moody gradients with bright upbeat ombré palette
@@ -77,6 +88,15 @@ struct LessonSlideView: View {
             }
         }
         .onAppear { speakCurrentSlide() }
+        // tb-mvp2-126: React to speaker toggle changes mid-session.
+        // Toggle OFF → stop immediately. Toggle ON → start speaking current slide.
+        .onChange(of: ttsEnabled) { enabled in
+            if enabled {
+                speakCurrentSlide()
+            } else {
+                ttsService.stopSpeaking()
+            }
+        }
         // tb-mvp2-073: clear lesson audio cache when sheet is dismissed
         .onDisappear {
             ttsService.stopSpeaking()
@@ -261,11 +281,13 @@ struct LessonSlideView: View {
             Spacer()
 
             // Primary action button
+            // tb-mvp2-136: isCTASlide shows the assessment CTA (may be a non-last slide
+            // when ctaSlideTitle is set). isLastSlide without isCTASlide shows "Done →".
             Button(action: primaryAction) {
                 HStack(spacing: 8) {
-                    Text(isLastSlide ? finalCTALabel : "Next")
+                    Text(isCTASlide ? finalCTALabel : (isLastSlide ? "Done →" : "Next"))
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    Image(systemName: isLastSlide ? "clipboard.fill" : "chevron.right")
+                    Image(systemName: isCTASlide ? "clipboard.fill" : "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                 }
                 .foregroundColor(.white)
@@ -275,7 +297,7 @@ struct LessonSlideView: View {
                     Capsule()
                         .fill(
                             LinearGradient(
-                                colors: isLastSlide
+                                colors: isCTASlide
                                     ? [Color(hex: "43E97B"), Color(hex: "38F9D7")]
                                     : [Color(hex: "667EEA"), Color(hex: "764BA2")],
                                 startPoint: .leading,
@@ -290,7 +312,12 @@ struct LessonSlideView: View {
     // MARK: - Actions
 
     private func primaryAction() {
-        if isLastSlide {
+        if isCTASlide {
+            // Assessment CTA — fires on ctaSlideTitle match (or last slide if no title set)
+            ttsService.stopSpeaking()
+            onFinished()
+        } else if isLastSlide {
+            // tb-mvp2-136: Last slide is "What's Next" (homework summary) — just dismiss
             ttsService.stopSpeaking()
             onFinished()
         } else {
@@ -400,6 +427,8 @@ struct LessonSlideView: View {
     /// playback. Immediately after starting, kicks off a background prefetch for slideIndex+1
     /// so the next tap on Next is latency-free.
     private func speakCurrentSlide() {
+        // tb-mvp2-126: Respect speaker toggle — skip TTS entirely if user muted.
+        guard ttsEnabled else { return }
         let idx = currentIndex
         let nextIdx = idx + 1
         // Small delay lets the slide transition animation complete first

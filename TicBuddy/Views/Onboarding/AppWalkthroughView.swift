@@ -66,7 +66,8 @@ private let walkthroughSteps: [WalkthroughStep] = [
     .init(
         icon: "➕",
         title: "Log a Tic",
-        message: "On the Home screen, tap \"Log a Tic Now\" whenever you notice a tic — even tiny ones. The more you log, the better Ziggy can help you.",
+        // tb-mvp2-127: Added reward points mention so users know logging earns them something.
+        message: "On the Home screen, tap \"Log a Tic Now\" whenever you notice a tic — even tiny ones. The more you log, the better Ziggy can help you. 🏆 Catching an urge earns 1 pt — using a competing response earns 2. Every 10 points = a new reward tier!",
         highlight: .none
     ),
     // tb-mvp2-123/user: "You're all set!" step removed — Lesson 1 step is now the
@@ -122,20 +123,16 @@ struct AppWalkthroughView: View {
             // caregiver/self-user context.
             if let lesson = CBITLessonService.lesson(for: .session1) {
                 let slides = lesson.slides
+                // tb-mvp2-129: Pre-warm ALL slides (not just 0+1) so every slide —
+                // including the long "What If I Can't Feel It Yet?" — is cached before
+                // the user ever taps into the lesson. The walkthrough takes 30+ seconds,
+                // giving plenty of buffer for sequential fetches (~1-2s each × 10 slides).
                 Task {
-                    if let slide0 = slides.first {
+                    for (index, slide) in slides.enumerated() {
                         await ZiggyTTSService.shared.prefetchLessonSlide(
-                            text: slide0.spokenText,
+                            text: slide.spokenText,
                             voiceProfile: .caregiver,
-                            slideIndex: 0
-                        )
-                    }
-                    // Double-buffer: slide 1 cached while user is still on slide 0
-                    if slides.count > 1 {
-                        await ZiggyTTSService.shared.prefetchLessonSlide(
-                            text: slides[1].spokenText,
-                            voiceProfile: .caregiver,
-                            slideIndex: 1
+                            slideIndex: index
                         )
                     }
                 }

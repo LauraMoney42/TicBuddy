@@ -183,7 +183,7 @@ final class WeeklySessionService: ObservableObject {
         case .session1:
             return CaregiverReadAheadContent(
                 stage: .session1,
-                headline: "Session 1 — Foundation",
+                headline: "Lesson 1 — Foundation",
                 summary: "This week Ziggy introduces psychoeducation: what tics are, why they happen, and what CBIT involves. The goal is curiosity and safety — not pressure or fixing.",
                 bulletPoints: [
                     "Tic awareness training begins — noticing without judging",

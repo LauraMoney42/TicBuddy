@@ -257,7 +257,10 @@ struct ChildModeRouter: View {
                     lesson: lesson,
                     voiceProfile: voiceProfile,
                     // "Start Tic Assessment →" on first run; "Update Tics →" on replay.
-                    finalCTALabel: isFirstRun ? "Start Tic Assessment →" : "Update Tics →"
+                    finalCTALabel: isFirstRun ? "Start Tic Assessment →" : "Update Tics →",
+                    // tb-mvp2-136: Fire assessment CTA on "Let's Map Your Tics" (id:9),
+                    // not the final "What's Next" slide (id:10) which is now dismiss/done only.
+                    ctaSlideTitle: "Let's Map Your Tics"
                 ) {
                     // Always route to post-Session-1 flow (Scheduler → Tic Assessment).
                     // asyncAfter avoids iOS 16 sheet presentation race condition.

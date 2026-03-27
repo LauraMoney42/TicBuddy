@@ -94,6 +94,7 @@ struct TicBuddyApp: App {
                         lesson: lesson,
                         voiceProfile: .caregiver,
                         finalCTALabel: "Start Tic Assessment →",
+                        ctaSlideTitle: "Let's Map Your Tics",
                         onFinished: {
                             // tb-mvp2-123 fix: explicitly mark walkthrough complete here.
                             // finish() in AppWalkthroughView uses withAnimation which can

@@ -258,7 +258,7 @@ struct CaregiverHomeView: View {
             // tb-mvp2-123: onFinished routes to tic assessment (same pattern as FamilyModeRouter).
             .sheet(isPresented: $showLesson1) {
                 if let lesson = CBITLessonService.lesson(for: .session1) {
-                    LessonSlideView(lesson: lesson, voiceProfile: .caregiver, finalCTALabel: "Update Tics →") {
+                    LessonSlideView(lesson: lesson, voiceProfile: .caregiver, finalCTALabel: "Update Tics →", ctaSlideTitle: "Let's Map Your Tics") {
                         showLesson1 = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             showIntakeAssessment = true
@@ -312,8 +312,9 @@ struct CaregiverHomeView: View {
     }
 
     /// Advance the focused child's CBIT session stage by one (tb-mvp2-006).
-    /// No-op if already on Session 8.
+    /// No-op if already on Session 8 or if user is a solo teen (tb-mvp2-125).
     private func advanceSessionStage() {
+        guard !isSelfUser else { return }
         guard let child = focusedChild,
               let nextStage = CBITSessionStage(rawValue: child.sessionStage.rawValue + 1),
               let idx = dataService.familyUnit.children.firstIndex(where: { $0.id == child.id })
@@ -1571,7 +1572,7 @@ private struct Lesson1ReplayCard: View {
                     Text("Lesson 1: CBIT Foundations")
                         .font(.system(size: 15, weight: .semibold, design: .rounded))
                         .foregroundColor(.primary)
-                    Text("7 slides · Read by Ziggy · Tap to replay")
+                    Text("11 slides · Read by Ziggy · Tap to replay")
                         .font(.system(size: 13, design: .rounded))
                         .foregroundColor(.secondary)
                 }
