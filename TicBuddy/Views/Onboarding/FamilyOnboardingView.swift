@@ -128,7 +128,7 @@ struct FamilyOnboardingView: View {
         case 0: return [Color(hex: "667EEA"), Color(hex: "764BA2")]
         case 1: return [Color(hex: "F093FB"), Color(hex: "764BA2")]
         case 2: return [Color(hex: "4FACFE"), Color(hex: "00F2FE")]
-        case 3: return [Color(hex: "43E97B"), Color(hex: "38F9D7")]
+        case 3: return [Color(hex: "134E5E"), Color(hex: "38A3A5")]
         case 4: return [Color(hex: "FA709A"), Color(hex: "FEE140")]
         case 5: return [Color(hex: "667EEA"), Color(hex: "764BA2")]
         default: return [Color(hex: "667EEA"), Color(hex: "764BA2")]
@@ -472,39 +472,41 @@ struct FamilySelfNicknameStep: View {
     @FocusState private var focused: Bool
 
     var body: some View {
-        VStack(spacing: 28) {
-            VStack(spacing: 10) {
-                Text("🙋")
-                    .font(.system(size: 80))
-                Text("Hey! What should\nwe call you?")
-                    .font(.system(size: 34, weight: .heavy, design: .rounded))
+        ScrollView {
+            VStack(spacing: 28) {
+                VStack(spacing: 10) {
+                    Text("👋 Hi! What should\nwe call you?")
+                        .font(.system(size: 34, weight: .heavy, design: .rounded))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                    Text("A nickname is fine — no last names needed.")
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundColor(.white.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 24)
+
+                TextField("Type your name here…", text: $nickname)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 26, weight: .bold, design: .rounded))
+                    .padding(18)
+                    .background(Color.white.opacity(0.2))
+                    .cornerRadius(20)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
-                Text("A nickname is fine — no last names needed.")
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundColor(.white.opacity(0.85))
+                    .focused($focused)
+                    .onAppear { focused = true }
+                    .padding(.horizontal, 30)
+
+                Text("Your name is only stored on this device.\nIt's never sent anywhere.")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.65))
                     .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
             }
-            .padding(.horizontal, 24)
-
-            TextField("Type your name here…", text: $nickname)
-                .textFieldStyle(.plain)
-                .font(.system(size: 26, weight: .bold, design: .rounded))
-                .padding(18)
-                .background(Color.white.opacity(0.2))
-                .cornerRadius(20)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .focused($focused)
-                .onAppear { focused = true }
-                .padding(.horizontal, 30)
-
-            Text("Your name is only stored on this device.\nIt's never sent anywhere.")
-                .font(.system(size: 13, weight: .medium, design: .rounded))
-                .foregroundColor(.white.opacity(0.65))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
+            .padding(.vertical, 20)
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
 
@@ -581,6 +583,7 @@ private struct AgeGroupCard: View {
         case .olderChild: return "🌳"
         case .youngTeen:  return "🌟"
         case .teen:       return "⚡️"
+        case .adult:      return "🌠"
         }
     }
 
@@ -613,10 +616,12 @@ private struct AgeGroupCard: View {
 struct FamilySelfAgeGroupStep: View {
     @Binding var ageGroup: AgeGroup
 
-    // Self-setup is only offered to 13+ so we filter the age groups shown
-    private let validGroups: [AgeGroup] = [.youngTeen, .teen]
+    // Self-setup is 13+ only; .adult is now a real enum case so no workarounds needed
+    private let validGroups: [AgeGroup] = [.youngTeen, .teen, .adult]
 
     var body: some View {
+        // Nested ScrollView removed — parent FamilyOnboardingView already provides ScrollView.
+        // Inner ScrollView caused gesture conflicts, making the 18+ (bottom) button untappable.
         VStack(spacing: 28) {
             VStack(spacing: 10) {
                 Text("🎂")
@@ -651,33 +656,14 @@ struct FamilySelfAgeGroupStep: View {
                             RoundedRectangle(cornerRadius: 18)
                                 .stroke(ageGroup == group ? Color.white : Color.clear, lineWidth: 2)
                         )
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                 }
-
-                // 18+ option
-                Button {
-                    // No AgeGroup case for 18+ in current enum — map to .teen as closest
-                    // TODO: add .adult case to AgeGroup in V2
-                    withAnimation(.spring(response: 0.3)) { ageGroup = .teen }
-                } label: {
-                    HStack {
-                        Text("18+")
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
-                        Spacer()
-                        Image(systemName: "circle")
-                            .font(.system(size: 26))
-                            .foregroundColor(.white.opacity(0.4))
-                    }
-                    .padding(18)
-                    .background(Color.white.opacity(0.12))
-                    .cornerRadius(18)
-                }
-                .buttonStyle(.plain)
             }
             .padding(.horizontal, 28)
         }
+        .padding(.vertical)
     }
 }
 

@@ -55,6 +55,21 @@ struct CaregiverHomeView: View {
                         .padding(.horizontal, 16)
                     }
 
+                    // ── Today's Tic Catch Check-in ─────────────────────────────
+                    // tb-mvp2-154: Moved to top of component stack per user request.
+                    TodayPracticeCard(
+                        sharedData: shared,
+                        sessionStage: focusedChild?.sessionStage ?? shared.currentSessionStage,
+                        isSelfUser: isSelfUser,
+                        onLogPractice: { status in
+                            logPractice(status)
+                        }
+                    )
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(16)
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                    .padding(.horizontal, 16)
+
                     // ── Evening check-in prompt (tb-mvp2-018) ─────────────────
                     // Shown after the reminder hour when today's practice isn't logged.
                     if checkInService.shouldShowEveningPrompt(practiceCalendar: shared.practiceCalendar) {
@@ -66,9 +81,57 @@ struct CaregiverHomeView: View {
                         .transition(.move(edge: .top).combined(with: .opacity))
                     }
 
+                    // ── Next Session Card (tb-mvp2-096) ────────────────────────
+                    // Shown once the user has scheduled their weekly session.
+                    // tb-mvp2-125: caregiver-only — solo teen users must not see
+                    // read-ahead or future session scheduling controls.
+                    if !isSelfUser {
+                        NextSessionCard()
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .cornerRadius(16)
+                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                            .padding(.horizontal, 16)
+                    }
+
+                    // ── Daily Instruction Card (tb-mvp2-005) ──────────────────
+                    DailyInstructionCard(
+                        instruction: DailyInstructionEngine.instruction(
+                            for: focusedChild?.sessionStage ?? shared.currentSessionStage,
+                            targetTic: focusedChild?.currentTargetTic,
+                            practiceCalendar: shared.practiceCalendar,
+                            childName: focusedChild?.displayName ?? "your child",
+                            isSelfUser: isSelfUser   // tb-mvp2-034
+                        )
+                    )
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(16)
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                    .padding(.horizontal, 16)
+
+                    // ── Quick Tic Counter (tb-mvp2-067) ───────────────────────
+                    // Zero-friction CBIT homework: one tap logs a .noticed tic entry.
+                    // Count refreshes live from dataService.ticEntries filtered to today.
+                    // Reuses QuickTicCounterCard from HomeView.swift; "Add detail →"
+                    // opens TicCalendarView so the user can edit category/outcome.
+                    QuickTicCounterCard(
+                        dataService: dataService,
+                        onDetailTap: { showQuickTicLog = true }
+                    )
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(16)
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                    .padding(.horizontal, 16)
+
+                    // ── Reward Points Card ─────────────────────────────────────
+                    RewardPointsCard(points: shared.rewardPoints)
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .cornerRadius(16)
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                        .padding(.horizontal, 16)
+
                     // ── Session Stage Card ─────────────────────────────────────
                     // tb-mvp2-142: Card is tappable for Session 1 — launches LessonSlideView.
-                    // Future sessions will author their own lessons; gate on .session1 for now.
+                    // tb-mvp2-153: Moved under Reward Points per user request.
                     let cardStage = focusedChild?.sessionStage ?? shared.currentSessionStage
                     Button {
                         if cardStage == .session1,
@@ -96,61 +159,18 @@ struct CaregiverHomeView: View {
                         )
                     }
                     .buttonStyle(.plain)
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(16)
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
                     .padding(.horizontal, 16)
-
-                    // ── Next Session Card (tb-mvp2-096) ────────────────────────
-                    // Shown once the user has scheduled their weekly session.
-                    // tb-mvp2-125: caregiver-only — solo teen users must not see
-                    // read-ahead or future session scheduling controls.
-                    if !isSelfUser {
-                        NextSessionCard()
-                            .padding(.horizontal, 16)
-                    }
-
-                    // ── Daily Instruction Card (tb-mvp2-005) ──────────────────
-                    DailyInstructionCard(
-                        instruction: DailyInstructionEngine.instruction(
-                            for: focusedChild?.sessionStage ?? shared.currentSessionStage,
-                            targetTic: focusedChild?.currentTargetTic,
-                            practiceCalendar: shared.practiceCalendar,
-                            childName: focusedChild?.displayName ?? "your child",
-                            isSelfUser: isSelfUser   // tb-mvp2-034
-                        )
-                    )
-                    .padding(.horizontal, 16)
-
-                    // ── Today's Practice Card ──────────────────────────────────
-                    // tb-mvp2-081: pass sessionStage so Week 1 shows awareness copy,
-                    // not CR copy (no competing response exists yet in Session 1).
-                    TodayPracticeCard(
-                        sharedData: shared,
-                        sessionStage: focusedChild?.sessionStage ?? shared.currentSessionStage,
-                        isSelfUser: isSelfUser,
-                        onLogPractice: { status in
-                            logPractice(status)
-                        }
-                    )
-                    .padding(.horizontal, 16)
-
-                    // ── Quick Tic Counter (tb-mvp2-067) ───────────────────────
-                    // Zero-friction CBIT homework: one tap logs a .noticed tic entry.
-                    // Count refreshes live from dataService.ticEntries filtered to today.
-                    // Reuses QuickTicCounterCard from HomeView.swift; "Add detail →"
-                    // opens TicCalendarView so the user can edit category/outcome.
-                    QuickTicCounterCard(
-                        dataService: dataService,
-                        onDetailTap: { showQuickTicLog = true }
-                    )
-                    .padding(.horizontal, 16)
-
-                    // ── Reward Points Card ─────────────────────────────────────
-                    RewardPointsCard(points: shared.rewardPoints)
-                        .padding(.horizontal, 16)
 
                     // ── Active Tic + CR Card ───────────────────────────────────
                     // tb-mvp2-147: moved immediately after Reward Points (before Evening/Read Ahead).
                     if let targetTic = focusedChild?.currentTargetTic {
                         ActiveTicCard(tic: targetTic, childName: focusedChild?.displayName ?? "", isSelfUser: isSelfUser)
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .cornerRadius(16)
+                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
                             .padding(.horizontal, 16)
                     } else if let child = focusedChild, child.ticHierarchy.isEmpty {
                         EmptyTicHierarchyCard(
@@ -158,6 +178,9 @@ struct CaregiverHomeView: View {
                             isSelfUser: isSelfUser,
                             onStartAssessment: { showIntakeAssessment = true }
                         )
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .cornerRadius(16)
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
                         .padding(.horizontal, 16)
                     }
 
@@ -168,9 +191,15 @@ struct CaregiverHomeView: View {
                             checkIn: checkIn,
                             childName: focusedChild?.displayName ?? "your child"
                         ) { showNightlyRitual = true }
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .cornerRadius(16)
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
                         .padding(.horizontal, 16)
                     } else if checkInService.shouldShowEveningPrompt(practiceCalendar: shared.practiceCalendar) {
                         EveningPracticePromptCard { showNightlyRitual = true }
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .cornerRadius(16)
+                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
                             .padding(.horizontal, 16)
                     }
 
@@ -183,6 +212,9 @@ struct CaregiverHomeView: View {
                             currentStage: child.sessionStage
                         )
                         CaregiverReadAheadCard(content: readAhead)
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .cornerRadius(16)
+                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
                             .padding(.horizontal, 16)
                     }
 
@@ -207,9 +239,9 @@ struct CaregiverHomeView: View {
                                 .foregroundColor(.secondary)
                         }
                         .padding(16)
-                        .background(Color.orange.opacity(0.08))
-                        .cornerRadius(14)
-                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.orange.opacity(0.2), lineWidth: 1))
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .cornerRadius(16)
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 1))
                     }
                     .buttonStyle(.plain)
                     .padding(.horizontal, 16)
@@ -218,7 +250,7 @@ struct CaregiverHomeView: View {
                 }
                 .padding(.top, 8)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
             .navigationTitle(caregiverGreeting)
             .navigationBarTitleDisplayMode(.large)
             // tb-mvp2-006: Session advancement confirmation sheet
@@ -561,9 +593,8 @@ private struct DailyInstructionCard: View {
             }
         }
         .padding(18)
-        .background(Color(.systemBackground))
-        .cornerRadius(18)
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(16)
         .onAppear {
             // Auto-expand full-session days so caregiver sees the full protocol
             isExpanded = instruction.isFullSessionDay
@@ -637,7 +668,8 @@ private struct TodayPracticeCard: View {
         VStack(alignment: .leading, spacing: 14) {
             // tb-mvp2-145: calendar icon restored; PracticeStatusBadge removed.
             // tb-mvp2-151: renamed to "How's tic catching going today?" centered.
-            Text("📅 How's tic catching going today?")
+            // tb-mvp2-152: renamed to "Today's Tic Catch Check-in" centered.
+            Text("📅 Today's Tic Catch Check-in")
                 .font(.headline.bold())
                 .frame(maxWidth: .infinity, alignment: .center)
                 .multilineTextAlignment(.center)
@@ -647,7 +679,7 @@ private struct TodayPracticeCard: View {
             // Tap again to deselect. Shows a kind message when 😐 is chosen.
             HStack(spacing: 16) {
                 Spacer()
-                ForEach(["😐", "😊", "🥳"], id: \.self) { emoji in
+                ForEach(["😶", "👀", "🔥"], id: \.self) { emoji in
                     Button {
                         withAnimation(.easeInOut(duration: 0.15)) {
                             selectedMood = selectedMood == emoji ? nil : emoji
@@ -660,7 +692,7 @@ private struct TodayPracticeCard: View {
                             .background(
                                 selectedMood == emoji
                                     ? Color(hex: "667EEA").opacity(0.15)
-                                    : Color(.secondarySystemBackground)
+                                    : Color(UIColor.secondarySystemGroupedBackground)
                             )
                             .cornerRadius(20)
                             .overlay(
@@ -678,7 +710,7 @@ private struct TodayPracticeCard: View {
                 Spacer()
             }
 
-            if selectedMood == "😐" {
+            if selectedMood == "😶" {
                 Text(kindMessage)
                     .font(.subheadline)
                     .foregroundColor(Color(hex: "667EEA"))
@@ -687,7 +719,7 @@ private struct TodayPracticeCard: View {
             }
 
             // tb-mvp2-145: encouraging message for the middle emoji (😊).
-            if selectedMood == "😊" {
+            if selectedMood == "👀" {
                 Text(goodMessage)
                     .font(.subheadline)
                     .foregroundColor(Color(hex: "667EEA"))
@@ -696,7 +728,7 @@ private struct TodayPracticeCard: View {
             }
 
             // tb-mvp2-146: extra-enthusiastic message for 🥳 (big grin).
-            if selectedMood == "🥳" {
+            if selectedMood == "🔥" {
                 Text(greatMessage)
                     .font(.subheadline.bold())
                     .foregroundColor(Color(hex: "764BA2"))
@@ -760,19 +792,20 @@ private struct TodayPracticeCard: View {
                     }
                 }
             } else {
-                // Already logged — show encouraging message
-                Text(encouragementText(for: todayStatus!))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
+                // Already logged — show encouraging message only if non-empty
+                let msg = encouragementText(for: todayStatus!)
+                if !msg.isEmpty {
+                    Text(msg)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 // tb-mvp2-145: "Change today's log" button removed — user taps an emoji to update.
             }
         }
         .padding(18)
-        .background(Color(.systemBackground))
-        .cornerRadius(18)
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(16)
     }
 
     private func encouragementText(for status: PracticeStatus) -> String {
@@ -780,7 +813,7 @@ private struct TodayPracticeCard: View {
         if isWeek1 {
             switch status {
             case .fullPractice: return "Nice — you're catching urges! 👀 That awareness is exactly what CBIT builds on."
-            case .partial:      return "Still learning — that's completely normal in Week 1. 🌱 Keep noticing."
+            case .partial:      return ""
             case .hardDay:      return "Tough day — that's okay. 💙 Awareness takes practice. Tomorrow is a fresh start."
             }
         }
@@ -925,9 +958,8 @@ private struct ActiveTicCard: View {
             }
         }
         .padding(18)
-        .background(Color(.systemBackground))
-        .cornerRadius(18)
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(16)
     }
 }
 
@@ -1028,9 +1060,8 @@ private struct EmptyTicHierarchyCard: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemBackground))
-        .cornerRadius(18)
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(16)
     }
 }
 
@@ -1070,9 +1101,8 @@ private struct RewardPointsCard: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemBackground))
-        .cornerRadius(18)
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(16)
     }
 }
 
@@ -1439,53 +1469,7 @@ struct CBITResourcesSheet: View {
     }
 }
 
-private struct ResourceRow: View {
-    let emoji: String
-    let title: String
-    let subtitle: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Text(emoji).font(.title3)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.subheadline.bold())
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-}
-
-private struct LinkRow: View {
-    let emoji: String
-    let title: String
-    let subtitle: String
-    let url: String
-
-    var body: some View {
-        Link(destination: URL(string: url)!) {
-            HStack(alignment: .top, spacing: 12) {
-                Text(emoji).font(.title3)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(title)
-                        .font(.subheadline.bold())
-                        .foregroundColor(.primary)
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                Spacer()
-                Image(systemName: "arrow.up.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-}
+// LinkRow and ResourceRow are defined in ParentResourceGuideView.swift (shared across Settings + Home).
 
 // MARK: - Evening Check-In Banner (tb-mvp2-018)
 //
@@ -1517,13 +1501,12 @@ private struct EveningCheckInBanner: View {
                     .foregroundColor(.secondary)
             }
             .padding(14)
-            .background(Color(.systemBackground))
-            .cornerRadius(14)
+            .background(Color(UIColor.secondarySystemGroupedBackground))
+            .cornerRadius(16)
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(Color.orange.opacity(0.35), lineWidth: 1.5)
             )
-            .shadow(color: Color.orange.opacity(0.1), radius: 6, y: 2)
         }
         .buttonStyle(.plain)
     }
@@ -1582,7 +1565,7 @@ private struct EveningPracticePromptCard: View {
             HStack(spacing: 14) {
                 Text("🌙").font(.system(size: 32))
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Evening ritual ready")
+                    Text("Evening Recap Ready")
                         .font(.system(size: 15, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
                     Text("Log practice + brief debrief with your child")
@@ -1596,9 +1579,8 @@ private struct EveningPracticePromptCard: View {
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.systemBackground))
-            .cornerRadius(18)
-            .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+            .background(Color(UIColor.secondarySystemGroupedBackground))
+            .cornerRadius(16)
         }
         .buttonStyle(.plain)
     }
@@ -1803,9 +1785,8 @@ private struct CaregiverReadAheadCard: View {
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .background(Color(.systemBackground))
-        .cornerRadius(18)
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(16)
     }
 }
 

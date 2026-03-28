@@ -45,7 +45,7 @@ enum CBITLessonService {
             LessonSlide(
                 id: 1,
                 title: "Your TicBuddy Toolkit",
-                body: "Here's what you'll be using every day:\n\n📅 **Calendar** — log tics daily and spot patterns over time. See what days are harder, and watch yourself improve week by week.\n\n🔢 **Tic counter** — tap it in the moment to count tics as they happen, or enter your totals at the end of the day. Either way works!\n\n🏆 **Reward points** — catch a tic urge = 1 point. Use a competing response = 2 points. Every 10 points unlocks a new reward tier.\n\nThat's it. Simple tools, real results.",
+                body: "Here's what you'll be using every day:\n\n📅 **Calendar** — log tics daily and spot patterns over time. See what days are harder, and watch yourself improve week by week.\n\n🔢 **Tic counter** — tap it in the moment to count tics as they happen, or enter your totals at the end of the day. Either way works!\n\n🏆 **Reward points** — practice noticing your tics and building awareness = points toward rewards you choose. Every 10 points = a new level!\n\nThat's it. Simple tools, real results.",
                 audioHint: "Upbeat and quick — this is a features highlight, not a lecture. Each bullet gets a beat of emphasis. End punchy: 'Simple tools, real results.'",
                 emoji: "🛠️"
             ),
@@ -54,7 +54,7 @@ enum CBITLessonService {
             LessonSlide(
                 id: 2,
                 title: "LESSON 1 - What is Tourette's",
-                body: "Tourette Syndrome — or TS — is when the brain sends little extra signals that cause movements or sounds called tics. Things like blinking, sniffing, or clearing your throat.\n\nTS is more common than most people think — about 1 in 100 kids has it. It's not dangerous, it's not your fault, and it doesn't define you.\n\nLots of people with TS live full, happy lives. And there are real things you can do to feel more in control. That's exactly what TicBuddy is here to help with.",
+                body: "Tourette Syndrome — or TS — is when the brain sends little extra signals that cause movements or sounds called tics. Things like blinking, sniffing, or clearing your throat.\n\nTS is more common than most people think — about 1 in 100 kids has it. It's not dangerous, it's not your fault, and it doesn't define you.\n\nLots of people with TS live full, happy lives. And there are real things you can do to feel more in control. That's exactly what TicBuddy is here to help with.\n\nSome tics are socially awkward — and that's something we'll talk about specifically. You're not alone in that.\n\nOne more thing worth knowing: you may notice your tics briefly increase as you focus on them during CBIT — this is normal, temporary, and a well-documented part of the process.",
                 audioHint: "Gentle, warm, reassuring. Speak like you're talking to a nervous kid who needs to feel safe.",
                 emoji: "👋"
             ),
@@ -62,21 +62,21 @@ enum CBITLessonService {
             LessonSlide(
                 id: 3,
                 title: "What Are Tics?",
-                body: "Tics come in two main types — motor (movements) and vocal (sounds) — and each can be simple or complex.\n\n• Simple tics: brief, sudden — like eye blinking, sniffing, or throat clearing.\n• Complex tics: longer sequences — like touching objects, jumping, repeating words, or making phrases.\n\nTics are unintentional. They're caused by how the brain processes signals — not a choice, not a habit.",
+                body: "Tics come in two main types — motor (movements) and vocal (sounds) — and each can be simple or complex.\n\n• Simple tics: brief, sudden — like eye blinking, sniffing, or throat clearing.\n• Complex tics: longer sequences — like touching objects, jumping, repeating words, or saying a whole sentence.\n\nTics happen on their own — your brain sends a signal and the tic follows, without you choosing it. That's the opposite of a habit, which is something you repeat intentionally.",
                 audioHint: "Clear and steady. Slight pause before the bullet points. Let 'not a choice, not a habit' land.",
                 emoji: "🧠"
             ),
             LessonSlide(
                 id: 4,
                 title: "Tics Change Over Time",
-                body: "Tics naturally wax and wane — they get better, worse, or change type depending on stress, illness, excitement, and focus. This is completely normal.\n\nMany children see tics improve significantly by late adolescence. CBIT can help reduce tic frequency and the distress they cause — right now, not just someday.",
+                body: "Tics naturally wax and wane — they get better, worse, or change type depending on stress, illness, excitement, and focus. This is completely normal.\n\nMany people with tics see them improve significantly as they get older — and CBIT can speed that up. CBIT can help reduce tic frequency and the distress they cause — right now, not just someday.",
                 audioHint: "Reassuring tone. Emphasize 'right now, not just someday'.",
                 emoji: "🌱"
             ),
             LessonSlide(
                 id: 5,
                 title: "The Premonitory Urge",
-                body: "Most people with tics experience a premonitory urge — an uncomfortable sensation that builds just before a tic happens. It might feel like an itch, pressure, or a sense that something is 'not right.'\n\nDoing the tic temporarily relieves this feeling — which is why tics are so hard to stop.\n\nRecognizing the urge is the first step in CBIT. You can't fight what you can't feel.",
+                body: "Most people with tics experience a premonitory urge — an uncomfortable sensation that builds just before a tic happens. It might feel like an itch, pressure, or a sense that something is 'not right.' Some describe it as needing to move, or like your body is waiting for something.\n\nDoing the tic temporarily relieves this feeling — which is why tics are so hard to stop.\n\nRecognizing the urge is the first step in CBIT. You can't fight what you can't feel.",
                 audioHint: "Measured pace. The last line is important — slight emphasis.",
                 emoji: "⚡️"
             ),
@@ -91,7 +91,7 @@ enum CBITLessonService {
                 id: 6,
                 title: "What If I Can't Feel It Yet?",
                 // tb-mvp2-130: Road metaphor paragraphs moved to "How CBIT Works" (id:7).
-                body: "That's okay — and really common.\n\n• The urge can be so faint you miss it at first. Some people only notice it after the tic, like a quiet 'oh, there it was.' That still counts as awareness.\n\n• Try this: do your tic on purpose, slowly, and pay close attention just before. Do you feel tightness in your throat? Tension building in your shoulder, thigh, or fingers? That small sensation — however subtle — is your urge.\n\n• For some tics, the urge hides in a surprising spot. An eye blink might start as pressure behind the eye. A vocal tic might feel like a tickle or fullness in the throat.\n\n• Even noticing the tic after it happens is awareness training. It gets sharper with practice — and that's exactly what the next few weeks are for.",
+                body: "That's okay — and really common.\n\n• The urge can be so faint you miss it at first. Some people only notice it after the tic, like a quiet 'oh, there it was.' That still counts as awareness.\n\n• Try this: do your tic on purpose, slowly, and pay close attention just before. Do you feel tightness in your throat? Tension building in your shoulder, thigh, or fingers? That small sensation — however subtle — is your urge.\n\n• For some tics, the urge shows up in an unexpected place. An eye blink might start as pressure behind the eye. A vocal tic might feel like a tickle or fullness in the throat.\n\n• Even noticing the tic after it happens is awareness training. It gets sharper with practice — and that's exactly what the next few weeks are for.",
                 audioHint: "Warm and reassuring throughout. Slight pause before 'Try this' — frame it as a gentle experiment, not a test. Slow down for the body-sensation examples.",
                 emoji: "🤔",
                 ziggyPrompt: "I just went through the lesson on the premonitory urge, but I'm honestly not sure I can feel the urge before my tics. Is that normal? How do I learn to notice it?"
@@ -102,7 +102,7 @@ enum CBITLessonService {
             LessonSlide(
                 id: 7,
                 title: "How CBIT Works",
-                body: "CBIT teaches a competing response — a specific action that is physically incompatible with the tic. When the premonitory urge appears, the competing response is performed instead.\n\nFor example: if the tic is an eye blink, the competing response might be slowly and gently closing the eyelids for a count of two, then relaxing. It's hard to forcefully blink while doing that — and that's exactly the point.\n\nOver time, the brain learns a new pathway. The urge weakens, and the tic loses power.\n\nCBIT does not suppress tics through willpower. It retrains the brain through practice.",
+                body: "CBIT teaches a competing response — a specific action your body does instead of the tic — and you literally can't do both at the same time. When the premonitory urge appears, the competing response is performed instead.\n\nFor example: if the tic is an eye blink, the competing response might be slowly and gently closing the eyelids for a count of two, then relaxing. It's hard to forcefully blink while doing that — and that's exactly the point.\n\nOver time, the brain learns a new pathway. The urge weakens, and the tic loses power.\n\nCBIT does not suppress tics through willpower. It retrains the brain through practice — like learning a sport or an instrument. The more you practice, the easier it gets.",
                 audioHint: "Confident, clear tone. Slow down for the eye-blink example — let it land. Pause before 'CBIT does not suppress tics' for emphasis.",
                 emoji: "🛠️"
             ),
@@ -151,7 +151,7 @@ enum CBITLessonService {
                 // tb-mvp2-112: Added Session 2 next-week reminder + calendar CTA per user feedback.
                 // tb-mvp2-122: Rewrote tic counter line to mention tally marks as a no-phone fallback.
                 // tb-mvp2-127: Added reward points line so users know logging earns points.
-                body: "Now that you know what tics and the premonitory urge are, it's time to start noticing them in real life.\n\n**Important:** Right now, we're not trying to stop tics, suppress them, or redirect them. That comes later. For now, the only goal is to catch the premonitory urge — just notice it. That awareness is the foundation everything else is built on.\n\n## Your Homework\nTry to catch your tics before they happen. When you feel that little urge — the itch, the pressure, the 'something's building' feeling — that's it. That's what we're looking for.\n\n📅 Schedule your next session — add it to your calendar right now, same day next week.\n📱 Catch a tic? Log it in the moment with the tic counter — or jot it down with tally marks if your phone isn't handy. At the end of the day, enter your totals. Either way works!\n🏆 Earn points as you go — catch a tic urge = 1 point, use a competing response = 2 points. Every 10 points = a new reward tier!\n\n🎯 Set a weekly tic-counting goal — pick a number that feels challenging but doable. Even just 'log tics 3 days this week' counts. Small wins add up.\n\n🎁 Choose your reward — decide now what you'll treat yourself to if you hit your goal. A favourite snack, extra screen time, a small purchase — anything that feels worth working for. Write it down so it's real.",
+                body: "Now that you know what tics and the premonitory urge are, it's time to start noticing them in real life.\n\n**Here's the key:** Right now, your only job is to *notice* the urge. No stopping, suppressing, or changing anything. Just awareness. Competing responses come later — one step at a time.\n\n## Your Homework\n**Core homework:** Log tics + schedule your next session.\n**Bonus:** Set a goal and choose a reward to work toward.\n\nTry to catch your tics before they happen. When you feel that little urge — the itch, the pressure, the 'something's building' feeling — that's it. That's what we're looking for.\n\n📅 Schedule your next session — add it to your calendar right now, same day next week.\n📱 Catch a tic? Log it in the moment with the tic counter — or jot it down with tally marks if your phone isn't handy. At the end of the day, enter your totals. Either way works!\n🏆 Earn points as you go — catch a tic urge = 1 point, use a competing response = 2 points. Every 10 points = a new reward tier!\n\n🎯 Set a weekly tic-counting goal — pick a number that feels challenging but doable. Even just 'log tics 3 days this week' counts. Small wins add up.\n\n🎁 Choose your reward — decide now what you'll treat yourself to if you hit your goal. A favourite snack, extra screen time, a small purchase — anything that feels worth working for. Write it down so it's real.",
                 // tb-mvp2-134: Added goal-setting + personal reward prompts per user request.
                 audioHint: "Energetic and encouraging. Pause after 'that's it'. The daily check-in line is a direct call to action. End on a warm, forward-looking note for the Session 2 reminder.",
                 emoji: "🎯"

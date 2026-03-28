@@ -1,3 +1,11 @@
+## 2026-03-27 14:30
+- Applied 11 content edits to Session 1 lesson slides: reward points description simplified (slide 1), social awkwardness acknowledgment added (slide 2), "making phrases" → "saying a whole sentence" (slide 3), tic intentionality reframed (slide 3), "children" → "people" + CBIT framing updated (slide 4), premonitory urge description expanded (slide 5), "hides in a surprising spot" → "shows up in an unexpected place" (slide 6), competing response description reworded (slide 7), practice analogy added to CBIT retraining (slide 7), "Important" callout rewritten as "Here's the key" (slide 10), core/bonus homework header added (slide 10)
+- Files affected: TicBuddy/Services/CBITLessonService.swift
+
+## 2026-03-27 14:00
+- Replaced FamilySelfAgeGroupStep struct with fixed version: adds `selected18Plus` @State, wraps content in ScrollView, moves `isSelected` inside the label closure to avoid Swift 5.9 local-variable-in-closure restriction, removes `.contentShape(Rectangle())`, and drops the now-redundant `.padding(.bottom, 20)` in favour of `.padding(.vertical)` on the ScrollView content
+- Files affected: TicBuddy/Views/Onboarding/FamilyOnboardingView.swift
+
 ## 2026-03-24 — tb-mvp2-018 Evening Check-In Sync (Dev1)
 - VERIFIED complete — all components fully implemented and wired end-to-end
 - Services/EveningCheckInService.swift — daily local notification scheduler (7 PM default, caregiver-configurable), shouldShowEveningPrompt(), permission handling

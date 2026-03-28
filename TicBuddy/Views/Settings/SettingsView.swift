@@ -57,7 +57,18 @@ struct SettingsView: View {
                     }
                 }
 
-                // MARK: - For Adults
+                // MARK: - Resources (visible to all: teens, parents, self-guided users)
+                Section {
+                    NavigationLink(destination: ParentResourceGuideView()) {
+                        Label("CBIT & TS Resources", systemImage: "books.vertical.fill")
+                    }
+                } header: {
+                    Text("Resources")
+                } footer: {
+                    Text("What is CBIT, how habit reversal works, Tourette's info, school accommodations, and medication guidance.")
+                }
+
+                // MARK: - For Adults / Parent Resources
                 Section {
                     NavigationLink(destination: CaregiversView()) {
                         Label("For Adults", systemImage: "person.2.fill")
@@ -65,7 +76,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Parents & Caregivers")
                 } footer: {
-                    Text("What is TS, how CBIT works, school accommodations, therapist finder, and family support resources.")
+                    Text("Therapist finder, family support resources, and caregiver guides.")
                 }
 
                 // MARK: - Privacy Section

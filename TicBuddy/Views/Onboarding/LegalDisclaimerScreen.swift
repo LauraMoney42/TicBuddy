@@ -139,7 +139,7 @@ struct LegalDisclaimerScreen: View {
                             Text("In a crisis?")
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundColor(Color(hex: "FEE140"))
-                            Text("Contact 988 (call or text), call 911, or go to your nearest emergency room. Do not rely on TicBuddy in an emergency.")
+                            Text("Call 911 or go to your nearest emergency room. You can also call or text 988 — the US Suicide & Crisis Lifeline. Do not rely on an app in an emergency.")
                                 .font(.system(size: 13, design: .rounded))
                                 .foregroundColor(.white.opacity(0.85))
                                 .fixedSize(horizontal: false, vertical: true)

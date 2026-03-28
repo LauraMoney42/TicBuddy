@@ -74,45 +74,50 @@ struct QuickTicCounterCard: View {
     private var todayCount: Int { dataService.entries(for: Date()).count }
 
     var body: some View {
-        HStack(spacing: 0) {
+        // tb-mvp2-155: ZStack so + button group is centered regardless of count width.
+        // tb-mvp2-156: "Add detail →" moved to middle-right of + button, slightly larger.
+        ZStack(alignment: .center) {
 
-            // ── Left: Count Display ──────────────────────────────────────────
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Today's Tics")
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundColor(.white.opacity(0.7))
+            // ── Leading count (overlay — doesn't shift + position) ───────────
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Today's Tics")
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundColor(.white.opacity(0.7))
 
-                Text("\(todayCount)")
-                    .font(.system(size: 52, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-                    .scaleEffect(bounce ? 1.18 : 1.0)
-                    .animation(.spring(response: 0.25, dampingFraction: 0.45), value: bounce)
-                    .contentTransition(.numericText())
+                    Text("\(todayCount)")
+                        .font(.system(size: 52, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .scaleEffect(bounce ? 1.18 : 1.0)
+                        .animation(.spring(response: 0.25, dampingFraction: 0.45), value: bounce)
+                        .contentTransition(.numericText())
+                }
+                .padding(.leading, 20)
+                Spacer()
+            }
+
+            // ── + button with "Add detail →" to its immediate right ──────────
+            HStack(spacing: 14) {
+                Button(action: quickLog) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.18))
+                            .frame(width: 76, height: 76)
+                        Image(systemName: "plus")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
 
                 Button(action: onDetailTap) {
                     Text("Add detail →")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor(.white.opacity(0.55))
+                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                        .foregroundColor(.white.opacity(0.75))
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 20)
-
-            // ── Right: +1 Tap Button ─────────────────────────────────────────
-            Button(action: quickLog) {
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.18))
-                        .frame(width: 76, height: 76)
-                    Image(systemName: "plus")
-                        .font(.system(size: 30, weight: .bold))
-                        .foregroundColor(.white)
-                }
-            }
-            .padding(.trailing, 16)
-            .padding(.vertical, 16)
         }
         .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
         .background(
             LinearGradient(
                 colors: [Color(hex: "667EEA"), Color(hex: "764BA2")],

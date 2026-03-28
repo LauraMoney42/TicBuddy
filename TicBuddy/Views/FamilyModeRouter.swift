@@ -177,7 +177,7 @@ struct ChildModeRouter: View {
                     ChildModeYoungView()
                 case .olderChild:
                     ChildModeOlderView()
-                case .youngTeen, .teen, .none:
+                case .youngTeen, .teen, .adult, .none:
                     ChildModeAdolescentView()
                 }
             }
