@@ -474,7 +474,7 @@ struct FamilySelfNicknameStep: View {
     var body: some View {
         VStack(spacing: 28) {
             VStack(spacing: 10) {
-                Text("🙋")
+                Text("👋")
                     .font(.system(size: 80))
                 Text("Hey! What should\nwe call you?")
                     .font(.system(size: 34, weight: .heavy, design: .rounded))
