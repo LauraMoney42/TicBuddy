@@ -659,65 +659,74 @@ private struct TodayPracticeCard: View {
                 .multilineTextAlignment(.center)
 
             // tb-checkin-001: emoji row removed. Layout: question (bold) → buttons.
-            if todayStatus == nil {
-                Text(isWeek1
-                     ? (isSelfUser
-                        ? "Have you been noticing the urge for your most bothersome tic today?"
-                        : "Has your child been noticing the urge for their target tic today?")
-                     : (isSelfUser
-                        ? "Have you practiced your competing response today?"
-                        : "Has your child practiced their competing response today?"))
-                    .font(.subheadline.bold())
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .multilineTextAlignment(.center)
+            // tb-mvp2-160: Buttons always visible. Selected = highlighted, others = dimmed.
+            Text(isWeek1
+                 ? (isSelfUser
+                    ? "Have you been noticing the urge for your most bothersome tic today?"
+                    : "Has your child been noticing the urge for their target tic today?")
+                 : (isSelfUser
+                    ? "Have you practiced your competing response today?"
+                    : "Has your child practiced their competing response today?"))
+                .font(.subheadline.bold())
+                .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
 
-                if isWeek1 {
-                    // tb-mvp2-081: Week 1 — awareness training, no CR exists yet.
-                    HStack(spacing: 10) {
-                        PracticeLogButton(
-                            label: "Yes, caught some 👀",
-                            color: .green,
-                            action: { onLogPractice(.fullPractice) }
-                        )
-                        PracticeLogButton(
-                            label: "Still learning 🌱",
-                            color: .orange,
-                            action: { onLogPractice(.partial) }
-                        )
-                        PracticeLogButton(
-                            label: "Tough day 💙",
-                            color: Color(hex: "667EEA"),
-                            action: { onLogPractice(.hardDay) }
-                        )
-                    }
-                } else {
-                    // Week 2+: competing response practice is active
-                    HStack(spacing: 10) {
-                        PracticeLogButton(
-                            label: "Full Session ✅",
-                            color: .green,
-                            action: { onLogPractice(.fullPractice) }
-                        )
-                        PracticeLogButton(
-                            label: "Partial 🌤",
-                            color: .orange,
-                            action: { onLogPractice(.partial) }
-                        )
-                        PracticeLogButton(
-                            label: "Hard Day 💙",
-                            color: Color(hex: "667EEA"),
-                            action: { onLogPractice(.hardDay) }
-                        )
-                    }
+            if isWeek1 {
+                // tb-mvp2-081: Week 1 — awareness training, no CR exists yet.
+                HStack(spacing: 10) {
+                    PracticeLogButton(
+                        label: "Yes, caught some 👀",
+                        color: .green,
+                        isSelected: todayStatus.map { $0 == .fullPractice },
+                        action: { onLogPractice(.fullPractice) }
+                    )
+                    PracticeLogButton(
+                        label: "Still learning 🌱",
+                        color: .orange,
+                        isSelected: todayStatus.map { $0 == .partial },
+                        action: { onLogPractice(.partial) }
+                    )
+                    PracticeLogButton(
+                        label: "Tough day 💙",
+                        color: Color(hex: "667EEA"),
+                        isSelected: todayStatus.map { $0 == .hardDay },
+                        action: { onLogPractice(.hardDay) }
+                    )
                 }
             } else {
-                // Already logged — show encouraging message if non-empty
-                let msg = encouragementText(for: todayStatus!)
+                // Week 2+: competing response practice is active
+                HStack(spacing: 10) {
+                    PracticeLogButton(
+                        label: "Full Session ✅",
+                        color: .green,
+                        isSelected: todayStatus.map { $0 == .fullPractice },
+                        action: { onLogPractice(.fullPractice) }
+                    )
+                    PracticeLogButton(
+                        label: "Partial 🌤",
+                        color: .orange,
+                        isSelected: todayStatus.map { $0 == .partial },
+                        action: { onLogPractice(.partial) }
+                    )
+                    PracticeLogButton(
+                        label: "Hard Day 💙",
+                        color: Color(hex: "667EEA"),
+                        isSelected: todayStatus.map { $0 == .hardDay },
+                        action: { onLogPractice(.hardDay) }
+                    )
+                }
+            }
+
+            // Encouragement text shown below buttons after logging
+            if let status = todayStatus {
+                let msg = encouragementText(for: status)
                 if !msg.isEmpty {
                     Text(msg)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .multilineTextAlignment(.center)
                 }
             }
         }
@@ -776,7 +785,23 @@ private struct PracticeStatusBadge: View {
 private struct PracticeLogButton: View {
     let label: String
     let color: Color
+    // tb-mvp2-160: nil = no selection yet (neutral), true = this button chosen, false = another chosen (dim)
+    var isSelected: Bool? = nil
     let action: () -> Void
+
+    private var opacity: Double {
+        switch isSelected {
+        case .none:  return 1.0   // no selection yet — full normal style
+        case .some(true):  return 1.0   // selected — highlighted
+        case .some(false): return 0.35  // another selected — dimmed
+        }
+    }
+
+    private var backgroundOpacity: Double {
+        isSelected == true ? 0.22 : 0.1
+    }
+
+    private var showBorder: Bool { isSelected == true }
 
     var body: some View {
         Button(action: action) {
@@ -785,10 +810,18 @@ private struct PracticeLogButton: View {
                 .foregroundColor(color)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
-                .background(color.opacity(0.1))
+                .background(color.opacity(backgroundOpacity))
                 .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(color, lineWidth: showBorder ? 2 : 0)
+                )
+                .scaleEffect(isSelected == true ? 1.04 : 1.0)
+                .animation(.spring(response: 0.25, dampingFraction: 0.6), value: isSelected)
         }
         .buttonStyle(.plain)
+        .opacity(opacity)
+        .animation(.easeInOut(duration: 0.2), value: isSelected)
     }
 }
 
