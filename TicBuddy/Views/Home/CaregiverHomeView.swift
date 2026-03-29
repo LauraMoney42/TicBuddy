@@ -28,6 +28,10 @@ struct CaregiverHomeView: View {
     @State private var showLesson1 = false          // tb-mvp2-066
     @State private var showIntakeAssessment = false // tb-mvp2-039
     @State private var showQuickTicLog = false      // tb-mvp2-067
+    // tb-tic-map-route-001: Mirror FamilyModeRouter Ziggy-first tic mapping flow.
+    @AppStorage("ticbuddy_tic_ziggy_done") private var ticZiggyDone = false
+    @State private var ziggyParsedTics: [TicHierarchyEntry] = []
+    @State private var showZiggyMapping = false
 
     private var family: FamilyUnit { dataService.familyUnit }
     private var shared: SharedFamilyData { family.sharedData }
@@ -176,7 +180,15 @@ struct CaregiverHomeView: View {
                         EmptyTicHierarchyCard(
                             childName: child.displayName,
                             isSelfUser: isSelfUser,
-                            onStartAssessment: { showIntakeAssessment = true }
+                            onStartAssessment: {
+                                // tb-tic-map-route-001: Route through Ziggy first unless
+                                // Ziggy mapping was already completed in a prior session.
+                                if ticZiggyDone {
+                                    showIntakeAssessment = true
+                                } else {
+                                    showZiggyMapping = true
+                                }
+                            }
                         )
                         .background(Color(UIColor.secondarySystemGroupedBackground))
                         .cornerRadius(16)
@@ -300,10 +312,33 @@ struct CaregiverHomeView: View {
                     }
                 }
             }
-            // tb-mvp2-039: Session 1 tic intake assessment
+            // tb-tic-map-route-001: Ziggy-first tic mapping (shown when ticZiggyDone == false).
+            // On complete → store parsed tics → transition to intake grid.
+            // On skip → mark done → transition to intake grid with empty preload.
+            .sheet(isPresented: $showZiggyMapping) {
+                if let child = focusedChild {
+                    ZiggyTicMappingView(child: child) { parsedTics in
+                        ticZiggyDone = true
+                        ziggyParsedTics = parsedTics
+                        showZiggyMapping = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showIntakeAssessment = true
+                        }
+                    } onSkip: {
+                        ticZiggyDone = true
+                        showZiggyMapping = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showIntakeAssessment = true
+                        }
+                    }
+                    .environmentObject(dataService)
+                }
+            }
+            // tb-mvp2-039: Session 1 tic intake assessment.
+            // tb-tic-map-route-001: preloadedHierarchy carries Ziggy-parsed tics when available.
             .sheet(isPresented: $showIntakeAssessment) {
                 if let child = focusedChild {
-                    TicIntakeAssessmentView(child: child) {
+                    TicIntakeAssessmentView(child: child, preloadedHierarchy: ziggyParsedTics) {
                         showIntakeAssessment = false
                     }
                     .environmentObject(dataService)
@@ -502,7 +537,7 @@ private struct DailyInstructionCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
 
-            // Header row
+            // Header row — always visible
             HStack(spacing: 10) {
                 Text(instruction.emoji)
                     .font(.system(size: 28))
@@ -529,49 +564,43 @@ private struct DailyInstructionCard: View {
                 }
             }
 
-            Divider()
-
-            // Steps list — always visible up to 2 steps, expand for rest
-            VStack(alignment: .leading, spacing: 8) {
-                let visibleSteps = isExpanded ? instruction.steps : Array(instruction.steps.prefix(2))
-
-                ForEach(Array(visibleSteps.enumerated()), id: \.offset) { index, step in
-                    HStack(alignment: .top, spacing: 10) {
-                        Text("\(index + 1)")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(.white)
-                            .frame(width: 22, height: 22)
-                            .background(Color(hex: "667EEA"))
-                            .clipShape(Circle())
-
-                        Text(step)
-                            .font(.subheadline)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+            // tb-home-collapse-001: Show More / Show Less toggle — always visible below header.
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                    isExpanded.toggle()
                 }
-
-                // Expand/collapse toggle
-                if instruction.steps.count > 2 {
-                    Button {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                            isExpanded.toggle()
-                        }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text(isExpanded ? "Show less" : "Show all \(instruction.steps.count) steps")
-                                .font(.caption.bold())
-                            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                                .font(.caption.bold())
-                        }
-                        .foregroundColor(Color(hex: "667EEA"))
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, 2)
+            } label: {
+                HStack(spacing: 4) {
+                    Text(isExpanded ? "Show Less ↑" : "Show More ↓")
+                        .font(.caption.bold())
                 }
+                .foregroundColor(Color(hex: "667EEA"))
             }
+            .buttonStyle(.plain)
 
-            // Coaching tip — shown when expanded or when it's a full-session day
-            if isExpanded || instruction.isFullSessionDay {
+            // tb-home-collapse-001: All card content gated — collapsed by default on launch.
+            if isExpanded {
+                Divider()
+
+                // All steps
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(Array(instruction.steps.enumerated()), id: \.offset) { index, step in
+                        HStack(alignment: .top, spacing: 10) {
+                            Text("\(index + 1)")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(.white)
+                                .frame(width: 22, height: 22)
+                                .background(Color(hex: "667EEA"))
+                                .clipShape(Circle())
+
+                            Text(step)
+                                .font(.subheadline)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+
+                // Coaching tip
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "lightbulb.fill")
                         .foregroundColor(.orange)
@@ -595,14 +624,10 @@ private struct DailyInstructionCard: View {
         .padding(18)
         .background(Color(UIColor.secondarySystemGroupedBackground))
         .cornerRadius(16)
-        .onAppear {
-            // Auto-expand full-session days so caregiver sees the full protocol
-            isExpanded = instruction.isFullSessionDay
-        }
-        .onChange(of: instruction.title) { _ in
-            // Re-evaluate expansion if session stage changes
-            isExpanded = instruction.isFullSessionDay
-        }
+        // tb-home-collapse-001: Always start collapsed — @State is not persisted so this
+        // resets on every launch. No auto-expand for full-session days.
+        .onAppear { isExpanded = false }
+        .onChange(of: instruction.title) { _ in isExpanded = false }
     }
 }
 
@@ -614,44 +639,6 @@ private struct TodayPracticeCard: View {
     var sessionStage: CBITSessionStage = .session1
     var isSelfUser: Bool = false
     let onLogPractice: (PracticeStatus) -> Void
-
-    // tb-mvp2-143: Ephemeral mood picker state — not persisted to data model.
-    @State private var selectedMood: String? = nil
-
-    // tb-mvp2-143: Supportive messages shown when user picks 😐.
-    // Daily rotation: deterministic per calendar day so it doesn't flicker on re-render.
-    private let kindMessages = [
-        "Tough days happen. Just showing up is enough. 🩵",
-        "Not every day feels great — and that's completely normal. You're still here. That counts. 🩵",
-        "Even on hard days, noticing your tics is a win. You're doing more than you think. 🩵",
-        "Some days are just like that. Tomorrow's a fresh start. 🩵"
-    ]
-    private var kindMessage: String {
-        kindMessages[abs(Calendar.current.component(.day, from: Date())) % kindMessages.count]
-    }
-
-    // tb-mvp2-145: Encouraging messages shown when user picks 😊 (middle emoji).
-    // Same daily rotation pattern as kindMessages.
-    private let goodMessages = [
-        "Good job! You're still learning — and that's exactly where you should be. 💜",
-        "Nice work today! Every bit of practice adds up. Keep going. 🌟",
-        "Keep it up! 💪",
-        "Solid day! Showing up and trying is what matters most. 🎯"
-    ]
-    private var goodMessage: String {
-        goodMessages[abs(Calendar.current.component(.day, from: Date())) % goodMessages.count]
-    }
-
-    // tb-mvp2-146: Extra-enthusiastic messages for 🥳 (big grin) — a genuinely great day.
-    private let greatMessages = [
-        "YES!! That's what we're talking about! You're crushing it today! 🎉",
-        "Amazing day! This is exactly the energy that makes progress happen. Keep it UP! 🚀",
-        "Look at you go!! Days like this are what CBIT is all about. You're incredible. ⭐️",
-        "That big grin says it all — you showed up and nailed it today. SO proud of you! 🏆"
-    ]
-    private var greatMessage: String {
-        greatMessages[abs(Calendar.current.component(.day, from: Date())) % greatMessages.count]
-    }
 
     /// tb-mvp2-081: Session 1 is awareness-only — no competing response yet.
     private var isWeek1: Bool { sessionStage == .session1 }
@@ -666,86 +653,26 @@ private struct TodayPracticeCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            // tb-mvp2-145: calendar icon restored; PracticeStatusBadge removed.
-            // tb-mvp2-151: renamed to "How's tic catching going today?" centered.
-            // tb-mvp2-152: renamed to "Today's Tic Catch Check-in" centered.
             Text("📅 Today's Tic Catch Check-in")
                 .font(.headline.bold())
                 .frame(maxWidth: .infinity, alignment: .center)
                 .multilineTextAlignment(.center)
 
-            // tb-mvp2-143: Mood picker — three tappable emoji pills, selection highlighted purple.
-            // tb-mvp2-145: centered, larger emojis (.system(size: 44)), no trailing Spacer.
-            // Tap again to deselect. Shows a kind message when 😐 is chosen.
-            HStack(spacing: 16) {
-                Spacer()
-                ForEach(["😶", "👀", "🔥"], id: \.self) { emoji in
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            selectedMood = selectedMood == emoji ? nil : emoji
-                        }
-                    } label: {
-                        Text(emoji)
-                            .font(.system(size: 44))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(
-                                selectedMood == emoji
-                                    ? Color(hex: "667EEA").opacity(0.15)
-                                    : Color(UIColor.secondarySystemGroupedBackground)
-                            )
-                            .cornerRadius(20)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(
-                                        selectedMood == emoji
-                                            ? Color(hex: "667EEA").opacity(0.5)
-                                            : Color.clear,
-                                        lineWidth: 1.5
-                                    )
-                            )
-                    }
-                    .buttonStyle(.plain)
-                }
-                Spacer()
-            }
-
-            if selectedMood == "😶" {
-                Text(kindMessage)
-                    .font(.subheadline)
-                    .foregroundColor(Color(hex: "667EEA"))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-
-            // tb-mvp2-145: encouraging message for the middle emoji (😊).
-            if selectedMood == "👀" {
-                Text(goodMessage)
-                    .font(.subheadline)
-                    .foregroundColor(Color(hex: "667EEA"))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-
-            // tb-mvp2-146: extra-enthusiastic message for 🥳 (big grin).
-            if selectedMood == "🔥" {
-                Text(greatMessage)
-                    .font(.subheadline.bold())
-                    .foregroundColor(Color(hex: "764BA2"))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-
+            // tb-checkin-001: emoji row removed. Layout: question (bold) → buttons.
             if todayStatus == nil {
+                Text(isWeek1
+                     ? (isSelfUser
+                        ? "Have you been noticing the urge for your most bothersome tic today?"
+                        : "Has your child been noticing the urge for their target tic today?")
+                     : (isSelfUser
+                        ? "Have you practiced your competing response today?"
+                        : "Has your child practiced their competing response today?"))
+                    .font(.subheadline.bold())
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .multilineTextAlignment(.center)
+
                 if isWeek1 {
                     // tb-mvp2-081: Week 1 — awareness training, no CR exists yet.
-                    // Ask about catching tic urges, not about a competing response.
-                    Text(isSelfUser
-                         ? "Have you been catching your tic urges today?"
-                         : "Has your child been noticing their tic urges today?")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-
                     HStack(spacing: 10) {
                         PracticeLogButton(
                             label: "Yes, caught some 👀",
@@ -765,14 +692,6 @@ private struct TodayPracticeCard: View {
                     }
                 } else {
                     // Week 2+: competing response practice is active
-                    // tb-mvp2-034: self-users log their own practice, not a child's
-                    Text(isSelfUser
-                         ? "Have you practiced your competing response today?"
-                         : "Has your child practiced their competing response today?")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-
-                    // Quick-log buttons
                     HStack(spacing: 10) {
                         PracticeLogButton(
                             label: "Full Session ✅",
@@ -792,7 +711,7 @@ private struct TodayPracticeCard: View {
                     }
                 }
             } else {
-                // Already logged — show encouraging message only if non-empty
+                // Already logged — show encouraging message if non-empty
                 let msg = encouragementText(for: todayStatus!)
                 if !msg.isEmpty {
                     Text(msg)
@@ -800,7 +719,6 @@ private struct TodayPracticeCard: View {
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                // tb-mvp2-145: "Change today's log" button removed — user taps an emoji to update.
             }
         }
         .padding(18)
@@ -1028,7 +946,7 @@ private struct EmptyTicHierarchyCard: View {
                 Text("📋")
                     .font(.system(size: 36))
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("No tic hierarchy yet")
+                    Text("No tic map yet")
                         .font(.headline.bold())
                     // tb-mvp2-034: self-users add their own tics, not a child's
                     Text(isSelfUser
