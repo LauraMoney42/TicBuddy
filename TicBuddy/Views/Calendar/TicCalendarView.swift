@@ -228,9 +228,11 @@ struct DaySummaryView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        // tb-mvp2-162: Center stats row and date label inside card.
+        VStack(spacing: 12) {
             Text(displayDate)
                 .font(.headline.bold())
+                .frame(maxWidth: .infinity, alignment: .center)
 
             if entries.isEmpty {
                 HStack {
@@ -238,16 +240,18 @@ struct DaySummaryView: View {
                     Text("No tics logged this day")
                         .foregroundColor(.secondary)
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
             } else {
-                HStack(spacing: 16) {
+                HStack(spacing: 24) {
                     StatPill(value: entries.count, label: "Total", color: Color(hex: "764BA2"))
                     StatPill(value: caught, label: "Caught ⚡️", color: .yellow)
                     StatPill(value: redirected, label: "Redirected 🌟", color: .green)
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
             }
         }
         .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
         .background(Color(.systemBackground))
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
