@@ -472,39 +472,43 @@ struct FamilySelfNicknameStep: View {
     @FocusState private var focused: Bool
 
     var body: some View {
-        VStack(spacing: 28) {
-            VStack(spacing: 10) {
-                Text("👋")
-                    .font(.system(size: 80))
-                Text("Hey! What should\nwe call you?")
-                    .font(.system(size: 34, weight: .heavy, design: .rounded))
+        // tb-mvp2-166: ScrollView prevents keyboard from covering the text field.
+        ScrollView {
+            VStack(spacing: 28) {
+                VStack(spacing: 10) {
+                    Text("👋")
+                        .font(.system(size: 80))
+                    Text("Hey! What should\nwe call you?")
+                        .font(.system(size: 34, weight: .heavy, design: .rounded))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                    Text("A nickname is fine — no last names needed.")
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundColor(.white.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 24)
+
+                TextField("Type your name here…", text: $nickname)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 26, weight: .bold, design: .rounded))
+                    .padding(18)
+                    .background(Color.white.opacity(0.2))
+                    .cornerRadius(20)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
-                Text("A nickname is fine — no last names needed.")
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundColor(.white.opacity(0.85))
+                    .focused($focused)
+                    .onAppear { focused = true }
+                    .padding(.horizontal, 30)
+
+                Text("Your name is only stored on this device.\nIt's never sent anywhere.")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.65))
                     .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
             }
-            .padding(.horizontal, 24)
-
-            TextField("Type your name here…", text: $nickname)
-                .textFieldStyle(.plain)
-                .font(.system(size: 26, weight: .bold, design: .rounded))
-                .padding(18)
-                .background(Color.white.opacity(0.2))
-                .cornerRadius(20)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .focused($focused)
-                .onAppear { focused = true }
-                .padding(.horizontal, 30)
-
-            Text("Your name is only stored on this device.\nIt's never sent anywhere.")
-                .font(.system(size: 13, weight: .medium, design: .rounded))
-                .foregroundColor(.white.opacity(0.65))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
 
@@ -656,6 +660,8 @@ struct FamilySelfAgeGroupStep: View {
                 }
 
                 // 18+ option
+                // tb-mvp2-166: .contentShape(Rectangle()) ensures full card area is tappable
+                // (fixes gesture conflict that made the button unresponsive).
                 Button {
                     // No AgeGroup case for 18+ in current enum — map to .teen as closest
                     // TODO: add .adult case to AgeGroup in V2
@@ -673,6 +679,7 @@ struct FamilySelfAgeGroupStep: View {
                     .padding(18)
                     .background(Color.white.opacity(0.12))
                     .cornerRadius(18)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
