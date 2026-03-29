@@ -31,7 +31,7 @@ enum ZiggyVoiceProfile: String, CaseIterable {
         switch ageGroup {
         case .veryYoung, .young: return .youngChild
         case .olderChild:        return .olderChild
-        case .youngTeen, .teen, .adult: return .adolescent
+        case .youngTeen, .teen: return .adolescent
         }
     }
 

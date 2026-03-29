@@ -31,6 +31,10 @@ struct SettingsView: View {
                         NavigationLink(destination: EveningReminderSettingsView()) {
                             Label("Practice Reminder", systemImage: "moon.fill")
                         }
+                        // tb-mvp2-098: Weekly session schedule — opens scheduler in standalone mode
+                        NavigationLink(destination: SessionSchedulerView()) {
+                            Label("Session Schedule", systemImage: "calendar")
+                        }
                         // tb-mvp2-024: Optional PIN gate when returning to caregiver mode
                         Toggle(isOn: Binding(
                             get: { dataService.familyUnit.sharedData.requirePINForCaregiverSwitch },

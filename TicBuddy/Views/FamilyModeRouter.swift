@@ -161,10 +161,25 @@ struct ChildModeRouter: View {
     @State private var showWeeklyIntro = false
     // tb-mvp2-059: Slide-based lesson shown after weekly intro when content exists for the session
     @State private var showLesson = false
-    // tb-mvp2-098: Linear post-Session-1 flow (Scheduler → Tic Assessment). Single sheet,
-    // step state driven internally by PostSession1FlowView. First-run only.
+    // tb-lesson1-flow-002: Scheduler sheet presented inline over the lesson after CTA tap.
+    // Dismissal returns user to "Let's Map Your Tics" slide (lesson auto-advanced on CTA tap).
+    @State private var showSchedulerFromLesson = false
+    // tb-mvp2-098/tb-lesson1-flow-002: Post-Session-1 flow (Tic Assessment → Homework).
+    // Scheduler step moved inline to lesson; this sheet now starts at tic assessment.
     @State private var showPostSession1Flow = false
     @AppStorage("hasCompletedSession1Flow") private var hasCompletedSession1Flow = false
+    // tb-optC-005: Post-lesson complete screen for Sessions 6–7 (first-time only, per lesson)
+    @State private var showPostLessonFlow = false
+    @State private var completedLesson: CBITLesson? = nil
+    // One-time complete card per lesson (Sessions 2–7). Keyed by session number so adding
+    // future sessions requires no new state — just extend the switch case range.
+    // UserDefaults used directly (not @AppStorage) since these reads don't need to trigger re-renders.
+    private func hasShownHomework(for stage: CBITSessionStage) -> Bool {
+        UserDefaults.standard.bool(forKey: "ticbuddy_l\(stage.rawValue)_homework_shown")
+    }
+    private func markHomeworkShown(for stage: CBITSessionStage) {
+        UserDefaults.standard.set(true, forKey: "ticbuddy_l\(stage.rawValue)_homework_shown")
+    }
 
     private var child: ChildProfile? { dataService.familyUnit.activeChild }
 
@@ -177,7 +192,7 @@ struct ChildModeRouter: View {
                     ChildModeYoungView()
                 case .olderChild:
                     ChildModeOlderView()
-                case .youngTeen, .teen, .adult, .none:
+                case .youngTeen, .teen, .none:
                     ChildModeAdolescentView()
                 }
             }
@@ -243,9 +258,9 @@ struct ChildModeRouter: View {
             }
         }
         // tb-mvp2-059: lesson sheet — shown after weekly intro when session has authored slides
-        // tb-mvp2-098: On first run (hasCompletedSession1Flow == false), completion triggers the
-        // linear post-Session-1 flow (Scheduler → Tic Assessment) via PostSession1FlowView.
-        // On replay, hierarchy is already filled so CTA just dismisses.
+        // tb-lesson1-flow-002: CTA on "Making Time for Practice" (id:9) fires onCTATapped,
+        // which opens the scheduler sheet over the lesson and auto-advances to "Let's Map Your Tics"
+        // (id:10). Last-slide "Done →" on "What's Next" (id:11) fires onFinished → tic assessment.
         .sheet(isPresented: $showLesson) {
             if let child = child,
                let lesson = CBITLessonService.lesson(for: child.sessionStage) {
@@ -256,18 +271,51 @@ struct ChildModeRouter: View {
                 LessonSlideView(
                     lesson: lesson,
                     voiceProfile: voiceProfile,
-                    // "Start Tic Assessment →" on first run; "Update Tics →" on replay.
-                    finalCTALabel: isFirstRun ? "Start Tic Assessment →" : "Update Tics →",
-                    // tb-mvp2-136: Fire assessment CTA on "Let's Map Your Tics" (id:9),
-                    // not the final "What's Next" slide (id:10) which is now dismiss/done only.
-                    ctaSlideTitle: "Let's Map Your Tics"
+                    finalCTALabel: isFirstRun ? "Schedule My Lesson" : "Update Schedule",
+                    ctaSlideTitle: "Making Time for Practice",
+                    onCTATapped: {
+                        // tb-lesson1-flow-002: Show scheduler over the lesson.
+                        // LessonSlideView auto-advances to id:10 after this fires,
+                        // so dismissing the scheduler reveals "Let's Map Your Tics".
+                        showSchedulerFromLesson = true
+                    },
+                    // tb-audio-001: Pass scheduler state so LessonSlideView suppresses TTS while open.
+                    schedulerPresented: showSchedulerFromLesson,
+                    // tb-lesson1-flow-003: "Let's Map Your Tics" shows "Map My Tics →" CTA
+                    // that fires onFinished directly (dismisses lesson → PostSession1FlowView).
+                    dismissActionSlideTitle: "Let's Map Your Tics",
+                    dismissActionLabel: "Map My Tics →"
                 ) {
-                    // Always route to post-Session-1 flow (Scheduler → Tic Assessment).
-                    // asyncAfter avoids iOS 16 sheet presentation race condition.
+                    // Last slide "Done →" → dismiss lesson, then show appropriate post-lesson flow.
+                    // asyncAfter avoids iOS sheet presentation race condition.
+                    // tb-optC-005: Sessions 6–7 get a dedicated complete screen + homework card
+                    // (first time only). All other sessions use the Session-1 flow or dismiss.
+                    let capturedStage = child.sessionStage
+                    let capturedLesson = lesson
                     showLesson = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        showPostSession1Flow = true
+                        switch capturedStage {
+                        case .session2, .session3, .session4, .session5, .session6, .session7:
+                            // One-time completion card — gate prevents repeat on replay.
+                            if !hasShownHomework(for: capturedStage) {
+                                markHomeworkShown(for: capturedStage)
+                                completedLesson = capturedLesson
+                                showPostLessonFlow = true
+                            }
+                        default:
+                            if !hasCompletedSession1Flow {
+                                showPostSession1Flow = true
+                            }
+                        }
                     }
+                }
+                // tb-lesson1-flow-002: Scheduler presented as a nested sheet over the lesson
+                // (iOS 16.4+ / iOS 17 nested sheet support). onContinue sets binding false
+                // to dismiss — reveals lesson at "Let's Map Your Tics" (id:10).
+                .sheet(isPresented: $showSchedulerFromLesson) {
+                    SessionSchedulerView(onContinue: {
+                        showSchedulerFromLesson = false
+                    })
                 }
             }
         }
@@ -281,6 +329,15 @@ struct ChildModeRouter: View {
                     showPostSession1Flow = false
                 }
                 .environmentObject(dataService)
+            }
+        }
+        // tb-optC-005: Sessions 6–7 post-lesson complete screen (AppStorage gated, once per lesson).
+        // Shows homework card + Ziggy CTA. completedLesson cleared on dismiss to avoid stale state.
+        .sheet(isPresented: $showPostLessonFlow, onDismiss: { completedLesson = nil }) {
+            if let lesson = completedLesson {
+                PostLessonCompleteView(lesson: lesson, onContinue: {
+                    showPostLessonFlow = false
+                })
             }
         }
         .onAppear {
@@ -299,33 +356,307 @@ struct ChildModeRouter: View {
 // MARK: - Post-Session-1 Linear Flow
 
 /// tb-mvp2-098: Container view that drives the linear first-run flow after Session 1:
-///   Step 1 — SessionSchedulerView: user picks day + time for weekly sessions
-///   Step 2 — TicIntakeAssessmentView: user documents their tics
+///   Step 1 — TicIntakeAssessmentView: user documents their tics
+///   Step 2 — PostLessonCompleteView(lesson1): homework card + Ziggy intro (first time only)
 ///
-/// Hosted in a single sheet from ChildModeRouter. Internal `postSession1Step` state
-/// advances forward only; user cannot skip either step on first run.
-/// `onComplete` fires when intake finishes — caller marks hasCompletedSession1Flow = true.
-private struct PostSession1FlowView: View {
+/// tb-lesson1-flow-002: SessionSchedulerView was removed from this flow. It is now
+/// presented as a nested sheet over the lesson (showSchedulerFromLesson in ChildModeRouter).
+/// Scheduler → lesson resumes at "Let's Map Your Tics" → last slide "Done →" → this flow.
+///
+/// Hosted in a single sheet from ChildModeRouter. Internal `step` state advances
+/// forward only. `onComplete` fires at end — caller marks hasCompletedSession1Flow = true.
+/// tb-option-c: Step 2 gated by AppStorage("ticbuddy_l1_homework_shown") — shows once.
+// tb-lesson1-flow-003: Promoted from private — TicBuddyApp.swift walkthrough path also uses this.
+struct PostSession1FlowView: View {
     @EnvironmentObject var dataService: TicDataService
     let child: ChildProfile
     let onComplete: () -> Void
 
-    /// tb-mvp2-098: Step enum drives navigation within the single-sheet flow.
-    private enum PostSession1Step { case scheduling, ticAssessment }
-    @State private var step: PostSession1Step = .scheduling
+    // tb-tic-ziggy-001: Added ziggyTicMapping step before ticAssessment.
+    // Shown once (ticZiggyDone gate). Skip or completion both advance to manual grid.
+    private enum PostSession1Step { case ziggyTicMapping, ticAssessment, homeworkSlide }
+    @AppStorage("ticbuddy_l1_homework_shown") private var homeworkShown = false
+    /// tb-tic-ziggy-001: Prevents re-showing on re-entry (e.g. force-quit mid-flow).
+    @AppStorage("ticbuddy_tic_ziggy_done") private var ticZiggyDone = false
+    /// tb-tic-ziggy-001: Tics from Ziggy conversation → passed as preloadedHierarchy.
+    @State private var ziggyParsedTics: [TicHierarchyEntry] = []
+    @State private var step: PostSession1Step = .ziggyTicMapping
 
     var body: some View {
         switch step {
-        case .scheduling:
-            // onContinue advances to tic assessment without dismissing the sheet
-            SessionSchedulerView {
-                step = .ticAssessment
+        case .ziggyTicMapping:
+            // tb-lesson1-flow-003: Only skip Ziggy if done AND tics exist.
+            // If ticHierarchy is empty, a stale ticZiggyDone flag (e.g. from a test run)
+            // must not bypass Ziggy — user still needs to map their tics.
+            if ticZiggyDone && !child.ticHierarchy.isEmpty {
+                // Already seen + tics mapped — skip straight to grid (re-entry after force-quit)
+                TicIntakeAssessmentView(child: child) { advanceFromAssessment() }
+                    .environmentObject(dataService)
+            } else {
+                // tb-tic-ziggy-001: Ziggy discovers top-5 tics via conversation.
+                ZiggyTicMappingView(child: child) { parsedTics in
+                    ticZiggyDone = true
+                    ziggyParsedTics = parsedTics
+                    step = .ticAssessment
+                } onSkip: {
+                    ticZiggyDone = true
+                    step = .ticAssessment
+                }
+                .environmentObject(dataService)
             }
+
         case .ticAssessment:
-            TicIntakeAssessmentView(child: child) {
-                onComplete()
+            TicIntakeAssessmentView(child: child, preloadedHierarchy: ziggyParsedTics) {
+                advanceFromAssessment()
             }
             .environmentObject(dataService)
+
+        case .homeworkSlide:
+            // Reuse PostLessonCompleteView — Session 1 bullets + Ziggy CTA live there now.
+            if let lesson1 = CBITLessonService.lesson(for: .session1) {
+                PostLessonCompleteView(lesson: lesson1, onContinue: onComplete)
+            }
+        }
+    }
+
+    private func advanceFromAssessment() {
+        if homeworkShown {
+            onComplete()
+        } else {
+            homeworkShown = true
+            step = .homeworkSlide
+        }
+    }
+}
+
+
+// MARK: - Post-Lesson Complete View (Sessions 1–7)
+
+/// One-time completion screen shown after a lesson finishes.
+/// Used for Session 1 (via PostSession1FlowView) and Sessions 2–7 (via ChildModeRouter).
+/// AppStorage gating is handled upstream — this view always shows when presented.
+/// Homework card + Ziggy CTA (if lesson.ziggyHandoffPrompt is set) + "Go to Dashboard".
+private struct PostLessonCompleteView: View {
+    let lesson: CBITLesson
+    let onContinue: () -> Void
+    @State private var showZiggy = false
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: "667EEA"), Color(hex: "764BA2")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 24) {
+                    Spacer(minLength: 32)
+
+                    // ── Completion header ────────────────────────────────────
+                    VStack(spacing: 8) {
+                        Text("✅")
+                            .font(.system(size: 56))
+                        Text("Lesson \(lesson.session) Complete!")
+                            .font(.system(size: 26, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                        Text("That's it for today. Great work.")
+                            .font(.system(size: 16, design: .rounded))
+                            .foregroundColor(.white.opacity(0.75))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 8)
+
+                    // ── Homework card ────────────────────────────────────────
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack(spacing: 10) {
+                            Text("📚")
+                                .font(.system(size: 28))
+                            Text("Your Homework")
+                                .font(.system(size: 20, weight: .bold, design: .rounded))
+                                .foregroundColor(.white)
+                        }
+
+                        // Homework bullets keyed by session number.
+                        // Content mirrors each lesson's "What's Next" slide, distilled to 3 bullets.
+                        VStack(alignment: .leading, spacing: 14) {
+                            if lesson.session == 1 {
+                                // tb-lesson1-complete-001: Updated to clarify homework covers ALL tics.
+                                HomeworkBullet(
+                                    emoji: "👀",
+                                    text: "Every day, try to notice your tics as they happen — all of them. Just observe, don't try to stop them."
+                                )
+                                HomeworkBullet(
+                                    emoji: "📅",
+                                    text: "Count or log them in your calendar when you can."
+                                )
+                                // tb-lesson1-complete-001: Next-lesson context using scheduled weekday.
+                                let weekday = UserDefaults.standard.string(forKey: "ticbuddy_session_weekday")
+                                let scheduledDayString = weekday.map { " on \($0)" } ?? ""
+                                HomeworkBullet(
+                                    emoji: "📅",
+                                    text: "That's Lesson 1 done for this week! Your next lesson is next week\(scheduledDayString). See you then."
+                                )
+                            } else if lesson.session == 2 {
+                                HomeworkBullet(
+                                    emoji: "💪",
+                                    text: "Try your competing response at least 3 times this week — a low-pressure moment, a harder situation, and whenever the urge shows up naturally."
+                                )
+                                HomeworkBullet(
+                                    emoji: "📱",
+                                    text: "Log your tics daily — even a quick tally helps you see patterns."
+                                )
+                                HomeworkBullet(
+                                    emoji: "📅",
+                                    text: "Schedule your next session — same day next week."
+                                )
+                            } else if lesson.session == 3 {
+                                HomeworkBullet(
+                                    emoji: "🌬️",
+                                    text: "Practice diaphragmatic breathing once a day — even just 5 minutes. Morning works well."
+                                )
+                                HomeworkBullet(
+                                    emoji: "💪",
+                                    text: "Keep using your competing response. If it wasn't working, try the adjusted version you identified today."
+                                )
+                                HomeworkBullet(
+                                    emoji: "📅",
+                                    text: "Schedule Session 4 — same day next week. Consistency is the whole game."
+                                )
+                            } else if lesson.session == 4 {
+                                HomeworkBullet(
+                                    emoji: "💪",
+                                    text: "Practice both CRs whenever you feel the urge. CR #1: aim for 3 uses. CR #2: try 2–3 times in low-stakes moments first."
+                                )
+                                HomeworkBullet(
+                                    emoji: "📱",
+                                    text: "Log both tics each day — even a rough count is useful. Patterns emerge over time."
+                                )
+                                HomeworkBullet(
+                                    emoji: "📅",
+                                    text: "Schedule your next session — same day next week."
+                                )
+                            } else if lesson.session == 5 {
+                                HomeworkBullet(
+                                    emoji: "🔍",
+                                    text: "Daily check-in: 30 seconds each morning to notice your body, 2 minutes each evening to log tics and patterns."
+                                )
+                                HomeworkBullet(
+                                    emoji: "💪",
+                                    text: "Use both CRs when urges appear. Aim for at least 3 uses each over the next two weeks."
+                                )
+                                HomeworkBullet(
+                                    emoji: "📅",
+                                    text: "Schedule your next session in about two weeks — biweekly cadence starts now."
+                                )
+                            } else if lesson.session == 6 {
+                                HomeworkBullet(
+                                    emoji: "🔄",
+                                    text: "Keep logging daily and use both CRs whenever you notice an urge."
+                                )
+                                HomeworkBullet(
+                                    emoji: "🔧",
+                                    text: "Check that each CR still feels physically incompatible — tune it if anything has slipped."
+                                )
+                                HomeworkBullet(
+                                    emoji: "✍️",
+                                    text: "Write down one moment from the past two weeks where you felt more in control. Keep it somewhere you'll see it."
+                                )
+                            } else if lesson.session == 7 {
+                                HomeworkBullet(
+                                    emoji: "📅",
+                                    text: "Keep the daily logging habit. Use your CR. Notice what's changed since you started."
+                                )
+                                HomeworkBullet(
+                                    emoji: "✍️",
+                                    text: "Write a note to yourself — what would you tell someone just starting CBIT? What do you wish you'd known? Keep it for later."
+                                )
+                                HomeworkBullet(
+                                    emoji: "💬",
+                                    text: "Chat with Ziggy any time between sessions — you don't need to wait."
+                                )
+                            }
+                        }
+                    }
+                    .padding(24)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white.opacity(0.12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                            )
+                    )
+                    .padding(.horizontal, 20)
+
+                    // ── Two-button footer ────────────────────────────────────
+                    // Primary: open Ziggy with handoff seed prompt (if lesson has one).
+                    // Secondary: skip to dashboard.
+                    VStack(spacing: 12) {
+                        if lesson.ziggyHandoffPrompt != nil {
+                            Button {
+                                showZiggy = true
+                            } label: {
+                                Text("Chat with your TicBuddy")
+                                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 18)
+                                    .background(
+                                        Capsule()
+                                            .fill(
+                                                LinearGradient(
+                                                    colors: [Color(hex: "43E97B"), Color(hex: "38F9D7")],
+                                                    startPoint: .leading,
+                                                    endPoint: .trailing
+                                                )
+                                            )
+                                    )
+                            }
+                        }
+
+                        Button(action: onContinue) {
+                            Text("Go to Dashboard")
+                                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                .foregroundColor(.white.opacity(0.65))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(Capsule().fill(Color.white.opacity(0.10)))
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 48)
+                }
+            }
+        }
+        // Ziggy handoff session. Dismiss → onContinue → home dashboard.
+        .sheet(isPresented: $showZiggy, onDismiss: onContinue) {
+            NavigationStack {
+                ChatView(seedPrompt: lesson.ziggyHandoffPrompt ?? "")
+                    .environmentObject(TicDataService.shared)
+            }
+        }
+    }
+}
+
+// MARK: - Homework Bullet Row
+
+private struct HomeworkBullet: View {
+    let emoji: String
+    let text: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Text(emoji)
+                .font(.system(size: 24))
+                .frame(width: 32)
+            Text(text)
+                .font(.system(size: 16, design: .rounded))
+                .foregroundColor(.white.opacity(0.9))
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }

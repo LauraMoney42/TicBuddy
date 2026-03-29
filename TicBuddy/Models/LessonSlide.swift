@@ -57,4 +57,16 @@ struct CBITLesson: Codable {
     let title: String
     let subtitle: String
     let slides: [LessonSlide]
+    /// tb-optC series: Ziggy CTA seed prompt shown on the post-lesson complete screen.
+    /// Nil = no Ziggy CTA for this lesson. Set for sessions with structured handoff content.
+    let ziggyHandoffPrompt: String?
+
+    init(session: Int, title: String, subtitle: String, slides: [LessonSlide],
+         ziggyHandoffPrompt: String? = nil) {
+        self.session = session
+        self.title = title
+        self.subtitle = subtitle
+        self.slides = slides
+        self.ziggyHandoffPrompt = ziggyHandoffPrompt
+    }
 }

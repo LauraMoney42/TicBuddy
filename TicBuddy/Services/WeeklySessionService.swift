@@ -46,7 +46,19 @@ final class WeeklySessionService: ObservableObject {
 
     /// Returns true if the child hasn't seen the weekly intro yet this week,
     /// or has never seen it (first ever open).
+    ///
+    /// tb-option-b: If `ticbuddy_session_weekday` is set (Calendar weekday int, 1=Sun–7=Sat),
+    /// also requires today's weekday to match before returning true. This ensures the lesson
+    /// auto-launches on the day the user chose, not on any random open after the 7-day window.
+    /// If no weekday is scheduled (value == 0), falls back to 7-day-only behaviour.
     func shouldAutoLaunch(for childID: UUID) -> Bool {
+        // tb-option-b: Weekday gate — integer(forKey:) returns 0 when key is not set.
+        let scheduledWeekday = UserDefaults.standard.integer(forKey: "ticbuddy_session_weekday")
+        if scheduledWeekday > 0 {
+            let todayWeekday = Calendar.current.component(.weekday, from: Date())
+            guard todayWeekday == scheduledWeekday else { return false }
+        }
+
         guard let last = UserDefaults.standard.object(forKey: lastLaunchKey(childID)) as? Date else {
             return true // Never launched → always show on first open
         }

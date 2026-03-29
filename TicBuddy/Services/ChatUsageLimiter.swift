@@ -37,15 +37,44 @@ final class ChatUsageLimiter: @unchecked Sendable {
     static let shared = ChatUsageLimiter()
     private init() {}
 
+    /// tb-tic-ziggy-001: Set true during the one-time Ziggy tic mapping onboarding session.
+    /// Exempts that session from all daily message limits (never increments or blocks).
+    /// ZiggyTicMappingView sets this on appear and clears it on disappear.
+    /// nonisolated(unsafe): only ever read/written on MainActor (SwiftUI lifecycle). Safe.
+    nonisolated(unsafe) static var isOnboardingTicMappingActive: Bool = false
+
     /// Hard daily exchange limit — NOT caregiver-adjustable (tb-mvp2-021 product spec).
     /// One "exchange" = one user message + one Ziggy reply.
     static let defaultDailyLimit = 15
+
+    /// Doubled limit for the child's scheduled weekly session day.
+    /// Session days benefit from longer conversations (lesson + homework delivery).
+    static let sessionDayLimit = 30
 
     /// Show countdown when remaining drops to this number: "5 questions left today 🌟"
     static let countdownThreshold = 5
 
     // Soft warning threshold — injected into system prompt when ≥75% used
     private static let softWarningThreshold = 0.75
+
+    // Session-day homework threshold — injected at 70% on session days so Ziggy
+    // has time to naturally deliver homework before the session closes.
+    private static let sessionDayHomeworkThreshold = 0.70
+
+    // UserDefaults key for the child's scheduled session weekday (1=Sunday … 7=Saturday).
+    // Matches SessionSchedulerService.Keys.weekday.
+    private static let sessionWeekdayKey = "ticbuddy_session_weekday"
+
+    // MARK: - Session Day Detection
+
+    /// Returns true when today matches the user's scheduled CBIT session weekday.
+    /// Falls back to false if no schedule is set (scheduledWeekday == 0).
+    static func isSessionDay() -> Bool {
+        let scheduledWeekday = UserDefaults.standard.integer(forKey: sessionWeekdayKey)
+        guard scheduledWeekday > 0 else { return false }
+        let todayWeekday = Calendar.current.component(.weekday, from: Date())
+        return todayWeekday == scheduledWeekday
+    }
 
     // MARK: - Storage
 
@@ -61,6 +90,7 @@ final class ChatUsageLimiter: @unchecked Sendable {
     }
 
     func status(for childID: UUID, limit: Int) -> UsageLimitStatus {
+        guard !Self.isOnboardingTicMappingActive else { return .unlimited }
         guard limit > 0 else { return .unlimited }
         let used = messagesUsedToday(for: childID)
         if used >= limit {
@@ -74,6 +104,7 @@ final class ChatUsageLimiter: @unchecked Sendable {
 
     /// True when the child has hit their daily limit and cannot send more messages.
     func isLimitReached(for childID: UUID, limit: Int) -> Bool {
+        guard !Self.isOnboardingTicMappingActive else { return false }
         guard limit > 0 else { return false }
         return messagesUsedToday(for: childID) >= limit
     }
@@ -107,25 +138,49 @@ final class ChatUsageLimiter: @unchecked Sendable {
 
     /// Returns a usage-aware addendum for Ziggy's system prompt.
     /// Nil when no action needed (within limit or unlimited).
+    ///
+    /// Session days (double limit) have an additional 70% checkpoint: Ziggy is instructed
+    /// to begin steering toward homework delivery so it's never skipped before the limit hits.
     func systemPromptAddendum(for childID: UUID, limit: Int) -> String? {
-        switch status(for: childID, limit: limit) {
-        case .approaching(let used, let max):
-            let remaining = max - used
+        guard !Self.isOnboardingTicMappingActive else { return nil }
+        let used = messagesUsedToday(for: childID)
+        guard limit > 0 else { return nil }
+        let fraction = Double(used) / Double(limit)
+        let onSessionDay = Self.isSessionDay()
+
+        // Session day — 70% checkpoint: homework delivery guarantee
+        if onSessionDay && fraction >= Self.sessionDayHomeworkThreshold && fraction < 1.0 {
+            let remaining = limit - used
             return """
-            USAGE NOTE: This child has used \(used) of their \(max) daily messages (\(remaining) remaining). \
+            USAGE NOTE (SESSION DAY): This is a scheduled CBIT session day. The user has used \(used) of \
+            \(limit) messages (\(remaining) remaining). Begin working toward a natural close. \
+            You MUST deliver today's homework assignment before this session ends — do not finish \
+            without giving the child specific, actionable homework to practice this week. \
+            After delivering homework, gently wrap up with encouragement.
+            """
+        }
+
+        // Standard 75% approaching threshold
+        if fraction >= Self.softWarningThreshold && fraction < 1.0 {
+            let remaining = limit - used
+            return """
+            USAGE NOTE: This child has used \(used) of their \(limit) daily messages (\(remaining) remaining). \
             Gently guide toward a natural session close within the next few exchanges. \
             Celebrate what was accomplished today and suggest continuing tomorrow.
             """
-        case .reached:
+        }
+
+        // Hard limit reached
+        if fraction >= 1.0 {
             return """
             USAGE NOTE: This child has reached their daily message limit. \
             This must be your final response. Warmly close the session: celebrate what they did today, \
             remind them their progress is saved, and encourage them to come back tomorrow. \
             Keep it to 2–3 sentences. End with a specific thing to practice before next time.
             """
-        default:
-            return nil
         }
+
+        return nil
     }
 
     /// Friendly wrap-up message shown in chat UI when limit is hit.
@@ -149,8 +204,14 @@ final class ChatUsageLimiter: @unchecked Sendable {
 extension ChildProfile {
     /// Daily message limit for this child's Ziggy sessions.
     /// 0 = unlimited (for caregivers or therapist-supervised use).
-    /// Default is ChatUsageLimiter.defaultDailyLimit if not overridden.
+    /// On the child's scheduled CBIT session day, the limit doubles to sessionDayLimit (30)
+    /// so there is room for lesson discussion, homework delivery, and wrap-up.
     var effectiveDailyLimit: Int {
-        dailyMessageLimit == 0 ? 0 : max(dailyMessageLimit, 5) // floor of 5 to prevent lockout bugs
+        guard dailyMessageLimit != 0 else { return 0 }           // unlimited override
+        let base = max(dailyMessageLimit, 5)                      // floor of 5 to prevent lockout bugs
+        if ChatUsageLimiter.isSessionDay() {
+            return max(base, ChatUsageLimiter.sessionDayLimit)    // at least 30 on session days
+        }
+        return base
     }
 }

@@ -5,7 +5,7 @@
 // CBIT practice session. All scheduling is on-device — no server involved.
 //
 // Behaviour:
-//   • Default reminder time: 7:00 PM daily (caregiver-configurable)
+//   • Default reminder time: 8:00 PM daily (caregiver-configurable)
 //   • Fires only if practice hasn't been logged today (checked via shared UserDefaults)
 //   • In-app: CaregiverHomeView reads `shouldShowEveningPrompt` to show a soft banner
 //   • Notification: deep-links to the app (no custom URL needed — just opens app)
@@ -36,7 +36,7 @@ final class EveningCheckInService: ObservableObject {
         }
     }
 
-    /// Hour of day for the reminder (24h). Default 19 = 7 PM.
+    /// Hour of day for the reminder (24h). Default 20 = 8 PM.
     @Published var reminderHour: Int {
         didSet {
             UserDefaults.standard.set(reminderHour, forKey: Keys.reminderHour)
@@ -70,7 +70,7 @@ final class EveningCheckInService: ObservableObject {
 
     private init() {
         self.isEnabled      = UserDefaults.standard.bool(forKey: Keys.isEnabled)
-        self.reminderHour   = UserDefaults.standard.object(forKey: Keys.reminderHour) as? Int ?? 19
+        self.reminderHour   = UserDefaults.standard.object(forKey: Keys.reminderHour) as? Int ?? 20
         self.reminderMinute = UserDefaults.standard.object(forKey: Keys.reminderMinute) as? Int ?? 0
     }
 

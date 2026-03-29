@@ -116,6 +116,9 @@ struct TicHierarchyEntry: Codable, Identifiable {
     var frequencyPerDay: Int             // estimated daily occurrences
     var hasPremonitoryUrge: Bool = false
     var urgeDescription: String = ""     // child's own words for the premonitory urge
+    /// tb-tic-assessment-001: Optional free-text description entered at intake.
+    /// e.g. "fast side-to-side", "only happens when stressed". Seeded into Ziggy context.
+    var userDescription: String = ""
     var competingResponse: String = ""   // the assigned CR for this tic
     var sessionIntroduced: CBITSessionStage = .session2
     var isCurrentlyActive: Bool = true   // whether this tic is the current target
@@ -139,7 +142,6 @@ enum AgeGroup: String, Codable, CaseIterable {
     case olderChild = "10-12"
     case youngTeen  = "13-15"
     case teen       = "16-17"
-    case adult      = "18+"
 
     var displayName: String { rawValue + " years" }
 
@@ -151,7 +153,6 @@ enum AgeGroup: String, Codable, CaseIterable {
         case .olderChild: return 10
         case .youngTeen:  return 13
         case .teen:       return 16
-        case .adult:      return 18
         }
     }
 
@@ -166,7 +167,7 @@ enum AgeGroup: String, Codable, CaseIterable {
     var childPINIsPrivate: Bool {
         switch self {
         case .veryYoung, .young: return false
-        case .olderChild, .youngTeen, .teen, .adult: return true
+        case .olderChild, .youngTeen, .teen: return true
         }
     }
 
@@ -176,7 +177,6 @@ enum AgeGroup: String, Codable, CaseIterable {
         case .veryYoung, .young: return "Young Child"
         case .olderChild:        return "Older Child"
         case .youngTeen, .teen:  return "Adolescent"
-        case .adult:             return "Adult"
         }
     }
 
@@ -192,7 +192,7 @@ enum AgeGroup: String, Codable, CaseIterable {
     var parentSeesDetailedLogs: Bool {
         switch self {
         case .veryYoung, .young, .olderChild: return true
-        case .youngTeen, .teen, .adult: return false  // adolescent/adult privacy — summary only
+        case .youngTeen, .teen: return false  // adolescent privacy — summary only
         }
     }
 }

@@ -1,3 +1,11 @@
+## 2026-03-28 — tb-mvp2-098 Session Scheduling Feature (atomic)
+- SessionSchedulerService.swift: scheduleNotification() now fires day-before session day (wrap Sun→Sat); notification copy updated to "Your TicBuddy session is tomorrow — find a quiet 15 min"; formattedSchedule changed to "DayName · reminder the day before"
+- EveningCheckInService.swift: default reminderHour changed from 19 → 20 (7 PM → 8 PM); updated header comment and @Published var doc comment
+- TicBuddyApp.swift: added @State showSchedulerAfterLesson1; Lesson 1 onFinished now shows SessionSchedulerView before routing to TicIntakeAssessmentView; new .fullScreenCover(isPresented: $showSchedulerAfterLesson1) block added
+- CBITLessonService.swift: added Session 1 slide id:9 "Making Time for Practice" (emoji: 📅) before tic-map handoff; shifted former id:9 → id:10, id:10 → id:11
+- SettingsView.swift: added "Session Schedule" NavigationLink (calendar icon) in Family section below "Practice Reminder"
+- Files affected: TicBuddy/Services/SessionSchedulerService.swift, TicBuddy/Services/EveningCheckInService.swift, TicBuddy/TicBuddyApp.swift, TicBuddy/Services/CBITLessonService.swift, TicBuddy/Views/Settings/SettingsView.swift
+
 ## 2026-03-27 14:30
 - Applied 11 content edits to Session 1 lesson slides: reward points description simplified (slide 1), social awkwardness acknowledgment added (slide 2), "making phrases" → "saying a whole sentence" (slide 3), tic intentionality reframed (slide 3), "children" → "people" + CBIT framing updated (slide 4), premonitory urge description expanded (slide 5), "hides in a surprising spot" → "shows up in an unexpected place" (slide 6), competing response description reworded (slide 7), practice analogy added to CBIT retraining (slide 7), "Important" callout rewritten as "Here's the key" (slide 10), core/bonus homework header added (slide 10)
 - Files affected: TicBuddy/Services/CBITLessonService.swift

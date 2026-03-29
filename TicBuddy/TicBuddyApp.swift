@@ -14,6 +14,7 @@ struct TicBuddyApp: App {
     @State private var showLesson1FromWalkthrough = false
     // tb-mvp2-123: after walkthrough lesson, route directly to tic assessment
     @State private var showIntakeAfterWalkthrough = false
+    @State private var showSchedulerAfterLesson1 = false
 
     private var appIsSetUp: Bool {
         dataService.familyUnit.hasCompletedSetup || dataService.userProfile.hasCompletedOnboarding
@@ -87,19 +88,27 @@ struct TicBuddyApp: App {
                 }
             }
             // tb-mvp2-065: Lesson 1 sheet launched from walkthrough "View Lesson 1" button.
-            // tb-mvp2-123: onFinished now routes to tic assessment instead of just dismissing.
+            // tb-lesson1-flow-002: CTA now fires on "Making Time for Practice" (same as
+            // FamilyModeRouter). Scheduler shown as nested sheet inside this fullScreenCover;
+            // lesson auto-advances to "Let's Map Your Tics". Last slide "Done →" → tic assessment.
             .fullScreenCover(isPresented: $showLesson1FromWalkthrough) {
                 if let lesson = CBITLessonService.lesson(for: .session1) {
                     LessonSlideView(
                         lesson: lesson,
                         voiceProfile: .caregiver,
-                        finalCTALabel: "Start Tic Assessment →",
-                        ctaSlideTitle: "Let's Map Your Tics",
+                        finalCTALabel: "Schedule My Lesson",
+                        ctaSlideTitle: "Making Time for Practice",
+                        onCTATapped: {
+                            // Show scheduler inline; lesson auto-advances to "Let's Map Your Tics".
+                            showSchedulerAfterLesson1 = true
+                        },
+                        // tb-audio-001: Pass scheduler state so LessonSlideView suppresses TTS while open.
+                        schedulerPresented: showSchedulerAfterLesson1,
+                        // tb-lesson1-flow-003: "Let's Map Your Tics" shows "Map My Tics →" CTA.
+                        dismissActionSlideTitle: "Let's Map Your Tics",
+                        dismissActionLabel: "Map My Tics →",
                         onFinished: {
-                            // tb-mvp2-123 fix: explicitly mark walkthrough complete here.
-                            // finish() in AppWalkthroughView uses withAnimation which can
-                            // race against fullScreenCover presentation — this guarantees
-                            // the overlay never re-appears when the cover dismisses.
+                            // Last slide "Done →" — mark walkthrough complete, show tic assessment.
                             walkthroughComplete = true
                             showLesson1FromWalkthrough = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -107,12 +116,21 @@ struct TicBuddyApp: App {
                             }
                         }
                     )
+                    // Scheduler as nested sheet over the lesson (iOS 16.4+/17 nested presentation).
+                    .sheet(isPresented: $showSchedulerAfterLesson1) {
+                        SessionSchedulerView(onContinue: {
+                            showSchedulerAfterLesson1 = false
+                        })
+                    }
                 }
             }
-            // tb-mvp2-123: Tic assessment presented after walkthrough lesson completes.
+            // tb-mvp2-123 / tb-lesson1-flow-003: Post-lesson flow after walkthrough.
+            // Routes through PostSession1FlowView (Ziggy → intake → homework) — same as
+            // FamilyModeRouter — so both paths are identical. Previously went directly to
+            // TicIntakeAssessmentView, skipping ZiggyTicMappingView entirely.
             .fullScreenCover(isPresented: $showIntakeAfterWalkthrough) {
                 if let child = dataService.familyUnit.children.first {
-                    TicIntakeAssessmentView(child: child) {
+                    PostSession1FlowView(child: child) {
                         showIntakeAfterWalkthrough = false
                     }
                     .environmentObject(dataService)

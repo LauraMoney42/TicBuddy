@@ -222,7 +222,10 @@ final class ZiggyTTSService: ObservableObject {
             // fetchAudio throwing and the guard running could otherwise suppress AVSpeech
             // even when the task was NOT cancelled (e.g. network timeout on a long slide).
             let wasCancelled = Task.isCancelled
-            print("[ZiggyTTS] Proxy unavailable (\(voiceProfile.rawValue)): \(error.localizedDescription) — using system TTS fallback")
+            // tb-ziggy-voice-001: speakWithSystemTTS now guards against APIConfig.isConfigured
+            // internally, so this call is safe — it will no-op in production (silent fail)
+            // and only fire AVSpeech in dev/offline mode (Railway not configured).
+            print("[ZiggyTTS] Proxy unavailable (\(voiceProfile.rawValue)): \(error.localizedDescription) — \(APIConfig.isConfigured ? "silent fail (Railway configured)" : "falling back to system TTS")")
             guard !wasCancelled else { return }
             await speakWithSystemTTS(text: text, voiceProfile: voiceProfile)
         }
@@ -263,15 +266,22 @@ final class ZiggyTTSService: ObservableObject {
         }
     }
 
-    /// AVSpeechSynthesizer fallback — fires when the OpenAI TTS proxy is unreachable or
-    /// returns an error (e.g. OPENAI_API_KEY not set in Railway). (tb-mvp2-043)
+    /// AVSpeechSynthesizer fallback — fires ONLY when Railway is not configured (dev/offline mode).
+    /// tb-ziggy-voice-001: When APIConfig.isConfigured is true, this method returns immediately
+    /// so the robot voice is never heard in production. Failure is silent — no playback.
     ///
+    /// tb-mvp2-043: Original fallback for proxy-unreachable scenarios.
     /// tb-mvp2-048: Rates pushed above 0.50 (the AVFoundation default). At 0.50,
     /// AVSpeechSynthesizer sounds choppy and word-by-word — each word has an audible
     /// micro-pause before the next. 0.54–0.57 is the sweet spot for natural cadence
-    /// without sounding rushed. This is only a fallback — OpenAI tts-1-hd nova is the
-    /// primary voice; ensure OPENAI_API_KEY is set in Railway to avoid this path.
+    /// without sounding rushed.
     private func speakWithSystemTTS(text: String, voiceProfile: ZiggyVoiceProfile) async {
+        // tb-ziggy-voice-001: Suppress AVSpeech entirely when Railway is configured.
+        // User always hears the AI voice or silence — never the iOS robot voice in production.
+        guard !APIConfig.isConfigured else {
+            print("[ZiggyTTS] Railway configured — suppressing AVSpeech fallback (silent fail).")
+            return
+        }
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
             try AVAudioSession.sharedInstance().setActive(true)

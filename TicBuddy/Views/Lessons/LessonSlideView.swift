@@ -21,6 +21,21 @@ struct LessonSlideView: View {
     /// "Let's Map Your Tics" keeps the "Start Tic Assessment →" action.
     /// nil = legacy behaviour (CTA fires on last slide).
     var ctaSlideTitle: String? = nil
+    /// tb-lesson1-flow-002: Optional override for the CTA slide tap. When set, the CTA fires
+    /// this callback AND auto-advances to the next slide (so the lesson is at the correct
+    /// position when any overlay — e.g. scheduler sheet — later dismisses). `onFinished` is
+    /// then reserved for the last-slide "Done →" action only.
+    /// nil = legacy behaviour (CTA tap calls onFinished, same as before).
+    var onCTATapped: (() -> Void)? = nil
+    /// tb-audio-001: When true, TTS is suppressed — the scheduler sheet is covering the lesson.
+    /// Speech resumes automatically via .onChange when this flips back to false.
+    var schedulerPresented: Bool = false
+    /// tb-lesson1-flow-003: Optional second CTA slide. When the current slide matches this title,
+    /// a custom-labelled button fires `onFinished()` directly (dismiss lesson + trigger post-flow).
+    /// Distinct from `ctaSlideTitle` which fires `onCTATapped` + auto-advances.
+    /// nil = no secondary CTA (default behaviour).
+    var dismissActionSlideTitle: String? = nil
+    var dismissActionLabel: String = "Map My Tics →"
     /// Called when the user taps the assessment CTA button (or Done on the last slide).
     let onFinished: () -> Void
 
@@ -40,6 +55,11 @@ struct LessonSlideView: View {
     private var isCTASlide: Bool {
         if let title = ctaSlideTitle { return currentSlide.title == title }
         return isLastSlide
+    }
+    /// tb-lesson1-flow-003: True when current slide is the dismiss-action CTA (fires onFinished).
+    private var isDismissActionSlide: Bool {
+        guard let title = dismissActionSlideTitle else { return false }
+        return currentSlide.title == title
     }
     private var progress: Double { Double(currentIndex + 1) / Double(lesson.slides.count) }
 
@@ -88,6 +108,14 @@ struct LessonSlideView: View {
             }
         }
         .onAppear { speakCurrentSlide() }
+        // tb-audio-001: Suppress audio while scheduler is open; resume the moment it closes.
+        .onChange(of: schedulerPresented) { isOpen in
+            if !isOpen {
+                speakCurrentSlide()
+            } else {
+                ttsService.stopSpeaking()
+            }
+        }
         // tb-mvp2-126: React to speaker toggle changes mid-session.
         // Toggle OFF → stop immediately. Toggle ON → start speaking current slide.
         .onChange(of: ttsEnabled) { enabled in
@@ -285,9 +313,13 @@ struct LessonSlideView: View {
             // when ctaSlideTitle is set). isLastSlide without isCTASlide shows "Done →".
             Button(action: primaryAction) {
                 HStack(spacing: 8) {
-                    Text(isCTASlide ? finalCTALabel : (isLastSlide ? "Done →" : "Next"))
+                    // tb-lesson1-flow-003: dismissActionSlide gets its own label ("Map My Tics →")
+                    Text(isCTASlide ? finalCTALabel
+                         : isDismissActionSlide ? dismissActionLabel
+                         : isLastSlide ? "Done"
+                         : "Next")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    Image(systemName: isCTASlide ? "clipboard.fill" : "chevron.right")
+                    Image(systemName: (isCTASlide || isDismissActionSlide) ? "map.fill" : "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                 }
                 .foregroundColor(.white)
@@ -297,8 +329,12 @@ struct LessonSlideView: View {
                     Capsule()
                         .fill(
                             LinearGradient(
+                                // tb-lesson1-flow-003: dismiss-action slide = warm amber-orange;
+                                // CTA slide = green-teal; default = purple.
                                 colors: isCTASlide
                                     ? [Color(hex: "43E97B"), Color(hex: "38F9D7")]
+                                    : isDismissActionSlide
+                                    ? [Color(hex: "FA709A"), Color(hex: "FEE140")]
                                     : [Color(hex: "667EEA"), Color(hex: "764BA2")],
                                 startPoint: .leading,
                                 endPoint: .trailing
@@ -313,11 +349,25 @@ struct LessonSlideView: View {
 
     private func primaryAction() {
         if isCTASlide {
-            // Assessment CTA — fires on ctaSlideTitle match (or last slide if no title set)
+            ttsService.stopSpeaking()
+            if let cta = onCTATapped {
+                // tb-lesson1-flow-002: CTA fires custom action (e.g. show scheduler sheet)
+                // and silently advances to the next slide. TTS is deferred to the
+                // .onChange(of: schedulerPresented) dismiss handler — NOT triggered here —
+                // so audio never plays while the scheduler sheet is covering the lesson.
+                cta()
+                goForwardSilently()
+            } else {
+                // Legacy: CTA fires onFinished (used by all callers that don't pass onCTATapped)
+                onFinished()
+            }
+        } else if isDismissActionSlide {
+            // tb-lesson1-flow-003: Dismiss-action CTA — custom label, fires onFinished directly.
+            // Used by "Let's Map Your Tics" to jump straight into the tic assessment flow.
             ttsService.stopSpeaking()
             onFinished()
         } else if isLastSlide {
-            // tb-mvp2-136: Last slide is "What's Next" (homework summary) — just dismiss
+            // tb-mvp2-136: Last slide — just dismiss / complete
             ttsService.stopSpeaking()
             onFinished()
         } else {
@@ -330,6 +380,18 @@ struct LessonSlideView: View {
         ttsService.stopSpeaking()
         withAnimation { currentIndex += 1 }
         speakCurrentSlide()
+    }
+
+    /// tb-audio-001: Advance slide WITHOUT triggering TTS. Used when an overlay (e.g. scheduler
+    /// sheet) is about to open — the .onChange(of: schedulerPresented) dismiss handler speaks
+    /// the destination slide once the overlay closes. This avoids the timing race where the
+    /// 0.35s async TTS delay fires AFTER schedulerPresented becomes true but the stale-value
+    /// capture makes the guard read false.
+    private func goForwardSilently() {
+        guard currentIndex < lesson.slides.count - 1 else { return }
+        ttsService.stopSpeaking()
+        withAnimation { currentIndex += 1 }
+        // No speakCurrentSlide() — audio deferred to .onChange(of: schedulerPresented) dismiss.
     }
 
     private func goBack() {
@@ -376,8 +438,8 @@ struct LessonSlideView: View {
             ForEach(Array(bodySegments(text).enumerated()), id: \.offset) { _, segment in
                 if segment.isHeader {
                     Text(segment.text)
-                        .font(.system(size: 19, weight: .bold, design: .rounded))
-                        .foregroundColor(Color(hex: "A8EDEA"))  // light teal — readable on all dark gradients
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
                         .padding(.top, 4)
                 } else {
                     Text(segment.text)
@@ -429,6 +491,8 @@ struct LessonSlideView: View {
     private func speakCurrentSlide() {
         // tb-mvp2-126: Respect speaker toggle — skip TTS entirely if user muted.
         guard ttsEnabled else { return }
+        // tb-audio-001: Don't start audio while the scheduler sheet is covering the lesson.
+        guard !schedulerPresented else { return }
         let idx = currentIndex
         let nextIdx = idx + 1
         // Small delay lets the slide transition animation complete first

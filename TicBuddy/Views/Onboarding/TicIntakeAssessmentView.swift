@@ -11,6 +11,17 @@
 
 import SwiftUI
 
+// MARK: - Custom Tic Entry
+
+/// tb-tic-assessment-001: Pairs a user-supplied tic name with an optional short description.
+/// Used for all three custom-entry sections (motor, word/phrase, complex).
+/// Description is stored in TicHierarchyEntry.userDescription and seeded into Ziggy context.
+private struct CustomTicEntry: Identifiable {
+    let id: UUID = UUID()
+    var name: String
+    var description: String   // optional — empty string means no description provided
+}
+
 // MARK: - Main View
 
 struct TicIntakeAssessmentView: View {
@@ -18,10 +29,26 @@ struct TicIntakeAssessmentView: View {
     let child: ChildProfile
     let onComplete: () -> Void
 
+    /// tb-tic-ziggy-001: Optional pre-built hierarchy from Ziggy tic mapping conversation.
+    /// When non-empty, view starts at confirm step so user can review before saving.
+    /// Tapping Back from confirm clears this and returns to manual entry (selectTics).
+    let preloadedHierarchy: [TicHierarchyEntry]
+
+    // Explicit init prevents synthesized memberwise init from including @EnvironmentObject.
+    init(child: ChildProfile, preloadedHierarchy: [TicHierarchyEntry] = [], onComplete: @escaping () -> Void) {
+        self.child = child
+        self.preloadedHierarchy = preloadedHierarchy
+        self.onComplete = onComplete
+    }
+
     // MARK: Step Machine
 
     enum Step { case selectTics, rateEach, confirm }
     @State private var step: Step = .selectTics
+
+    /// tb-tic-ziggy-001: Holds Ziggy-built hierarchy when starting at confirm step.
+    /// Empty means we use the manually-built `builtHierarchy` computed var instead.
+    @State private var ziggyBuiltHierarchy: [TicHierarchyEntry] = []
 
     // Selections from Step 1
     @State private var selectedMotor: Set<TicMotorType> = []
@@ -30,10 +57,12 @@ struct TicIntakeAssessmentView: View {
     @State private var selectedVocal: Set<TicVocalType> = []
     @State private var customTicName: String = ""
     @State private var showCustomField: Bool = false
-    /// tb-mvp2-082: Each entry is a user-supplied name for one Word or Phrase tic.
-    @State private var wordPhraseEntries: [String] = []
-    /// tb-mvp2-108: Each entry is a user description of one complex (motor+vocal) tic sequence.
-    @State private var complexTicEntries: [String] = []
+    /// tb-mvp2-082 / tb-tic-assessment-001: Word or Phrase tic entries (name + optional description).
+    @State private var wordPhraseEntries: [CustomTicEntry] = []
+    /// tb-mvp2-108 / tb-tic-assessment-001: Complex tic entries (name + optional description).
+    @State private var complexTicEntries: [CustomTicEntry] = []
+    /// tb-tic-assessment-001: Custom motor tic entries (name + optional description).
+    @State private var motorTicEntries: [CustomTicEntry] = []
 
     // Per-tic ratings — keyed by stable item UUID (not display name)
     @State private var ratings: [UUID: TicRating] = [:]
@@ -50,17 +79,23 @@ struct TicIntakeAssessmentView: View {
         var items: [TicSelectionItem] = []
         items += selectedMotor.sorted(by: { $0.rawValue < $1.rawValue })
             .map { TicSelectionItem(canonicalName: $0.rawValue, displayName: $0.rawValue, emoji: $0.emoji, category: .motor) }
+        // tb-tic-assessment-001: User-added custom motor tics (with optional description)
+        items += motorTicEntries.map {
+            TicSelectionItem(canonicalName: $0.name, displayName: $0.name, emoji: "⚡️",
+                             category: .motor, userDescription: $0.description)
+        }
         items += selectedVocal.filter { $0 != .wordOrPhrase }
             .sorted(by: { $0.rawValue < $1.rawValue })
             .map { TicSelectionItem(canonicalName: $0.rawValue, displayName: $0.rawValue, emoji: $0.emoji, category: .vocal) }
         // Each word/phrase entry becomes its own TicSelectionItem
         items += wordPhraseEntries.map {
-            TicSelectionItem(canonicalName: TicVocalType.wordOrPhrase.rawValue, displayName: $0, emoji: "💬", category: .vocal)
+            TicSelectionItem(canonicalName: TicVocalType.wordOrPhrase.rawValue, displayName: $0.name,
+                             emoji: "💬", category: .vocal, userDescription: $0.description)
         }
-        // tb-mvp2-108: Complex tics — each entry is a free-text description of a
-        // combined motor+vocal sequence (e.g. "hands to face + scream").
+        // tb-mvp2-108 / tb-tic-assessment-001: Complex tics with optional description.
         items += complexTicEntries.map {
-            TicSelectionItem(canonicalName: $0, displayName: $0, emoji: "🔀", category: .complex)
+            TicSelectionItem(canonicalName: $0.name, displayName: $0.name, emoji: "🔀",
+                             category: .complex, userDescription: $0.description)
         }
         if !customTicName.trimmingCharacters(in: .whitespaces).isEmpty {
             items.append(TicSelectionItem(canonicalName: customTicName.trimmingCharacters(in: .whitespaces),
@@ -87,6 +122,7 @@ struct TicIntakeAssessmentView: View {
                     frequencyPerDay: r.frequency.dailyCount,
                     hasPremonitoryUrge: r.hasUrge,
                     urgeDescription: r.urgeDescription,
+                    userDescription: item.userDescription,
                     hierarchyOrder: 0   // re-ordered below
                 )
             }
@@ -111,6 +147,7 @@ struct TicIntakeAssessmentView: View {
                         showCustomField: $showCustomField,
                         wordPhraseEntries: $wordPhraseEntries,
                         complexTicEntries: $complexTicEntries,
+                        motorTicEntries: $motorTicEntries,
                         childName: child.displayName
                     ) {
                         let snapshot = allSelectedNames
@@ -152,12 +189,20 @@ struct TicIntakeAssessmentView: View {
 
                 case .confirm:
                     ConfirmStep(
-                        hierarchy: builtHierarchy,
+                        // tb-tic-ziggy-001: use Ziggy-built hierarchy when pre-loaded;
+                        // fall back to manually-built hierarchy otherwise.
+                        hierarchy: ziggyBuiltHierarchy.isEmpty ? builtHierarchy : ziggyBuiltHierarchy,
                         childName: child.displayName,
                         onBack: {
-                            // Use ratingItems (the mutable snapshot) not allSelectedNames
-                            currentRatingIndex = max(0, ratingItems.count - 1)
-                            step = .rateEach
+                            if !ziggyBuiltHierarchy.isEmpty {
+                                // Pre-loaded from Ziggy → "Back" discards it and starts manual entry
+                                ziggyBuiltHierarchy = []
+                                step = .selectTics
+                            } else {
+                                // Normal manual path → back to rate-each
+                                currentRatingIndex = max(0, ratingItems.count - 1)
+                                step = .rateEach
+                            }
                         },
                         onSave: saveAndClose
                     )
@@ -170,6 +215,13 @@ struct TicIntakeAssessmentView: View {
                     Button("Cancel") { onComplete() }
                 }
             }
+            // tb-tic-ziggy-001: seed Ziggy pre-built hierarchy on first appear
+            .onAppear {
+                if !preloadedHierarchy.isEmpty && ziggyBuiltHierarchy.isEmpty {
+                    ziggyBuiltHierarchy = preloadedHierarchy
+                    step = .confirm
+                }
+            }
         }
     }
 
@@ -177,7 +229,8 @@ struct TicIntakeAssessmentView: View {
 
     private func saveAndClose() {
         var updated = child
-        updated.ticHierarchy = builtHierarchy
+        // tb-tic-ziggy-001: save Ziggy-built hierarchy if present, else manual
+        updated.ticHierarchy = ziggyBuiltHierarchy.isEmpty ? builtHierarchy : ziggyBuiltHierarchy
         dataService.updateChild(updated)
         onComplete()
     }
@@ -193,6 +246,9 @@ private struct TicSelectionItem: Identifiable {
     var displayName: String      // User-editable; becomes nickname if changed
     let emoji: String
     let category: TicCategory
+    /// tb-tic-assessment-001: Optional short description entered at intake.
+    /// Stored in TicHierarchyEntry.userDescription and seeded into Ziggy context.
+    var userDescription: String = ""
 
     /// True when the user has given this tic a custom nickname.
     var hasNickname: Bool { displayName != canonicalName }
@@ -241,17 +297,24 @@ private struct SelectTicsStep: View {
     @Binding var selectedVocal: Set<TicVocalType>
     @Binding var customTicName: String
     @Binding var showCustomField: Bool
-    /// tb-mvp2-082: Each string is one named Word-or-Phrase tic entry.
-    @Binding var wordPhraseEntries: [String]
-    /// tb-mvp2-108: Each string describes one complex (motor+vocal) tic sequence.
-    @Binding var complexTicEntries: [String]
+    /// tb-mvp2-082 / tb-tic-assessment-001: Word or Phrase entries (name + optional description).
+    @Binding var wordPhraseEntries: [CustomTicEntry]
+    /// tb-mvp2-108 / tb-tic-assessment-001: Complex tic entries (name + optional description).
+    @Binding var complexTicEntries: [CustomTicEntry]
+    /// tb-tic-assessment-001: Custom motor tic entries (name + optional description).
+    @Binding var motorTicEntries: [CustomTicEntry]
     let childName: String
     let onNext: () -> Void
 
     @State private var newWordPhraseName: String = ""
+    @State private var newWordPhraseDesc: String = ""
     @FocusState private var wordPhraseFieldFocused: Bool
     @State private var newComplexTicName: String = ""
+    @State private var newComplexTicDesc: String = ""
     @FocusState private var complexTicFieldFocused: Bool
+    @State private var newMotorTicName: String = ""
+    @State private var newMotorTicDesc: String = ""
+    @FocusState private var motorTicFieldFocused: Bool
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
@@ -260,6 +323,7 @@ private struct SelectTicsStep: View {
         !selectedVocal.filter({ $0 != .wordOrPhrase }).isEmpty ||
         !wordPhraseEntries.isEmpty ||
         !complexTicEntries.isEmpty ||
+        !motorTicEntries.isEmpty ||
         !customTicName.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
@@ -297,6 +361,64 @@ private struct SelectTicsStep: View {
                         }
                     }
                     .padding(.horizontal, 16)
+
+                    // tb-tic-assessment-001: Custom motor tic multi-entry section —
+                    // matches the Word or Phrase and Complex Tic patterns below.
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Add a custom motor tic", systemImage: "plus.circle")
+                            .font(.subheadline.bold())
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 20)
+
+                        ForEach(motorTicEntries.indices, id: \.self) { i in
+                            HStack(spacing: 8) {
+                                Text("⚡️").font(.system(size: 20))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(motorTicEntries[i].name)
+                                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                                    if !motorTicEntries[i].description.isEmpty {
+                                        Text(motorTicEntries[i].description)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                Spacer()
+                                Button { motorTicEntries.remove(at: i) } label: {
+                                    Image(systemName: "minus.circle.fill")
+                                        .foregroundColor(.red.opacity(0.7))
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 6)
+                            .background(Color(hex: "38A3A5").opacity(0.07))
+                            .cornerRadius(10)
+                            .padding(.horizontal, 16)
+                        }
+
+                        VStack(spacing: 6) {
+                            HStack(spacing: 8) {
+                                TextField("Add a motor tic (e.g. \"Neck Roll\")", text: $newMotorTicName)
+                                    .textFieldStyle(.roundedBorder)
+                                    .focused($motorTicFieldFocused)
+                                    .submitLabel(.next)
+                                Button(action: addMotorTic) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.system(size: 26))
+                                        .foregroundColor(newMotorTicName.trimmingCharacters(in: .whitespaces).isEmpty
+                                            ? Color.gray.opacity(0.4)
+                                            : Color(hex: "38A3A5"))
+                                }
+                                .disabled(newMotorTicName.trimmingCharacters(in: .whitespaces).isEmpty)
+                            }
+                            TextField("Describe it briefly, e.g. \"fast side-to-side\" (optional)",
+                                      text: $newMotorTicDesc)
+                                .textFieldStyle(.roundedBorder)
+                                .font(.caption)
+                                .submitLabel(.done)
+                                .onSubmit { addMotorTic() }
+                        }
+                        .padding(.horizontal, 16)
+                    }
                 }
 
                 // Vocal tics (all types except wordOrPhrase — handled separately below)
@@ -330,14 +452,18 @@ private struct SelectTicsStep: View {
 
                         ForEach(wordPhraseEntries.indices, id: \.self) { i in
                             HStack(spacing: 8) {
-                                Text("💬")
-                                    .font(.system(size: 20))
-                                Text(wordPhraseEntries[i])
-                                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                                Text("💬").font(.system(size: 20))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(wordPhraseEntries[i].name)
+                                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                                    if !wordPhraseEntries[i].description.isEmpty {
+                                        Text(wordPhraseEntries[i].description)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
                                 Spacer()
-                                Button {
-                                    wordPhraseEntries.remove(at: i)
-                                } label: {
+                                Button { wordPhraseEntries.remove(at: i) } label: {
                                     Image(systemName: "minus.circle.fill")
                                         .foregroundColor(.red.opacity(0.7))
                                 }
@@ -349,20 +475,27 @@ private struct SelectTicsStep: View {
                             .padding(.horizontal, 16)
                         }
 
-                        HStack(spacing: 8) {
-                            TextField("e.g. \"The Blurt\", \"That word\"", text: $newWordPhraseName)
+                        VStack(spacing: 6) {
+                            HStack(spacing: 8) {
+                                TextField("e.g. \"The Blurt\", \"That word\"", text: $newWordPhraseName)
+                                    .textFieldStyle(.roundedBorder)
+                                    .focused($wordPhraseFieldFocused)
+                                    .submitLabel(.next)
+                                Button(action: addWordPhrase) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.system(size: 26))
+                                        .foregroundColor(newWordPhraseName.trimmingCharacters(in: .whitespaces).isEmpty
+                                            ? Color.gray.opacity(0.4)
+                                            : Color(hex: "667EEA"))
+                                }
+                                .disabled(newWordPhraseName.trimmingCharacters(in: .whitespaces).isEmpty)
+                            }
+                            TextField("Describe it briefly, e.g. \"only when nervous\" (optional)",
+                                      text: $newWordPhraseDesc)
                                 .textFieldStyle(.roundedBorder)
-                                .focused($wordPhraseFieldFocused)
+                                .font(.caption)
                                 .submitLabel(.done)
                                 .onSubmit { addWordPhrase() }
-                            Button(action: addWordPhrase) {
-                                Image(systemName: "plus.circle.fill")
-                                    .font(.system(size: 26))
-                                    .foregroundColor(newWordPhraseName.trimmingCharacters(in: .whitespaces).isEmpty
-                                        ? Color.gray.opacity(0.4)
-                                        : Color(hex: "667EEA"))
-                            }
-                            .disabled(newWordPhraseName.trimmingCharacters(in: .whitespaces).isEmpty)
                         }
                         .padding(.horizontal, 16)
                     }
@@ -382,14 +515,18 @@ private struct SelectTicsStep: View {
 
                     ForEach(complexTicEntries.indices, id: \.self) { i in
                         HStack(spacing: 8) {
-                            Text("🔀")
-                                .font(.system(size: 20))
-                            Text(complexTicEntries[i])
-                                .font(.system(size: 14, weight: .medium, design: .rounded))
+                            Text("🔀").font(.system(size: 20))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(complexTicEntries[i].name)
+                                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                                if !complexTicEntries[i].description.isEmpty {
+                                    Text(complexTicEntries[i].description)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
                             Spacer()
-                            Button {
-                                complexTicEntries.remove(at: i)
-                            } label: {
+                            Button { complexTicEntries.remove(at: i) } label: {
                                 Image(systemName: "minus.circle.fill")
                                     .foregroundColor(.red.opacity(0.7))
                             }
@@ -401,20 +538,28 @@ private struct SelectTicsStep: View {
                         .padding(.horizontal, 16)
                     }
 
-                    HStack(spacing: 8) {
-                        TextField("Describe the sequence (e.g. \"hands to face + scream\")", text: $newComplexTicName)
+                    VStack(spacing: 6) {
+                        HStack(spacing: 8) {
+                            TextField("Describe the sequence (e.g. \"hands to face + scream\")",
+                                      text: $newComplexTicName)
+                                .textFieldStyle(.roundedBorder)
+                                .focused($complexTicFieldFocused)
+                                .submitLabel(.next)
+                            Button(action: addComplexTic) {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.system(size: 26))
+                                    .foregroundColor(newComplexTicName.trimmingCharacters(in: .whitespaces).isEmpty
+                                        ? Color.gray.opacity(0.4)
+                                        : Color.purple)
+                            }
+                            .disabled(newComplexTicName.trimmingCharacters(in: .whitespaces).isEmpty)
+                        }
+                        TextField("Add any extra detail, e.g. \"triggered by eye contact\" (optional)",
+                                  text: $newComplexTicDesc)
                             .textFieldStyle(.roundedBorder)
-                            .focused($complexTicFieldFocused)
+                            .font(.caption)
                             .submitLabel(.done)
                             .onSubmit { addComplexTic() }
-                        Button(action: addComplexTic) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.system(size: 26))
-                                .foregroundColor(newComplexTicName.trimmingCharacters(in: .whitespaces).isEmpty
-                                    ? Color.gray.opacity(0.4)
-                                    : Color.purple)
-                        }
-                        .disabled(newComplexTicName.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
                     .padding(.horizontal, 16)
                 }
@@ -438,6 +583,20 @@ private struct SelectTicsStep: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
+
+                // tb-option-b: Reassurance note — visible below all tic content, above Continue.
+                // Reminds users this isn't a one-time assessment; they can return anytime.
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "arrow.uturn.backward.circle")
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary)
+                        .padding(.top, 1)
+                    Text("You can come back anytime to add new tics or remove ones that have stopped.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 4)
 
                 // Next button
                 Button(action: { wordPhraseFieldFocused = false; onNext() }) {
@@ -463,16 +622,27 @@ private struct SelectTicsStep: View {
     private func addWordPhrase() {
         let name = newWordPhraseName.trimmingCharacters(in: .whitespaces)
         guard !name.isEmpty else { return }
-        wordPhraseEntries.append(name)
+        wordPhraseEntries.append(CustomTicEntry(name: name, description: newWordPhraseDesc.trimmingCharacters(in: .whitespaces)))
         newWordPhraseName = ""
+        newWordPhraseDesc = ""
     }
 
-    // tb-mvp2-108
+    // tb-mvp2-108 / tb-tic-assessment-001
     private func addComplexTic() {
         let name = newComplexTicName.trimmingCharacters(in: .whitespaces)
         guard !name.isEmpty else { return }
-        complexTicEntries.append(name)
+        complexTicEntries.append(CustomTicEntry(name: name, description: newComplexTicDesc.trimmingCharacters(in: .whitespaces)))
         newComplexTicName = ""
+        newComplexTicDesc = ""
+    }
+
+    // tb-tic-assessment-001
+    private func addMotorTic() {
+        let name = newMotorTicName.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty else { return }
+        motorTicEntries.append(CustomTicEntry(name: name, description: newMotorTicDesc.trimmingCharacters(in: .whitespaces)))
+        newMotorTicName = ""
+        newMotorTicDesc = ""
     }
 }
 
