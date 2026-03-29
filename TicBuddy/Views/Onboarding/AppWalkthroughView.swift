@@ -102,11 +102,6 @@ struct AppWalkthroughView: View {
                 Color.black.opacity(0.65)
                     .ignoresSafeArea()
 
-                // ── Tab spotlight ring ────────────────────────────────────────
-                if case .tab(let idx) = current.highlight {
-                    tabSpotlight(index: idx, geo: geo)
-                }
-
                 // ── Tooltip card ──────────────────────────────────────────────
                 tooltipLayout(geo: geo)
             }
@@ -140,46 +135,6 @@ struct AppWalkthroughView: View {
         }
         // Reset pulse when step changes so .onAppear on the new ring fires cleanly
         .onChange(of: stepIndex) { _ in pulse = false }
-    }
-
-    private func tabSpotlight(index: Int, geo: GeometryProxy) -> some View {
-        // Tab bar items are evenly distributed across screen width.
-        // Visual tab bar = 49pt, sitting directly above the safe-area inset.
-        // Icon+label group (~38pt) is centered in the 49pt bar:
-        //   group top  = (49 - 38) / 2 = 5.5pt from top of bar
-        //   icon center = 5.5 + 12.5 = 18pt from top → 31pt from bottom of bar.
-        // tb-mvp2-069: derive cy from geo directly — stays in SwiftUI coordinate space,
-        // no UIKit bridging, no first-render timing issues with @State defaults.
-        let tabW = geo.size.width / 5.0
-        let cx   = tabW * CGFloat(index) + tabW / 2
-        let cy   = geo.size.height - geo.safeAreaInsets.bottom - 31
-
-        return ZStack {
-            // Glow halo
-            Circle()
-                .fill(Color(hex: "667EEA").opacity(0.22))
-                .frame(width: 56, height: 56)
-                .blur(radius: 8)
-            // Ring
-            Circle()
-                .stroke(
-                    LinearGradient(
-                        colors: [Color(hex: "667EEA"), Color(hex: "764BA2")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 2.5
-                )
-                .frame(width: 50, height: 50)
-        }
-        .id("spotlight-\(index)") // Force re-creation on tab change
-        .scaleEffect(pulse ? 1.12 : 1.0)
-        .position(x: cx, y: cy)
-        .onAppear {
-            withAnimation(
-                .easeInOut(duration: 0.65).repeatForever(autoreverses: true)
-            ) { pulse = true }
-        }
     }
 
     // MARK: - Tooltip Layout
