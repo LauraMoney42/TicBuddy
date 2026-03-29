@@ -16,6 +16,7 @@
 		63723E9002769736B897B48C /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312ED1A05C2EF95FB9E84476 /* ProgressView.swift */; };
 		69F005DFB8EB4E899001DC16 /* WeeklySessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8F603E01474268BBA728D8 /* WeeklySessionService.swift */; };
 		7F2DBF68DF1181AF7FEAC1B6 /* TicCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83703804BA79632C4A4B5E93 /* TicCalendarView.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F3 /* TicDetailEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* TicDetailEditSheet.swift */; };
 		95073885D89B21CF5F016CF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB46BFA286DCA74505A40DD /* Extensions.swift */; };
 		95E06ACCF653886F438E1C3A /* CaregiversView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169F057100115E870D7B326A /* CaregiversView.swift */; };
 		DD11EE22FF3344556677881A /* ParentResourceGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF3344556677880A /* ParentResourceGuideView.swift */; };
@@ -64,6 +65,7 @@
 		FF00112233445566778801BB /* FamilyModeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00112233445566778800BB /* FamilyModeRouter.swift */; };
 		FF001122334455AA00000002 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF001122334455AA00000001 /* APIConfig.swift */; };
 		TB039AAA000000000001 /* TicIntakeAssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB039AAA000000000002 /* TicIntakeAssessmentView.swift */; };
+		TBZ001000000000001 /* ZiggyTicMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TBZ001000000000002 /* ZiggyTicMappingView.swift */; };
 		TB059AAA000000000001 /* LessonSlide.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059AAA000000000002 /* LessonSlide.swift */; };
 		TB059BBB000000000001 /* CBITLessonService.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059BBB000000000002 /* CBITLessonService.swift */; };
 		TB059CCC000000000001 /* LessonSlideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059CCC000000000002 /* LessonSlideView.swift */; };
@@ -85,6 +87,7 @@
 		5D6CACE3B1B8B20C28B1A604 /* WelcomeKindnessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeKindnessView.swift; sourceTree = "<group>"; };
 		782A34C2B134480AAFA45339 /* TicBuddyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicBuddyApp.swift; sourceTree = "<group>"; };
 		83703804BA79632C4A4B5E93 /* TicCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicCalendarView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* TicDetailEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicDetailEditSheet.swift; sourceTree = "<group>"; };
 		98FB435ABA626A64070DABBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A7AAA91AE853C7471BFA64D8 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		AA00112233445566778800BB /* FamilyUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyUnit.swift; sourceTree = "<group>"; };
@@ -132,6 +135,7 @@
 		FF00112233445566778800BB /* FamilyModeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyModeRouter.swift; sourceTree = "<group>"; };
 		FF001122334455AA00000001 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		TB039AAA000000000002 /* TicIntakeAssessmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicIntakeAssessmentView.swift; sourceTree = "<group>"; };
+		TBZ001000000000002 /* ZiggyTicMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyTicMappingView.swift; sourceTree = "<group>"; };
 		TB059AAA000000000002 /* LessonSlide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonSlide.swift; sourceTree = "<group>"; };
 		TB059BBB000000000002 /* CBITLessonService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBITLessonService.swift; sourceTree = "<group>"; };
 		TB059CCC000000000002 /* LessonSlideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonSlideView.swift; sourceTree = "<group>"; };
@@ -170,6 +174,7 @@
 			isa = PBXGroup;
 			children = (
 				83703804BA79632C4A4B5E93 /* TicCalendarView.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* TicDetailEditSheet.swift */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -260,6 +265,7 @@
 				B844254B8BD65A97BA744E3E /* OnboardingView.swift */,
 				5D6CACE3B1B8B20C28B1A604 /* WelcomeKindnessView.swift */,
 				TB039AAA000000000002 /* TicIntakeAssessmentView.swift */,
+				TBZ001000000000002 /* ZiggyTicMappingView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -412,6 +418,7 @@
 				AA11BB22CC33DD44EE5501FF /* TTSVoicePreviewView.swift in Sources */,
 				F7F201F165E896094C92F020 /* TicBuddyApp.swift in Sources */,
 				7F2DBF68DF1181AF7FEAC1B6 /* TicCalendarView.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F3 /* TicDetailEditSheet.swift in Sources */,
 				48ADEB5FB1CE044BA099F9FC /* TicDataService.swift in Sources */,
 				1AAC28696A94AD697AD945A8 /* TicEntry.swift in Sources */,
 				BC81FD345D703DF571DD9DFC /* UserProfile.swift in Sources */,
@@ -456,6 +463,7 @@
 				TB059CCC000000000001 /* LessonSlideView.swift in Sources */,
 				TB065AAA000000000001 /* AppWalkthroughView.swift in Sources */,
 				TB039AAA000000000001 /* TicIntakeAssessmentView.swift in Sources */,
+				TBZ001000000000001 /* ZiggyTicMappingView.swift in Sources */,
 				TB096AAA000000000001 /* SessionSchedulerService.swift in Sources */,
 				TB096BBB000000000001 /* SessionSchedulerView.swift in Sources */,
 			);
