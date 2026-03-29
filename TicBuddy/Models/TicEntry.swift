@@ -103,6 +103,8 @@ struct TicEntry: Identifiable, Codable {
     var outcome: TicOutcome
     var urgeStrength: Int        // 1-5 scale (premonitory urge)
     var note: String?
+    // tb-mvp2-161: Context — where the user was / what they were doing when the tic occurred.
+    var context: String?
 
     init(
         id: UUID = UUID(),
@@ -113,7 +115,8 @@ struct TicEntry: Identifiable, Codable {
         customLabel: String? = nil,
         outcome: TicOutcome = .noticed,
         urgeStrength: Int = 1,
-        note: String? = nil
+        note: String? = nil,
+        context: String? = nil
     ) {
         self.id = id
         self.date = date
@@ -124,6 +127,7 @@ struct TicEntry: Identifiable, Codable {
         self.outcome = outcome
         self.urgeStrength = urgeStrength
         self.note = note
+        self.context = context
     }
 
     var displayName: String {

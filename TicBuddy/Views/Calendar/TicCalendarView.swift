@@ -277,6 +277,9 @@ struct DayEntriesView: View {
     let date: Date
     @ObservedObject var dataService: TicDataService
 
+    // tb-mvp2-161: Tapping a row opens TicDetailEditSheet for that entry.
+    @State private var editingEntry: TicEntry? = nil
+
     var entries: [TicEntry] { dataService.entries(for: date).sorted { $0.date > $1.date } }
 
     var body: some View {
@@ -286,10 +289,16 @@ struct DayEntriesView: View {
                     .font(.headline.bold())
 
                 ForEach(entries) { entry in
-                    TicEntryRowView(entry: entry) {
-                        dataService.deleteTicEntry(entry)
-                    }
+                    TicEntryRowView(
+                        entry: entry,
+                        onEdit: { editingEntry = entry },
+                        onDelete: { dataService.deleteTicEntry(entry) }
+                    )
                 }
+            }
+            .sheet(item: $editingEntry) { entry in
+                TicDetailEditSheet(entry: entry)
+                    .environmentObject(dataService)
             }
         }
     }
@@ -297,6 +306,8 @@ struct DayEntriesView: View {
 
 struct TicEntryRowView: View {
     let entry: TicEntry
+    // tb-mvp2-161: onEdit opens TicDetailEditSheet; onDelete removes the entry.
+    let onEdit: () -> Void
     let onDelete: () -> Void
 
     var timeString: String {
@@ -306,37 +317,53 @@ struct TicEntryRowView: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            Text(entry.emoji)
-                .font(.title2)
-                .frame(width: 44, height: 44)
-                .background(Color(hex: "667EEA").opacity(0.1))
-                .cornerRadius(12)
+        Button(action: onEdit) {
+            HStack(spacing: 12) {
+                Text(entry.emoji)
+                    .font(.title2)
+                    .frame(width: 44, height: 44)
+                    .background(Color(hex: "667EEA").opacity(0.1))
+                    .cornerRadius(12)
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(entry.displayName)
-                    .font(.subheadline.bold())
-                HStack(spacing: 6) {
-                    Text(entry.outcome.emoji)
-                    Text(entry.outcome.rawValue)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("•")
-                        .foregroundColor(.secondary)
-                    Text(timeString)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(entry.displayName)
+                        .font(.subheadline.bold())
+                        .foregroundColor(.primary)
+                    HStack(spacing: 6) {
+                        Text(entry.outcome.emoji)
+                        Text(entry.outcome.rawValue)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("•")
+                            .foregroundColor(.secondary)
+                        Text(timeString)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    // Show context inline if user has filled it in
+                    if let ctx = entry.context, !ctx.isEmpty {
+                        Text("📍 \(ctx)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
-            }
 
-            Spacer()
+                Spacer()
 
-            Button(action: onDelete) {
-                Image(systemName: "trash")
-                    .foregroundColor(.red.opacity(0.6))
+                // Pencil hint so user knows row is editable
+                Image(systemName: "pencil")
                     .font(.caption)
+                    .foregroundColor(Color(hex: "667EEA").opacity(0.5))
+
+                Button(action: onDelete) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red.opacity(0.6))
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)  // prevent row tap from firing delete
             }
         }
+        .buttonStyle(.plain)
         .padding(12)
         .background(Color(.systemBackground))
         .cornerRadius(14)

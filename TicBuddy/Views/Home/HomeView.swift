@@ -7,6 +7,8 @@ struct HomeView: View {
     @EnvironmentObject var dataService: TicDataService
     @State private var showAddTic = false
     @State private var showPhaseDetail = false
+    // tb-mvp2-161: Entry to edit via "Add detail →" — most recent today's entry.
+    @State private var editingEntry: TicEntry? = nil
 
     var profile: UserProfile { dataService.userProfile }
 
@@ -24,8 +26,13 @@ struct HomeView: View {
 
                     // tb-mvp2-067: Quick tic counter — instant +1 tap, no form required.
                     // CBIT homework = observe and tally tics throughout the day.
-                    QuickTicCounterCard(dataService: dataService, onDetailTap: { showAddTic = true })
-                        .padding(.horizontal, 16)
+                    // tb-mvp2-161: "Add detail →" opens TicDetailEditSheet for the most recent today's entry.
+                    QuickTicCounterCard(dataService: dataService, onDetailTap: {
+                        editingEntry = dataService.entries(for: Date())
+                            .sorted { $0.date > $1.date }
+                            .first
+                    })
+                    .padding(.horizontal, 16)
 
                     // Today's stats
                     TodayStatsCard(dataService: dataService)
@@ -51,6 +58,11 @@ struct HomeView: View {
                 AddTicView(date: Date())
                     .environmentObject(dataService)
             }
+            // tb-mvp2-161: Edit sheet for enriching a logged entry (name, context, notes).
+            .sheet(item: $editingEntry) { entry in
+                TicDetailEditSheet(entry: entry)
+                    .environmentObject(dataService)
+            }
             .sheet(isPresented: $showPhaseDetail) {
                 PhaseDetailView(phase: profile.recommendedPhase)
             }
@@ -74,47 +86,47 @@ struct QuickTicCounterCard: View {
     private var todayCount: Int { dataService.entries(for: Date()).count }
 
     var body: some View {
-        // tb-mvp2-155: ZStack so + button group is centered regardless of count width.
-        // tb-mvp2-156: "Add detail →" moved to middle-right of + button, slightly larger.
-        ZStack(alignment: .center) {
+        // tb-ticcounter-001: Replaced ZStack/overlay approach with 3 equal-width columns.
+        // Previous layout centered the + button + "Add detail →" as a group, pushing +
+        // left of screen center. Equal thirds guarantee + is always screen-centered.
+        HStack(spacing: 0) {
 
-            // ── Leading count (overlay — doesn't shift + position) ───────────
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Today's Tics")
-                        .font(.system(size: 13, weight: .medium, design: .rounded))
-                        .foregroundColor(.white.opacity(0.7))
+            // ── Left third: "Today's Tics" label + count ─────────────────────
+            VStack(alignment: .center, spacing: 2) {
+                Text("Today's Tics")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.7))
 
-                    Text("\(todayCount)")
-                        .font(.system(size: 52, weight: .bold, design: .rounded))
+                Text("\(todayCount)")
+                    .font(.system(size: 52, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .scaleEffect(bounce ? 1.18 : 1.0)
+                    .animation(.spring(response: 0.25, dampingFraction: 0.45), value: bounce)
+                    .contentTransition(.numericText())
+            }
+            .frame(maxWidth: .infinity)
+
+            // ── Center third: + button perfectly centered ────────────────────
+            Button(action: quickLog) {
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.18))
+                        .frame(width: 76, height: 76)
+                    Image(systemName: "plus")
+                        .font(.system(size: 30, weight: .bold))
                         .foregroundColor(.white)
-                        .scaleEffect(bounce ? 1.18 : 1.0)
-                        .animation(.spring(response: 0.25, dampingFraction: 0.45), value: bounce)
-                        .contentTransition(.numericText())
-                }
-                .padding(.leading, 20)
-                Spacer()
-            }
-
-            // ── + button with "Add detail →" to its immediate right ──────────
-            HStack(spacing: 14) {
-                Button(action: quickLog) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.white.opacity(0.18))
-                            .frame(width: 76, height: 76)
-                        Image(systemName: "plus")
-                            .font(.system(size: 30, weight: .bold))
-                            .foregroundColor(.white)
-                    }
-                }
-
-                Button(action: onDetailTap) {
-                    Text("Add detail →")
-                        .font(.system(size: 15, weight: .medium, design: .rounded))
-                        .foregroundColor(.white.opacity(0.75))
                 }
             }
+            .frame(maxWidth: .infinity)
+
+            // ── Right third: "Add detail →" centered ─────────────────────────
+            Button(action: onDetailTap) {
+                Text("Add detail →")
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.75))
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
