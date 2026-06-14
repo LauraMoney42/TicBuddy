@@ -295,8 +295,9 @@ struct ChildModeRouter: View {
                     showLesson = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         switch capturedStage {
-                        case .session2, .session3, .session4, .session5, .session6, .session7:
+                        case .session2, .session3, .session4, .session5, .session6, .session7, .session8:
                             // One-time completion card — gate prevents repeat on replay.
+                            // tb-optC-006: session8 added — graduation/relapse plan complete screen.
                             if !hasShownHomework(for: capturedStage) {
                                 markHomeworkShown(for: capturedStage)
                                 completedLesson = capturedLesson
@@ -576,6 +577,21 @@ private struct PostLessonCompleteView: View {
                                     emoji: "💬",
                                     text: "Chat with Ziggy any time between sessions — you don't need to wait."
                                 )
+                            } else if lesson.session == 8 {
+                                // tb-optC-006: Session 8 is the final session. Homework is the
+                                // relapse plan + keeping the app as a long-term tool.
+                                HomeworkBullet(
+                                    emoji: "📋",
+                                    text: "Write down your relapse plan — early warning sign, first move, and who or what you'll lean on. A written plan is one you'll actually use."
+                                )
+                                HomeworkBullet(
+                                    emoji: "🛠️",
+                                    text: "You've got real skills now: urge awareness, competing response, self-monitoring. Trust them — especially on hard days."
+                                )
+                                HomeworkBullet(
+                                    emoji: "💬",
+                                    text: "Ziggy is still here. Log, check in, and revisit earlier lessons any time — no schedule required."
+                                )
                             }
                         }
                     }
@@ -599,7 +615,8 @@ private struct PostLessonCompleteView: View {
                             Button {
                                 showZiggy = true
                             } label: {
-                                Text("Chat with your TicBuddy")
+                                // tb-optC-006: Session 8 uses graduation-aware CTA label.
+                                Text(lesson.session == 8 ? "Check in with your TicBuddy" : "Chat with your TicBuddy")
                                     .font(.system(size: 17, weight: .bold, design: .rounded))
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)

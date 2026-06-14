@@ -1,0 +1,2 @@
+2026-03-28 00:00 - Added Session 2 lesson content (7 slides) to CBITLessonService.swift; wired case .session2 into the lesson(for:) switch statement
+2026-03-28 10:00 - Added Session 3 lesson content (9 slides: troubleshooting CRs + diaphragmatic breathing) to CBITLessonService.swift; wired case .session3 into the lesson(for:) switch; removed stale comment about sessions 6-8 in switch default

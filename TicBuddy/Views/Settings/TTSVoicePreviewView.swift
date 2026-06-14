@@ -23,6 +23,8 @@ struct TTSVoicePreviewView: View {
     @State private var selectedVoice: String = "nova"
     @State private var speed: Double = 1.05
     @State private var lastPlayed: String = ""
+    // tb-lesson2-preview-001: Preview Lesson 2 slides without session gating
+    @State private var showLesson2Preview = false
 
     private let voices = ["nova", "shimmer", "alloy", "echo", "fable", "onyx"]
 
@@ -46,6 +48,8 @@ struct TTSVoicePreviewView: View {
                         previewButton
                         if let err = tts.previewError { errorBanner(err) }
                         if !lastPlayed.isEmpty && tts.previewError == nil { lastPlayedBadge }
+                        // tb-lesson2-preview-001: Lesson 2 preview — bypasses session gating
+                        lesson2PreviewButton
                         Spacer(minLength: 40)
                     }
                     .padding(.horizontal, 20)
@@ -273,6 +277,72 @@ struct TTSVoicePreviewView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(Color(hex: "FF6B6B").opacity(0.3), lineWidth: 1)
         )
+    }
+
+    // MARK: - Lesson 2 Preview Button
+    // tb-lesson2-preview-001: Opens Lesson 2 slides directly — no session gating.
+    // Accessible from the hidden dev panel (triple-tap version in Settings).
+
+    private var lesson2PreviewButton: some View {
+        VStack(spacing: 8) {
+            Divider()
+                .background(Color.white.opacity(0.1))
+                .padding(.vertical, 4)
+            Text("CONTENT REVIEW")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundColor(.white.opacity(0.3))
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button {
+                showLesson2Preview = true
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "2.square.fill")
+                        .font(.system(size: 16, weight: .bold))
+                    Text("Preview Lesson 2 Slides")
+                        .font(.system(size: 16, weight: .bold))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    LinearGradient(
+                        colors: [Color(hex: "1B5E20"), Color(hex: "2E7D32")],
+                        startPoint: .leading, endPoint: .trailing
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .shadow(color: Color(hex: "1B5E20").opacity(0.5), radius: 10, y: 4)
+            }
+            .buttonStyle(.plain)
+            .fullScreenCover(isPresented: $showLesson2Preview) {
+                if let lesson2 = CBITLessonService.lesson(for: .session2) {
+                    LessonSlideView(
+                        lesson: lesson2,
+                        voiceProfile: .caregiver,
+                        finalCTALabel: "Done Previewing ✓",
+                        onFinished: { showLesson2Preview = false }
+                    )
+                } else {
+                    // Fallback — should never happen if CBITLessonService is populated
+                    VStack(spacing: 16) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(Color(hex: "FFB347"))
+                        Text("Lesson 2 not found")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Text("CBITLessonService.session2 may be nil.")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
+                        Button("Dismiss") { showLesson2Preview = false }
+                            .foregroundColor(Color(hex: "667EEA"))
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(hex: "0D0D1A").ignoresSafeArea())
+                }
+            }
+        }
     }
 
     // MARK: - Last Played Badge

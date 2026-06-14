@@ -158,7 +158,7 @@ enum CBITLessonService {
                 id: 10,
                 title: "Making Time for Practice",
                 // tb-lesson1-flow-002: This slide now carries the scheduling CTA.
-                // Closing line bridges to the "Schedule My Sessions →" button below.
+                // Closing line bridges to the "Schedule My Lesson" button below.
                 body: "CBIT works best with consistency — one session per week keeps your progress moving. We'll help you set a weekly time that works for you.\n\n💡 One tip: For each lesson, find a quiet spot where you won't be interrupted. Set aside about 20–30 minutes — that's all it takes.\n\nTap below to pick your weekly session day now — it only takes a second.",
                 audioHint: "Warm and motivating. Short slide — let each sentence breathe. Pause before the tip line. End with a light, forward energy on the last line.",
                 emoji: "📅"
@@ -669,6 +669,9 @@ enum CBITLessonService {
                 audioHint: "Warm, genuine, celebratory — but grounded. This is the final slide of the entire programme. 'Go live your life. You've got what you need.' should land like a real, earned send-off.",
                 emoji: "🎉"
             )
-        ]
+        ],
+        // tb-optC-006: Final session handoff. CTA is "Check in with your TicBuddy"
+        // (graduation/relapse plan context rather than active CR work).
+        ziggyHandoffPrompt: "Hi Ziggy! I just finished my final CBIT session — Lesson 8. I've built my relapse plan and I'm ready to wrap up structured sessions. Can we do one last check-in and talk through what comes next?"
     )
 }
