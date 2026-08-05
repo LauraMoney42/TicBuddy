@@ -3,161 +3,173 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01BD4B745282C27296B04DB3 /* LessonSlide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 829C258A8D279A75181A4125 /* LessonSlide.swift */; };
+		0F84B00B984AC1B47D6153B0 /* CBITSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D3EC19A9C927B45EE84842 /* CBITSessionStore.swift */; };
+		10DF4CA020C358CB9FE455BF /* TextMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50FB72E88D3DDBF819412065 /* TextMatch.swift */; };
+		17062097DAA3C0CC66007592 /* CBITLessonService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96009037DD6DBDC73EC7B273 /* CBITLessonService.swift */; };
 		1AAC28696A94AD697AD945A8 /* TicEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D4D8AEC8F785942B06C52F7 /* TicEntry.swift */; };
-		1E21831007FD455388829A21 /* ZiggyWeeklyIntroSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54048696834845F296817B8C /* ZiggyWeeklyIntroSheet.swift */; };
+		1D5BC367269274C0E1FA9979 /* CaregiverSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA79622A45A144AF3AB7926 /* CaregiverSessionStore.swift */; };
+		1DC869832A8B4704CAB091F8 /* COPPAConsentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C85963E6CEB2277A32946E /* COPPAConsentService.swift */; };
+		21E88D711B28C735718D7FCA /* CaregiverOnboardingZiggyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B43DDE86BCB881CE2200D0D /* CaregiverOnboardingZiggyView.swift */; };
+		2A4CA15B7A518726FCD832FD /* COPPAConsentSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6479979B9FBC55F099A66469 /* COPPAConsentSheet.swift */; };
+		3201A71F26D43A30F611677D /* EveningCheckInSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DD8D92671F227613C9A9CB /* EveningCheckInSheet.swift */; };
+		3492959C3700E53128D75102 /* OnDeviceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15676514FCF7413588C2C0AF /* OnDeviceEmbedder.swift */; };
+		3A60CBB0970F43520320ACEE /* DeviceConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3FEBF99FF1C3F69555422F /* DeviceConfigView.swift */; };
 		3C34DE5C305BAD18189CD26D /* WelcomeKindnessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6CACE3B1B8B20C28B1A604 /* WelcomeKindnessView.swift */; };
 		41AE28CF9F423DC4C98A090B /* CompetingResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB224F6CA6490708B217D6DC /* CompetingResponses.swift */; };
+		45793CAB984A918F0ED99928 /* ChildModeAdolescentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B430F062CFDEF4FCE6C75D /* ChildModeAdolescentView.swift */; };
 		48ADEB5FB1CE044BA099F9FC /* TicDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84BD3A0FD0620A66EAC970D /* TicDataService.swift */; };
+		48C31A54CF41EBED15110BEC /* RAGObservability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545A5911EFF11AF720273EA0 /* RAGObservability.swift */; };
 		4B573A59180F43FF1C78F04F /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F06DF9CD451CFE1544477B8 /* KeychainHelper.swift */; };
+		4C873294681EAB889475573A /* OnDeviceRAGIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88EA618DA6173618F80FCBD /* OnDeviceRAGIndex.swift */; };
+		4CEA898C7E3A3969C83B0830 /* AppWalkthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675125B48C389F266624F058 /* AppWalkthroughView.swift */; };
+		4D4E4EB32A932D3F494D093A /* ZiggyWeeklyIntroSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECCB5819AE279D750201AE2 /* ZiggyWeeklyIntroSheet.swift */; };
+		51E68595B63AF75ACD65CD4F /* RewardMilestoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88646745C39DF34B06C59ABA /* RewardMilestoneSheet.swift */; };
+		52F54A443D4213C09B5D73C5 /* FamilyManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6A388F4C6031CD929D9941 /* FamilyManagementView.swift */; };
+		53E99DDCB47DFCB5D1767DCC /* FamilyModeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE00DD2745507199F80E6883 /* FamilyModeRouter.swift */; };
+		54533CAE6CFA58C07F6BFC86 /* SessionSchedulerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D153DCCC5F843949B3A980F /* SessionSchedulerService.swift */; };
+		5520E6B965D58216A2B4F0A0 /* ChildModeOlderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057719DD8EBA9C001441D01E /* ChildModeOlderView.swift */; };
+		5F4B4AFA54CAB73608562E7C /* FamilyPINService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AD8DD4CC5147738E01177D /* FamilyPINService.swift */; };
 		63723E9002769736B897B48C /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312ED1A05C2EF95FB9E84476 /* ProgressView.swift */; };
-		69F005DFB8EB4E899001DC16 /* WeeklySessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8F603E01474268BBA728D8 /* WeeklySessionService.swift */; };
+		65B5D1B6E72A73EBC514813E /* COPPAComplianceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B02A64E42874409516549DD /* COPPAComplianceService.swift */; };
+		695E7137F4F2A9B53F8B5087 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC18FCF446AEB0FB226DC0A /* SpeechRecognizer.swift */; };
+		6AE94D369B65D57C4CFCFC57 /* WeeklySessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91EE19981416EB16023FDB0 /* WeeklySessionService.swift */; };
+		6C306ED297D68AC9C7BC99CC /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F488E781EB8BDCDCA3598FE6 /* APIConfig.swift */; };
+		6D1C2BD62AAC589DD0B5C3DE /* LessonSlideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498B9998F6047D3E2CC3F72 /* LessonSlideView.swift */; };
+		708A64633C322CEE11B149DB /* EveningCheckInService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4C372555443F9887A35C05 /* EveningCheckInService.swift */; };
+		727558683E9DA0C209A7FABB /* CaregiverHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF7E2ED8B011757E4C418EE /* CaregiverHomeView.swift */; };
+		7DF48049D9C7CB08B7C80BB6 /* DomainGuardrail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF500D66CFE599366B19EAB /* DomainGuardrail.swift */; };
 		7F2DBF68DF1181AF7FEAC1B6 /* TicCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83703804BA79632C4A4B5E93 /* TicCalendarView.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F3 /* TicDetailEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* TicDetailEditSheet.swift */; };
+		81811A9C93727FFF1915D1E8 /* NightlyRitualSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7201C7D4F89C30CBDE435E94 /* NightlyRitualSheet.swift */; };
+		84E4436459BA6F561FCCF595 /* ChatUsageLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3599B5DF69BAF85C95F865E /* ChatUsageLimiter.swift */; };
+		8603ACA59C582362835EF9BF /* CBITCorpus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF189EC4ED53CA52460DA97 /* CBITCorpus.swift */; };
+		94847E4B29D4D640CEBC9236 /* SessionSchedulerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589E64C878DF44186FEFA67 /* SessionSchedulerView.swift */; };
 		95073885D89B21CF5F016CF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB46BFA286DCA74505A40DD /* Extensions.swift */; };
 		95E06ACCF653886F438E1C3A /* CaregiversView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169F057100115E870D7B326A /* CaregiversView.swift */; };
-		DD11EE22FF3344556677881A /* ParentResourceGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF3344556677880A /* ParentResourceGuideView.swift */; };
+		9E7C2DFC4660DB96994531EB /* TTSVoicePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAAC656E4B5811BDA0942D /* TTSVoicePreviewView.swift */; };
 		A16EECB8945354B96992D018 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B844254B8BD65A97BA744E3E /* OnboardingView.swift */; };
 		A2DA44673F11FEBAF53A67EA /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7AAA91AE853C7471BFA64D8 /* ChatViewModel.swift */; };
-		A5B6C7D8E9F0A5B6C7D8E9F0 /* KindCodeSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9A0B5C6D7E8F9A0 /* KindCodeSplashView.swift */; };
+		A58DABB12AC1DCB5C0088D09 /* ZiggyRetrievalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73AFAA84612824497EA5B357 /* ZiggyRetrievalService.swift */; };
 		A9D0AAD0AC01F026AB03FD78 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C9121C47E1F13303139AAF /* ChatView.swift */; };
-		AA00112233445566778801BB /* FamilyUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00112233445566778800BB /* FamilyUnit.swift */; };
-		AA00112233445566778801CC /* SessionMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00112233445566778800CC /* SessionMemory.swift */; };
-		AA001122334455667788BB02 /* CaregiverSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA001122334455667788BB01 /* CaregiverSessionStore.swift */; };
-		AA001122334455667788BB04 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA001122334455667788BB03 /* SpeechRecognizer.swift */; };
-		AA001122334455667788BB06 /* CaregiverOnboardingZiggyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA001122334455667788BB05 /* CaregiverOnboardingZiggyView.swift */; };
-		AA11BB22CC33DD44EE5501FF /* TTSVoicePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE5500FF /* TTSVoicePreviewView.swift */; };
-		BB00112233445566778801BB /* CBITSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800BB /* CBITSessionStore.swift */; };
-		BB00112233445566778801CC /* COPPAComplianceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800CC /* COPPAComplianceService.swift */; };
-		BB00112233445566778801DD /* COPPAConsentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800DD /* COPPAConsentService.swift */; };
-		BB00112233445566778801EE /* ChatUsageLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800EE /* ChatUsageLimiter.swift */; };
-		BB00112233445566778801FF /* DailyInstructionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00112233445566778800FF /* DailyInstructionEngine.swift */; };
-		BB001122334455667788BB00 /* EveningCheckInService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB00 /* EveningCheckInService.swift */; };
-		BB001122334455667788BB11 /* FamilyPINService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB11 /* FamilyPINService.swift */; };
-		BB001122334455667788BB22 /* ZiggyContentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB22 /* ZiggyContentFilter.swift */; };
-		BB001122334455667788BB33 /* ZiggyTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB33 /* ZiggyTTSService.swift */; };
-		BB001122334455667788BB44 /* ZiggyVoiceProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB44 /* ZiggyVoiceProfileService.swift */; };
-		BB001122334455667788BB55 /* ZiggyPIIScrubber.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB55 /* ZiggyPIIScrubber.swift */; };
-		BB001122334455667788BB66 /* ZiggyOutputFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB001122334455667700BB66 /* ZiggyOutputFilter.swift */; };
+		ACF16857790C79499D936C90 /* ZiggyVoiceProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EECC603EA185F3F4ACBCDED9 /* ZiggyVoiceProfileService.swift */; };
+		BC48EA3AE4CA87AE075CF9D2 /* ZiggyContentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E45A9285E1E820ADEF186A /* ZiggyContentFilter.swift */; };
 		BC81FD345D703DF571DD9DFC /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89BB656CE186D212AE77C77 /* UserProfile.swift */; };
+		BE9B972002A27594E31A2F74 /* FamilyUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77D815348FB0B49B4BC4E24 /* FamilyUnit.swift */; };
 		BECA973F64AAAB3F8DD311C1 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F3B3AF884F822A2B16AF1 /* HomeView.swift */; };
-		CC00112233445566778801BB /* CaregiverHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800BB /* CaregiverHomeView.swift */; };
-		CC00112233445566778801CC /* COPPAConsentSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800CC /* COPPAConsentSheet.swift */; };
-		CC00112233445566778801DD /* DeviceConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800DD /* DeviceConfigView.swift */; };
-		CC00112233445566778801EE /* FamilyOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800EE /* FamilyOnboardingView.swift */; };
-		CC00112233445566778801FF /* FamilyManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00112233445566778800FF /* FamilyManagementView.swift */; };
-		CC001122334455667788CC01 /* ZiggyOutOfScopeClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC001122334455667700CC01 /* ZiggyOutOfScopeClassifier.swift */; };
-		CC001122334455667788DD02 /* LegalDisclaimerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */; };
-		CC001122334455EE0002 /* ZiggyRAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC001122334455DD0002 /* ZiggyRAGService.swift */; };
+		C5FA3101C42C75168BD59CEB /* SessionMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D65B7A076A1F64507051D9 /* SessionMemory.swift */; };
+		C82DE0D08ECF335E042208C1 /* KindCodeSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0500ACAF3DC4C9B5C60D465 /* KindCodeSplashView.swift */; };
+		CB43CE17D61D089216BBD72D /* ZiggyTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FB2C26480E05F40D47FA2A /* ZiggyTTSService.swift */; };
+		D3C5431914D57FD38790B823 /* ZiggySessionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C56DDFC551AAF8A04A74C8 /* ZiggySessionContext.swift */; };
+		D6A9012464F4BF0FDA76BD70 /* TicDetailEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE554FF838C254B1A1593E62 /* TicDetailEditSheet.swift */; };
 		DBF7096ACEBDC35B850F6553 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408FE15906CCF6A5349C10B4 /* SettingsView.swift */; };
-		DD00112233445566778801BB /* ChildModeAdolescentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD00112233445566778800BB /* ChildModeAdolescentView.swift */; };
-		DD00112233445566778801CC /* ChildModeOlderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD00112233445566778800CC /* ChildModeOlderView.swift */; };
-		DD00112233445566778801DD /* ChildModeYoungView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD00112233445566778800DD /* ChildModeYoungView.swift */; };
-		DD00112233445566778801EE /* RewardMilestoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD00112233445566778800EE /* RewardMilestoneSheet.swift */; };
+		DD7994D474178FBFC9CFFA25 /* ZiggyOutputFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 944143F673A7E478DE0C1E5F /* ZiggyOutputFilter.swift */; };
+		E01FC098519D6065383CEC65 /* LegalDisclaimerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BAEAA1CC5BA5201722C0347 /* LegalDisclaimerScreen.swift */; };
 		E6E9EE01ABDF4C994C5F0CE2 /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA622FEF8B0C4AA7D7ED105F /* ClaudeService.swift */; };
-		EE00112233445566778801BB /* EveningCheckInSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE00112233445566778800BB /* EveningCheckInSheet.swift */; };
-		EE00112233445566778801CC /* NightlyRitualSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE00112233445566778800CC /* NightlyRitualSheet.swift */; };
+		E7030ACD45F884C687959C08 /* FamilyOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89D69E6BD537F69D991FA00 /* FamilyOnboardingView.swift */; };
+		EA1B35DE91CE30DAB9C5E91E /* ZiggyPIIScrubber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9444391D032067D33A2BE3 /* ZiggyPIIScrubber.swift */; };
+		EAAA0240AC68C8508C64E51E /* DailyInstructionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585C665331245DB693261002 /* DailyInstructionEngine.swift */; };
+		ECFCBC08DF9D365FD1CD7E12 /* ChildModeYoungView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8C6B6420C10889D47A0467 /* ChildModeYoungView.swift */; };
+		F75708F7183757E59B1E3F7D /* ZiggyTicMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17441803309200FAD4D9F711 /* ZiggyTicMappingView.swift */; };
+		F76E3D47888B15C642D544B2 /* ParentResourceGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0558047316E3FD14D8B46C06 /* ParentResourceGuideView.swift */; };
 		F7B4F6C4851AE61AEE68D38D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA8AB570F10309CDA560F08B /* Assets.xcassets */; };
+		F7B7DBEC690E8A82B882B842 /* TicIntakeAssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7ADB2A783C338D9E842305 /* TicIntakeAssessmentView.swift */; };
 		F7F201F165E896094C92F020 /* TicBuddyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 782A34C2B134480AAFA45339 /* TicBuddyApp.swift */; };
-		FF00112233445566778801BB /* FamilyModeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00112233445566778800BB /* FamilyModeRouter.swift */; };
-		FF001122334455AA00000002 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF001122334455AA00000001 /* APIConfig.swift */; };
-		TB039AAA000000000001 /* TicIntakeAssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB039AAA000000000002 /* TicIntakeAssessmentView.swift */; };
-		TBZ001000000000001 /* ZiggyTicMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TBZ001000000000002 /* ZiggyTicMappingView.swift */; };
-		TB059AAA000000000001 /* LessonSlide.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059AAA000000000002 /* LessonSlide.swift */; };
-		TB059BBB000000000001 /* CBITLessonService.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059BBB000000000002 /* CBITLessonService.swift */; };
-		TB059CCC000000000001 /* LessonSlideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB059CCC000000000002 /* LessonSlideView.swift */; };
-		TB065AAA000000000001 /* AppWalkthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB065AAA000000000002 /* AppWalkthroughView.swift */; };
-		TB096AAA000000000001 /* SessionSchedulerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB096AAA000000000002 /* SessionSchedulerService.swift */; };
-		TB096BBB000000000001 /* SessionSchedulerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TB096BBB000000000002 /* SessionSchedulerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		01DD8D92671F227613C9A9CB /* EveningCheckInSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EveningCheckInSheet.swift; sourceTree = "<group>"; };
+		0558047316E3FD14D8B46C06 /* ParentResourceGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentResourceGuideView.swift; sourceTree = "<group>"; };
+		057719DD8EBA9C001441D01E /* ChildModeOlderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeOlderView.swift; sourceTree = "<group>"; };
 		0F06DF9CD451CFE1544477B8 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		14B430F062CFDEF4FCE6C75D /* ChildModeAdolescentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeAdolescentView.swift; sourceTree = "<group>"; };
+		15676514FCF7413588C2C0AF /* OnDeviceEmbedder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDeviceEmbedder.swift; sourceTree = "<group>"; };
+		1589E64C878DF44186FEFA67 /* SessionSchedulerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSchedulerView.swift; sourceTree = "<group>"; };
 		169F057100115E870D7B326A /* CaregiversView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiversView.swift; sourceTree = "<group>"; };
-		DD11EE22FF3344556677880A /* ParentResourceGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentResourceGuideView.swift; sourceTree = "<group>"; };
+		17441803309200FAD4D9F711 /* ZiggyTicMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyTicMappingView.swift; sourceTree = "<group>"; };
+		1F9444391D032067D33A2BE3 /* ZiggyPIIScrubber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyPIIScrubber.swift; sourceTree = "<group>"; };
+		27FB2C26480E05F40D47FA2A /* ZiggyTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyTTSService.swift; sourceTree = "<group>"; };
+		2B43DDE86BCB881CE2200D0D /* CaregiverOnboardingZiggyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverOnboardingZiggyView.swift; sourceTree = "<group>"; };
+		2FF500D66CFE599366B19EAB /* DomainGuardrail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainGuardrail.swift; sourceTree = "<group>"; };
 		312ED1A05C2EF95FB9E84476 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		351F3B3AF884F822A2B16AF1 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		3BAEAA1CC5BA5201722C0347 /* LegalDisclaimerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDisclaimerScreen.swift; sourceTree = "<group>"; };
 		3D4D8AEC8F785942B06C52F7 /* TicEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicEntry.swift; sourceTree = "<group>"; };
 		408FE15906CCF6A5349C10B4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		45AD8DD4CC5147738E01177D /* FamilyPINService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyPINService.swift; sourceTree = "<group>"; };
+		4AA79622A45A144AF3AB7926 /* CaregiverSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverSessionStore.swift; sourceTree = "<group>"; };
+		4B02A64E42874409516549DD /* COPPAComplianceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAComplianceService.swift; sourceTree = "<group>"; };
+		4E3FEBF99FF1C3F69555422F /* DeviceConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceConfigView.swift; sourceTree = "<group>"; };
 		4EB46BFA286DCA74505A40DD /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		54048696834845F296817B8C /* ZiggyWeeklyIntroSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyWeeklyIntroSheet.swift; sourceTree = "<group>"; };
+		4EF189EC4ED53CA52460DA97 /* CBITCorpus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBITCorpus.swift; sourceTree = "<group>"; };
+		4F8C6B6420C10889D47A0467 /* ChildModeYoungView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeYoungView.swift; sourceTree = "<group>"; };
+		50FB72E88D3DDBF819412065 /* TextMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMatch.swift; sourceTree = "<group>"; };
+		545A5911EFF11AF720273EA0 /* RAGObservability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGObservability.swift; sourceTree = "<group>"; };
+		57D65B7A076A1F64507051D9 /* SessionMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionMemory.swift; sourceTree = "<group>"; };
+		585C665331245DB693261002 /* DailyInstructionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyInstructionEngine.swift; sourceTree = "<group>"; };
+		5D153DCCC5F843949B3A980F /* SessionSchedulerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSchedulerService.swift; sourceTree = "<group>"; };
 		5D6CACE3B1B8B20C28B1A604 /* WelcomeKindnessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeKindnessView.swift; sourceTree = "<group>"; };
+		5ECCB5819AE279D750201AE2 /* ZiggyWeeklyIntroSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyWeeklyIntroSheet.swift; sourceTree = "<group>"; };
+		6479979B9FBC55F099A66469 /* COPPAConsentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAConsentSheet.swift; sourceTree = "<group>"; };
+		675125B48C389F266624F058 /* AppWalkthroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWalkthroughView.swift; sourceTree = "<group>"; };
+		7201C7D4F89C30CBDE435E94 /* NightlyRitualSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightlyRitualSheet.swift; sourceTree = "<group>"; };
+		73AFAA84612824497EA5B357 /* ZiggyRetrievalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyRetrievalService.swift; sourceTree = "<group>"; };
 		782A34C2B134480AAFA45339 /* TicBuddyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicBuddyApp.swift; sourceTree = "<group>"; };
+		78C85963E6CEB2277A32946E /* COPPAConsentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAConsentService.swift; sourceTree = "<group>"; };
+		7C7ADB2A783C338D9E842305 /* TicIntakeAssessmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicIntakeAssessmentView.swift; sourceTree = "<group>"; };
+		829C258A8D279A75181A4125 /* LessonSlide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonSlide.swift; sourceTree = "<group>"; };
 		83703804BA79632C4A4B5E93 /* TicCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicCalendarView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* TicDetailEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicDetailEditSheet.swift; sourceTree = "<group>"; };
+		8498B9998F6047D3E2CC3F72 /* LessonSlideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonSlideView.swift; sourceTree = "<group>"; };
+		88646745C39DF34B06C59ABA /* RewardMilestoneSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardMilestoneSheet.swift; sourceTree = "<group>"; };
+		8E6A388F4C6031CD929D9941 /* FamilyManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyManagementView.swift; sourceTree = "<group>"; };
+		944143F673A7E478DE0C1E5F /* ZiggyOutputFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyOutputFilter.swift; sourceTree = "<group>"; };
+		96009037DD6DBDC73EC7B273 /* CBITLessonService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBITLessonService.swift; sourceTree = "<group>"; };
 		98FB435ABA626A64070DABBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A3599B5DF69BAF85C95F865E /* ChatUsageLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsageLimiter.swift; sourceTree = "<group>"; };
 		A7AAA91AE853C7471BFA64D8 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
-		AA00112233445566778800BB /* FamilyUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyUnit.swift; sourceTree = "<group>"; };
-		AA00112233445566778800CC /* SessionMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionMemory.swift; sourceTree = "<group>"; };
-		AA001122334455667788BB01 /* CaregiverSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverSessionStore.swift; sourceTree = "<group>"; };
-		AA001122334455667788BB03 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
-		AA001122334455667788BB05 /* CaregiverOnboardingZiggyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverOnboardingZiggyView.swift; sourceTree = "<group>"; };
-		AA11BB22CC33DD44EE5500FF /* TTSVoicePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSVoicePreviewView.swift; sourceTree = "<group>"; };
-		B5C6D7E8F9A0B5C6D7E8F9A0 /* KindCodeSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindCodeSplashView.swift; sourceTree = "<group>"; };
 		B844254B8BD65A97BA744E3E /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		B89BB656CE186D212AE77C77 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
-		BB001122334455667700BB00 /* EveningCheckInService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EveningCheckInService.swift; sourceTree = "<group>"; };
-		BB001122334455667700BB11 /* FamilyPINService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyPINService.swift; sourceTree = "<group>"; };
-		BB001122334455667700BB22 /* ZiggyContentFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyContentFilter.swift; sourceTree = "<group>"; };
-		BB001122334455667700BB33 /* ZiggyTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyTTSService.swift; sourceTree = "<group>"; };
-		BB001122334455667700BB44 /* ZiggyVoiceProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyVoiceProfileService.swift; sourceTree = "<group>"; };
-		BB001122334455667700BB55 /* ZiggyPIIScrubber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyPIIScrubber.swift; sourceTree = "<group>"; };
-		BB001122334455667700BB66 /* ZiggyOutputFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyOutputFilter.swift; sourceTree = "<group>"; };
-		BB00112233445566778800BB /* CBITSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBITSessionStore.swift; sourceTree = "<group>"; };
-		BB00112233445566778800CC /* COPPAComplianceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAComplianceService.swift; sourceTree = "<group>"; };
-		BB00112233445566778800DD /* COPPAConsentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAConsentService.swift; sourceTree = "<group>"; };
-		BB00112233445566778800EE /* ChatUsageLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsageLimiter.swift; sourceTree = "<group>"; };
-		BB00112233445566778800FF /* DailyInstructionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyInstructionEngine.swift; sourceTree = "<group>"; };
 		BB224F6CA6490708B217D6DC /* CompetingResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetingResponses.swift; sourceTree = "<group>"; };
-		CC001122334455667700CC01 /* ZiggyOutOfScopeClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyOutOfScopeClassifier.swift; sourceTree = "<group>"; };
-		CC00112233445566778800BB /* CaregiverHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverHomeView.swift; sourceTree = "<group>"; };
-		CC00112233445566778800CC /* COPPAConsentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPPAConsentSheet.swift; sourceTree = "<group>"; };
-		CC00112233445566778800DD /* DeviceConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceConfigView.swift; sourceTree = "<group>"; };
-		CC00112233445566778800EE /* FamilyOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyOnboardingView.swift; sourceTree = "<group>"; };
-		CC00112233445566778800FF /* FamilyManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyManagementView.swift; sourceTree = "<group>"; };
-		CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDisclaimerScreen.swift; sourceTree = "<group>"; };
-		CC001122334455DD0002 /* ZiggyRAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyRAGService.swift; sourceTree = "<group>"; };
+		C77D815348FB0B49B4BC4E24 /* FamilyUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyUnit.swift; sourceTree = "<group>"; };
+		CC4C372555443F9887A35C05 /* EveningCheckInService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EveningCheckInService.swift; sourceTree = "<group>"; };
+		CE00DD2745507199F80E6883 /* FamilyModeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyModeRouter.swift; sourceTree = "<group>"; };
+		CECAAC656E4B5811BDA0942D /* TTSVoicePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSVoicePreviewView.swift; sourceTree = "<group>"; };
+		D0500ACAF3DC4C9B5C60D465 /* KindCodeSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindCodeSplashView.swift; sourceTree = "<group>"; };
 		D7C9121C47E1F13303139AAF /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		D89D69E6BD537F69D991FA00 /* FamilyOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyOnboardingView.swift; sourceTree = "<group>"; };
+		D8D3EC19A9C927B45EE84842 /* CBITSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBITSessionStore.swift; sourceTree = "<group>"; };
+		D91EE19981416EB16023FDB0 /* WeeklySessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklySessionService.swift; sourceTree = "<group>"; };
 		DA8AB570F10309CDA560F08B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DD00112233445566778800BB /* ChildModeAdolescentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeAdolescentView.swift; sourceTree = "<group>"; };
-		DD00112233445566778800CC /* ChildModeOlderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeOlderView.swift; sourceTree = "<group>"; };
-		DD00112233445566778800DD /* ChildModeYoungView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildModeYoungView.swift; sourceTree = "<group>"; };
-		DD00112233445566778800EE /* RewardMilestoneSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardMilestoneSheet.swift; sourceTree = "<group>"; };
-		E5AECC4EBDC91497D133B279 /* TicBuddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TicBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DEC18FCF446AEB0FB226DC0A /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
+		E4C56DDFC551AAF8A04A74C8 /* ZiggySessionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggySessionContext.swift; sourceTree = "<group>"; };
+		E5AECC4EBDC91497D133B279 /* TicBuddy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TicBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E88EA618DA6173618F80FCBD /* OnDeviceRAGIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDeviceRAGIndex.swift; sourceTree = "<group>"; };
+		E9E45A9285E1E820ADEF186A /* ZiggyContentFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyContentFilter.swift; sourceTree = "<group>"; };
 		EA622FEF8B0C4AA7D7ED105F /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
-		EE00112233445566778800BB /* EveningCheckInSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EveningCheckInSheet.swift; sourceTree = "<group>"; };
-		EE00112233445566778800CC /* NightlyRitualSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightlyRitualSheet.swift; sourceTree = "<group>"; };
+		EECC603EA185F3F4ACBCDED9 /* ZiggyVoiceProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyVoiceProfileService.swift; sourceTree = "<group>"; };
+		F488E781EB8BDCDCA3598FE6 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		F84BD3A0FD0620A66EAC970D /* TicDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicDataService.swift; sourceTree = "<group>"; };
-		FE8F603E01474268BBA728D8 /* WeeklySessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklySessionService.swift; sourceTree = "<group>"; };
-		FF00112233445566778800BB /* FamilyModeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyModeRouter.swift; sourceTree = "<group>"; };
-		FF001122334455AA00000001 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
-		TB039AAA000000000002 /* TicIntakeAssessmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicIntakeAssessmentView.swift; sourceTree = "<group>"; };
-		TBZ001000000000002 /* ZiggyTicMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZiggyTicMappingView.swift; sourceTree = "<group>"; };
-		TB059AAA000000000002 /* LessonSlide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonSlide.swift; sourceTree = "<group>"; };
-		TB059BBB000000000002 /* CBITLessonService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBITLessonService.swift; sourceTree = "<group>"; };
-		TB059CCC000000000002 /* LessonSlideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonSlideView.swift; sourceTree = "<group>"; };
-		TB065AAA000000000002 /* AppWalkthroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWalkthroughView.swift; sourceTree = "<group>"; };
-		TB096AAA000000000002 /* SessionSchedulerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSchedulerService.swift; sourceTree = "<group>"; };
-		TB096BBB000000000002 /* SessionSchedulerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSchedulerView.swift; sourceTree = "<group>"; };
+		FDF7E2ED8B011757E4C418EE /* CaregiverHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaregiverHomeView.swift; sourceTree = "<group>"; };
+		FE554FF838C254B1A1593E62 /* TicDetailEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicDetailEditSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0EEB5F307248FD007DA517D1 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				CE00DD2745507199F80E6883 /* FamilyModeRouter.swift */,
 				14022C4F85D503DEC759A3A8 /* Calendar */,
 				70469651E2114A16BE4CE6A5 /* Chat */,
-				DD001122334455667788CCCC /* ChildMode */,
-				EE001122334455667788CCCC /* Evening */,
+				86B7A645388A11BBEB014078 /* ChildMode */,
+				E8C61A8367825C8E0036F3D2 /* Evening */,
 				7C5E3B670FC65924377AC154 /* Home */,
-				TB059DDD000000000001 /* Lessons */,
-				TB096CCC000000000001 /* Sessions */,
+				514B213ACA2EAEFFFCFE5AEA /* Lessons */,
 				E41D1230E4AF537D5FBC8125 /* Onboarding */,
+				4790927321B9A59609408729 /* Sessions */,
 				C1E9DF338FF4362F3946CA93 /* Settings */,
-				FF00112233445566778800BB /* FamilyModeRouter.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -174,9 +186,25 @@
 			isa = PBXGroup;
 			children = (
 				83703804BA79632C4A4B5E93 /* TicCalendarView.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1F2 /* TicDetailEditSheet.swift */,
+				FE554FF838C254B1A1593E62 /* TicDetailEditSheet.swift */,
 			);
 			path = Calendar;
+			sourceTree = "<group>";
+		};
+		4790927321B9A59609408729 /* Sessions */ = {
+			isa = PBXGroup;
+			children = (
+				1589E64C878DF44186FEFA67 /* SessionSchedulerView.swift */,
+			);
+			path = Sessions;
+			sourceTree = "<group>";
+		};
+		514B213ACA2EAEFFFCFE5AEA /* Lessons */ = {
+			isa = PBXGroup;
+			children = (
+				8498B9998F6047D3E2CC3F72 /* LessonSlideView.swift */,
+			);
+			path = Lessons;
 			sourceTree = "<group>";
 		};
 		70469651E2114A16BE4CE6A5 /* Chat */ = {
@@ -193,8 +221,8 @@
 				DA8AB570F10309CDA560F08B /* Assets.xcassets */,
 				4EB46BFA286DCA74505A40DD /* Extensions.swift */,
 				98FB435ABA626A64070DABBE /* Info.plist */,
+				D0500ACAF3DC4C9B5C60D465 /* KindCodeSplashView.swift */,
 				782A34C2B134480AAFA45339 /* TicBuddyApp.swift */,
-				B5C6D7E8F9A0B5C6D7E8F9A0 /* KindCodeSplashView.swift */,
 				E4B9474851FDD503B9D7C66B /* Models */,
 				FFFA72600546CA9E824786F4 /* Services */,
 				11C7539830F6FA4A66EEAA8F /* ViewModels */,
@@ -206,12 +234,37 @@
 		7C5E3B670FC65924377AC154 /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				CC00112233445566778800BB /* CaregiverHomeView.swift */,
-				AA001122334455667788BB05 /* CaregiverOnboardingZiggyView.swift */,
+				FDF7E2ED8B011757E4C418EE /* CaregiverHomeView.swift */,
+				2B43DDE86BCB881CE2200D0D /* CaregiverOnboardingZiggyView.swift */,
 				351F3B3AF884F822A2B16AF1 /* HomeView.swift */,
 				312ED1A05C2EF95FB9E84476 /* ProgressView.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		84242982CF04BDC11D43CBE3 /* RAG */ = {
+			isa = PBXGroup;
+			children = (
+				4EF189EC4ED53CA52460DA97 /* CBITCorpus.swift */,
+				2FF500D66CFE599366B19EAB /* DomainGuardrail.swift */,
+				15676514FCF7413588C2C0AF /* OnDeviceEmbedder.swift */,
+				E88EA618DA6173618F80FCBD /* OnDeviceRAGIndex.swift */,
+				545A5911EFF11AF720273EA0 /* RAGObservability.swift */,
+				50FB72E88D3DDBF819412065 /* TextMatch.swift */,
+			);
+			path = RAG;
+			sourceTree = "<group>";
+		};
+		86B7A645388A11BBEB014078 /* ChildMode */ = {
+			isa = PBXGroup;
+			children = (
+				14B430F062CFDEF4FCE6C75D /* ChildModeAdolescentView.swift */,
+				057719DD8EBA9C001441D01E /* ChildModeOlderView.swift */,
+				4F8C6B6420C10889D47A0467 /* ChildModeYoungView.swift */,
+				88646745C39DF34B06C59ABA /* RewardMilestoneSheet.swift */,
+				5ECCB5819AE279D750201AE2 /* ZiggyWeeklyIntroSheet.swift */,
+			);
+			path = ChildMode;
 			sourceTree = "<group>";
 		};
 		8F3C251955CF984AEE368B35 = {
@@ -234,38 +287,26 @@
 			isa = PBXGroup;
 			children = (
 				169F057100115E870D7B326A /* CaregiversView.swift */,
-				CC00112233445566778800FF /* FamilyManagementView.swift */,
-				DD11EE22FF3344556677880A /* ParentResourceGuideView.swift */,
+				8E6A388F4C6031CD929D9941 /* FamilyManagementView.swift */,
+				0558047316E3FD14D8B46C06 /* ParentResourceGuideView.swift */,
 				408FE15906CCF6A5349C10B4 /* SettingsView.swift */,
-				AA11BB22CC33DD44EE5500FF /* TTSVoicePreviewView.swift */,
+				CECAAC656E4B5811BDA0942D /* TTSVoicePreviewView.swift */,
 			);
 			path = Settings;
-			sourceTree = "<group>";
-		};
-		DD001122334455667788CCCC /* ChildMode */ = {
-			isa = PBXGroup;
-			children = (
-				DD00112233445566778800BB /* ChildModeAdolescentView.swift */,
-				DD00112233445566778800CC /* ChildModeOlderView.swift */,
-				DD00112233445566778800DD /* ChildModeYoungView.swift */,
-				DD00112233445566778800EE /* RewardMilestoneSheet.swift */,
-				54048696834845F296817B8C /* ZiggyWeeklyIntroSheet.swift */,
-			);
-			path = ChildMode;
 			sourceTree = "<group>";
 		};
 		E41D1230E4AF537D5FBC8125 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				TB065AAA000000000002 /* AppWalkthroughView.swift */,
-				CC00112233445566778800CC /* COPPAConsentSheet.swift */,
-				CC00112233445566778800DD /* DeviceConfigView.swift */,
-				CC00112233445566778800EE /* FamilyOnboardingView.swift */,
-				CC001122334455667788DD01 /* LegalDisclaimerScreen.swift */,
+				675125B48C389F266624F058 /* AppWalkthroughView.swift */,
+				6479979B9FBC55F099A66469 /* COPPAConsentSheet.swift */,
+				4E3FEBF99FF1C3F69555422F /* DeviceConfigView.swift */,
+				D89D69E6BD537F69D991FA00 /* FamilyOnboardingView.swift */,
+				3BAEAA1CC5BA5201722C0347 /* LegalDisclaimerScreen.swift */,
 				B844254B8BD65A97BA744E3E /* OnboardingView.swift */,
+				7C7ADB2A783C338D9E842305 /* TicIntakeAssessmentView.swift */,
 				5D6CACE3B1B8B20C28B1A604 /* WelcomeKindnessView.swift */,
-				TB039AAA000000000002 /* TicIntakeAssessmentView.swift */,
-				TBZ001000000000002 /* ZiggyTicMappingView.swift */,
+				17441803309200FAD4D9F711 /* ZiggyTicMappingView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -274,20 +315,21 @@
 			isa = PBXGroup;
 			children = (
 				BB224F6CA6490708B217D6DC /* CompetingResponses.swift */,
-				AA00112233445566778800BB /* FamilyUnit.swift */,
-				TB059AAA000000000002 /* LessonSlide.swift */,
-				AA00112233445566778800CC /* SessionMemory.swift */,
+				C77D815348FB0B49B4BC4E24 /* FamilyUnit.swift */,
+				829C258A8D279A75181A4125 /* LessonSlide.swift */,
+				57D65B7A076A1F64507051D9 /* SessionMemory.swift */,
 				3D4D8AEC8F785942B06C52F7 /* TicEntry.swift */,
 				B89BB656CE186D212AE77C77 /* UserProfile.swift */,
+				E4C56DDFC551AAF8A04A74C8 /* ZiggySessionContext.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		EE001122334455667788CCCC /* Evening */ = {
+		E8C61A8367825C8E0036F3D2 /* Evening */ = {
 			isa = PBXGroup;
 			children = (
-				EE00112233445566778800BB /* EveningCheckInSheet.swift */,
-				EE00112233445566778800CC /* NightlyRitualSheet.swift */,
+				01DD8D92671F227613C9A9CB /* EveningCheckInSheet.swift */,
+				7201C7D4F89C30CBDE435E94 /* NightlyRitualSheet.swift */,
 			);
 			path = Evening;
 			sourceTree = "<group>";
@@ -295,47 +337,31 @@
 		FFFA72600546CA9E824786F4 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				FF001122334455AA00000001 /* APIConfig.swift */,
-				TB059BBB000000000002 /* CBITLessonService.swift */,
-				BB00112233445566778800BB /* CBITSessionStore.swift */,
-				AA001122334455667788BB01 /* CaregiverSessionStore.swift */,
-				BB00112233445566778800EE /* ChatUsageLimiter.swift */,
+				F488E781EB8BDCDCA3598FE6 /* APIConfig.swift */,
+				4AA79622A45A144AF3AB7926 /* CaregiverSessionStore.swift */,
+				96009037DD6DBDC73EC7B273 /* CBITLessonService.swift */,
+				D8D3EC19A9C927B45EE84842 /* CBITSessionStore.swift */,
+				A3599B5DF69BAF85C95F865E /* ChatUsageLimiter.swift */,
 				EA622FEF8B0C4AA7D7ED105F /* ClaudeService.swift */,
-				BB00112233445566778800CC /* COPPAComplianceService.swift */,
-				BB00112233445566778800DD /* COPPAConsentService.swift */,
-				BB00112233445566778800FF /* DailyInstructionEngine.swift */,
-				BB001122334455667700BB00 /* EveningCheckInService.swift */,
-				TB096AAA000000000002 /* SessionSchedulerService.swift */,
-				BB001122334455667700BB11 /* FamilyPINService.swift */,
+				4B02A64E42874409516549DD /* COPPAComplianceService.swift */,
+				78C85963E6CEB2277A32946E /* COPPAConsentService.swift */,
+				585C665331245DB693261002 /* DailyInstructionEngine.swift */,
+				CC4C372555443F9887A35C05 /* EveningCheckInService.swift */,
+				45AD8DD4CC5147738E01177D /* FamilyPINService.swift */,
 				0F06DF9CD451CFE1544477B8 /* KeychainHelper.swift */,
-				AA001122334455667788BB03 /* SpeechRecognizer.swift */,
+				5D153DCCC5F843949B3A980F /* SessionSchedulerService.swift */,
+				DEC18FCF446AEB0FB226DC0A /* SpeechRecognizer.swift */,
 				F84BD3A0FD0620A66EAC970D /* TicDataService.swift */,
-				BB001122334455667700BB22 /* ZiggyContentFilter.swift */,
-				BB001122334455667700BB33 /* ZiggyTTSService.swift */,
-				BB001122334455667700BB44 /* ZiggyVoiceProfileService.swift */,
-				BB001122334455667700BB55 /* ZiggyPIIScrubber.swift */,
-				BB001122334455667700BB66 /* ZiggyOutputFilter.swift */,
-				CC001122334455667700CC01 /* ZiggyOutOfScopeClassifier.swift */,
-				CC001122334455DD0002 /* ZiggyRAGService.swift */,
-				FE8F603E01474268BBA728D8 /* WeeklySessionService.swift */,
+				D91EE19981416EB16023FDB0 /* WeeklySessionService.swift */,
+				E9E45A9285E1E820ADEF186A /* ZiggyContentFilter.swift */,
+				944143F673A7E478DE0C1E5F /* ZiggyOutputFilter.swift */,
+				1F9444391D032067D33A2BE3 /* ZiggyPIIScrubber.swift */,
+				73AFAA84612824497EA5B357 /* ZiggyRetrievalService.swift */,
+				27FB2C26480E05F40D47FA2A /* ZiggyTTSService.swift */,
+				EECC603EA185F3F4ACBCDED9 /* ZiggyVoiceProfileService.swift */,
+				84242982CF04BDC11D43CBE3 /* RAG */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		TB059DDD000000000001 /* Lessons */ = {
-			isa = PBXGroup;
-			children = (
-				TB059CCC000000000002 /* LessonSlideView.swift */,
-			);
-			path = Lessons;
-			sourceTree = "<group>";
-		};
-		TB096CCC000000000001 /* Sessions */ = {
-			isa = PBXGroup;
-			children = (
-				TB096BBB000000000002 /* SessionSchedulerView.swift */,
-			);
-			path = Sessions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -367,9 +393,13 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					07FCE413F669D70FC42D9A8C = {
+						DevelopmentTeam = "";
+					};
+				};
 			};
 			buildConfigurationList = 1BFF264029540F29C4033459 /* Build configuration list for PBXProject "TicBuddy" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -378,6 +408,8 @@
 			);
 			mainGroup = 8F3C251955CF984AEE368B35;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B40113EDBEED30624387C38E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -402,70 +434,76 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C306ED297D68AC9C7BC99CC /* APIConfig.swift in Sources */,
+				4CEA898C7E3A3969C83B0830 /* AppWalkthroughView.swift in Sources */,
+				8603ACA59C582362835EF9BF /* CBITCorpus.swift in Sources */,
+				17062097DAA3C0CC66007592 /* CBITLessonService.swift in Sources */,
+				0F84B00B984AC1B47D6153B0 /* CBITSessionStore.swift in Sources */,
+				65B5D1B6E72A73EBC514813E /* COPPAComplianceService.swift in Sources */,
+				1DC869832A8B4704CAB091F8 /* COPPAConsentService.swift in Sources */,
+				2A4CA15B7A518726FCD832FD /* COPPAConsentSheet.swift in Sources */,
+				727558683E9DA0C209A7FABB /* CaregiverHomeView.swift in Sources */,
+				21E88D711B28C735718D7FCA /* CaregiverOnboardingZiggyView.swift in Sources */,
+				1D5BC367269274C0E1FA9979 /* CaregiverSessionStore.swift in Sources */,
 				95E06ACCF653886F438E1C3A /* CaregiversView.swift in Sources */,
-				DD11EE22FF3344556677881A /* ParentResourceGuideView.swift in Sources */,
+				84E4436459BA6F561FCCF595 /* ChatUsageLimiter.swift in Sources */,
 				A9D0AAD0AC01F026AB03FD78 /* ChatView.swift in Sources */,
 				A2DA44673F11FEBAF53A67EA /* ChatViewModel.swift in Sources */,
+				45793CAB984A918F0ED99928 /* ChildModeAdolescentView.swift in Sources */,
+				5520E6B965D58216A2B4F0A0 /* ChildModeOlderView.swift in Sources */,
+				ECFCBC08DF9D365FD1CD7E12 /* ChildModeYoungView.swift in Sources */,
 				E6E9EE01ABDF4C994C5F0CE2 /* ClaudeService.swift in Sources */,
 				41AE28CF9F423DC4C98A090B /* CompetingResponses.swift in Sources */,
+				EAAA0240AC68C8508C64E51E /* DailyInstructionEngine.swift in Sources */,
+				3A60CBB0970F43520320ACEE /* DeviceConfigView.swift in Sources */,
+				7DF48049D9C7CB08B7C80BB6 /* DomainGuardrail.swift in Sources */,
+				708A64633C322CEE11B149DB /* EveningCheckInService.swift in Sources */,
+				3201A71F26D43A30F611677D /* EveningCheckInSheet.swift in Sources */,
 				95073885D89B21CF5F016CF4 /* Extensions.swift in Sources */,
+				52F54A443D4213C09B5D73C5 /* FamilyManagementView.swift in Sources */,
+				53E99DDCB47DFCB5D1767DCC /* FamilyModeRouter.swift in Sources */,
+				E7030ACD45F884C687959C08 /* FamilyOnboardingView.swift in Sources */,
+				5F4B4AFA54CAB73608562E7C /* FamilyPINService.swift in Sources */,
+				BE9B972002A27594E31A2F74 /* FamilyUnit.swift in Sources */,
 				BECA973F64AAAB3F8DD311C1 /* HomeView.swift in Sources */,
 				4B573A59180F43FF1C78F04F /* KeychainHelper.swift in Sources */,
-				A5B6C7D8E9F0A5B6C7D8E9F0 /* KindCodeSplashView.swift in Sources */,
+				C82DE0D08ECF335E042208C1 /* KindCodeSplashView.swift in Sources */,
+				E01FC098519D6065383CEC65 /* LegalDisclaimerScreen.swift in Sources */,
+				01BD4B745282C27296B04DB3 /* LessonSlide.swift in Sources */,
+				6D1C2BD62AAC589DD0B5C3DE /* LessonSlideView.swift in Sources */,
+				81811A9C93727FFF1915D1E8 /* NightlyRitualSheet.swift in Sources */,
+				3492959C3700E53128D75102 /* OnDeviceEmbedder.swift in Sources */,
+				4C873294681EAB889475573A /* OnDeviceRAGIndex.swift in Sources */,
 				A16EECB8945354B96992D018 /* OnboardingView.swift in Sources */,
+				F76E3D47888B15C642D544B2 /* ParentResourceGuideView.swift in Sources */,
 				63723E9002769736B897B48C /* ProgressView.swift in Sources */,
+				48C31A54CF41EBED15110BEC /* RAGObservability.swift in Sources */,
+				51E68595B63AF75ACD65CD4F /* RewardMilestoneSheet.swift in Sources */,
+				C5FA3101C42C75168BD59CEB /* SessionMemory.swift in Sources */,
+				54533CAE6CFA58C07F6BFC86 /* SessionSchedulerService.swift in Sources */,
+				94847E4B29D4D640CEBC9236 /* SessionSchedulerView.swift in Sources */,
 				DBF7096ACEBDC35B850F6553 /* SettingsView.swift in Sources */,
-				AA11BB22CC33DD44EE5501FF /* TTSVoicePreviewView.swift in Sources */,
+				695E7137F4F2A9B53F8B5087 /* SpeechRecognizer.swift in Sources */,
+				9E7C2DFC4660DB96994531EB /* TTSVoicePreviewView.swift in Sources */,
+				10DF4CA020C358CB9FE455BF /* TextMatch.swift in Sources */,
 				F7F201F165E896094C92F020 /* TicBuddyApp.swift in Sources */,
 				7F2DBF68DF1181AF7FEAC1B6 /* TicCalendarView.swift in Sources */,
-				A1B2C3D4E5F6A7B8C9D0E1F3 /* TicDetailEditSheet.swift in Sources */,
 				48ADEB5FB1CE044BA099F9FC /* TicDataService.swift in Sources */,
+				D6A9012464F4BF0FDA76BD70 /* TicDetailEditSheet.swift in Sources */,
 				1AAC28696A94AD697AD945A8 /* TicEntry.swift in Sources */,
+				F7B7DBEC690E8A82B882B842 /* TicIntakeAssessmentView.swift in Sources */,
 				BC81FD345D703DF571DD9DFC /* UserProfile.swift in Sources */,
+				6AE94D369B65D57C4CFCFC57 /* WeeklySessionService.swift in Sources */,
 				3C34DE5C305BAD18189CD26D /* WelcomeKindnessView.swift in Sources */,
-				AA00112233445566778801BB /* FamilyUnit.swift in Sources */,
-				AA00112233445566778801CC /* SessionMemory.swift in Sources */,
-				BB00112233445566778801BB /* CBITSessionStore.swift in Sources */,
-				BB00112233445566778801CC /* COPPAComplianceService.swift in Sources */,
-				BB00112233445566778801DD /* COPPAConsentService.swift in Sources */,
-				BB00112233445566778801EE /* ChatUsageLimiter.swift in Sources */,
-				BB00112233445566778801FF /* DailyInstructionEngine.swift in Sources */,
-				BB001122334455667788BB00 /* EveningCheckInService.swift in Sources */,
-				BB001122334455667788BB11 /* FamilyPINService.swift in Sources */,
-				BB001122334455667788BB22 /* ZiggyContentFilter.swift in Sources */,
-				BB001122334455667788BB33 /* ZiggyTTSService.swift in Sources */,
-				BB001122334455667788BB44 /* ZiggyVoiceProfileService.swift in Sources */,
-				BB001122334455667788BB55 /* ZiggyPIIScrubber.swift in Sources */,
-				BB001122334455667788BB66 /* ZiggyOutputFilter.swift in Sources */,
-				CC001122334455667788CC01 /* ZiggyOutOfScopeClassifier.swift in Sources */,
-				CC001122334455EE0002 /* ZiggyRAGService.swift in Sources */,
-				FF001122334455AA00000002 /* APIConfig.swift in Sources */,
-				CC00112233445566778801BB /* CaregiverHomeView.swift in Sources */,
-				CC00112233445566778801CC /* COPPAConsentSheet.swift in Sources */,
-				CC00112233445566778801DD /* DeviceConfigView.swift in Sources */,
-				CC00112233445566778801EE /* FamilyOnboardingView.swift in Sources */,
-				CC00112233445566778801FF /* FamilyManagementView.swift in Sources */,
-				DD00112233445566778801BB /* ChildModeAdolescentView.swift in Sources */,
-				DD00112233445566778801CC /* ChildModeOlderView.swift in Sources */,
-				DD00112233445566778801DD /* ChildModeYoungView.swift in Sources */,
-				DD00112233445566778801EE /* RewardMilestoneSheet.swift in Sources */,
-				EE00112233445566778801BB /* EveningCheckInSheet.swift in Sources */,
-				EE00112233445566778801CC /* NightlyRitualSheet.swift in Sources */,
-				FF00112233445566778801BB /* FamilyModeRouter.swift in Sources */,
-				69F005DFB8EB4E899001DC16 /* WeeklySessionService.swift in Sources */,
-				1E21831007FD455388829A21 /* ZiggyWeeklyIntroSheet.swift in Sources */,
-				AA001122334455667788BB02 /* CaregiverSessionStore.swift in Sources */,
-				AA001122334455667788BB04 /* SpeechRecognizer.swift in Sources */,
-				AA001122334455667788BB06 /* CaregiverOnboardingZiggyView.swift in Sources */,
-				CC001122334455667788DD02 /* LegalDisclaimerScreen.swift in Sources */,
-				TB059AAA000000000001 /* LessonSlide.swift in Sources */,
-				TB059BBB000000000001 /* CBITLessonService.swift in Sources */,
-				TB059CCC000000000001 /* LessonSlideView.swift in Sources */,
-				TB065AAA000000000001 /* AppWalkthroughView.swift in Sources */,
-				TB039AAA000000000001 /* TicIntakeAssessmentView.swift in Sources */,
-				TBZ001000000000001 /* ZiggyTicMappingView.swift in Sources */,
-				TB096AAA000000000001 /* SessionSchedulerService.swift in Sources */,
-				TB096BBB000000000001 /* SessionSchedulerView.swift in Sources */,
+				BC48EA3AE4CA87AE075CF9D2 /* ZiggyContentFilter.swift in Sources */,
+				DD7994D474178FBFC9CFFA25 /* ZiggyOutputFilter.swift in Sources */,
+				EA1B35DE91CE30DAB9C5E91E /* ZiggyPIIScrubber.swift in Sources */,
+				A58DABB12AC1DCB5C0088D09 /* ZiggyRetrievalService.swift in Sources */,
+				D3C5431914D57FD38790B823 /* ZiggySessionContext.swift in Sources */,
+				CB43CE17D61D089216BBD72D /* ZiggyTTSService.swift in Sources */,
+				F75708F7183757E59B1E3F7D /* ZiggyTicMappingView.swift in Sources */,
+				ACF16857790C79499D936C90 /* ZiggyVoiceProfileService.swift in Sources */,
+				4D4E4EB32A932D3F494D093A /* ZiggyWeeklyIntroSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -535,7 +573,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = G6U69FC9H3;
 				INFOPLIST_FILE = TicBuddy/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -555,7 +592,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = G6U69FC9H3;
 				INFOPLIST_FILE = TicBuddy/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (

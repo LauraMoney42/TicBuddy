@@ -27,7 +27,10 @@ class ChatViewModel: ObservableObject {
     private let contentFilter = ZiggyContentFilter.shared
     private let piiScrubber = ZiggyPIIScrubber.shared      // tb-rag-002: strip PII before API
     private let outputFilter = ZiggyOutputFilter.shared    // tb-rag-004: scan response before delivery
-    private let ragService = ZiggyRAGService.shared        // tb-rag-001: CBIT knowledge retrieval
+    // tb-rag-ondevice-006: on-device RAG + layered domain guardrail. Replaces the
+    // legacy remote ZiggyRAGService (Voyage AI + Supabase), which required external
+    // infra not shipped with the app. Retrieval + guardrail now run fully on-device.
+    private let retrievalService = ZiggyRetrievalService.shared
     /// TTS service — shared singleton so the speaker toggle in ChatView binds live
     let ttsService = ZiggyTTSService.shared
 
@@ -47,6 +50,9 @@ class ChatViewModel: ObservableObject {
         if messages.isEmpty {
             addWelcomeMessage()
         }
+        // Embed the CBIT corpus + centroid off the main thread so the first
+        // message has no retrieval hitch (idempotent).
+        retrievalService.warmUp()
     }
 
     // MARK: - Active Child Helpers
@@ -202,12 +208,30 @@ class ChatViewModel: ObservableObject {
                 let scrubbed = piiScrubber.scrub(text)
                 let apiUserMessage = scrubbed.scrubbed
 
-                // tb-rag-001: Fetch relevant CBIT knowledge chunks (best-effort, non-blocking).
-                // Uses the PII-scrubbed message + voice profile/phase filters for precision retrieval.
-                // Returns nil if RAG is unavailable; Claude responds from base knowledge only.
-                let ragBlock = await ragService.fetchContext(
+                // tb-rag-ondevice-004: DOMAIN GUARDRAIL. Runs fully on-device on the
+                // scrubbed message. If out of scope (medication, diagnosis, clearly
+                // off-topic, or semantically distant from the CBIT corpus), reply with
+                // a warm redirect and DO NOT call the Claude API — saving latency/cost
+                // and enforcing scope deterministically.
+                switch retrievalService.checkScope(apiUserMessage) {
+                case .inScope:
+                    break
+                case let .outOfScope(_, redirect):
+                    let redirectMessage = ChatMessage(role: .assistant, content: redirect)
+                    messages.append(redirectMessage)
+                    ttsService.speak(text: redirect, voiceProfile: activeVoiceProfile)
+                    startWordReveal(text: redirect, messageId: redirectMessage.id)
+                    saveHistory()
+                    isLoading = false
+                    return
+                }
+
+                // tb-rag-ondevice-006: Retrieve relevant CBIT knowledge chunks ON-DEVICE
+                // (NLEmbedding + hybrid cosine/lexical). Uses the PII-scrubbed message +
+                // phase/tic-type filters. Returns nil if nothing relevant; Claude then
+                // responds from base knowledge only. No network, no data leaves the phone.
+                let ragBlock = await retrievalService.groundingBlock(
                     for: apiUserMessage,
-                    voiceProfile: activeVoiceProfile,
                     phase: dataService.activeUserProfile.recommendedPhase,
                     ticCategories: dataService.activeUserProfile.primaryTicCategories
                 )

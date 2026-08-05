@@ -440,8 +440,9 @@ class ClaudeService: ObservableObject {
             + [ProxyMessage(role: "user", content: userMessage)]
 
         // Build proxy request: { messages, systemPrompt, model }
-        // tb-rag-001: RAG context is retrieved iOS-side by ZiggyRAGService and injected
-        // into the system prompt via memoryInjection before this call (see ChatViewModel).
+        // tb-rag-ondevice-006: RAG context is retrieved ON-DEVICE by ZiggyRetrievalService
+        // and injected into the system prompt via memoryInjection before this call
+        // (see ChatViewModel). No retrieval happens server-side.
         let request = TicTalkRequest(
             messages: proxyMessages,
             systemPrompt: systemPrompt,
@@ -460,14 +461,9 @@ class ClaudeService: ObservableObject {
         }
         urlRequest.httpBody = try JSONEncoder().encode(request)
 
-        let (data, response) = try await URLSession.shared.data(for: urlRequest)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-            throw ClaudeError.apiError("Status \(statusCode): \(String(data: data, encoding: .utf8) ?? "unknown")")
-        }
-
-        // Proxy returns { response: string }
+        // tb-rag-ondevice-009: retry + exponential backoff on transient failures,
+        // with per-attempt observability. Proxy returns { response: string }.
+        let data = try await performWithRetry(urlRequest)
         let decoded = try JSONDecoder().decode(TicTalkResponse.self, from: data)
         return decoded.response
     }
@@ -504,13 +500,8 @@ class ClaudeService: ObservableObject {
         urlRequest.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         urlRequest.httpBody = try JSONEncoder().encode(request)
 
-        let (data, response) = try await URLSession.shared.data(for: urlRequest)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-            throw ClaudeError.apiError("Status \(statusCode): \(String(data: data, encoding: .utf8) ?? "unknown")")
-        }
-
+        // tb-rag-ondevice-009: retry + backoff + observability (shared helper).
+        let data = try await performWithRetry(urlRequest)
         let decoded = try JSONDecoder().decode(TicTalkResponse.self, from: data)
         return decoded.response
     }
@@ -620,11 +611,8 @@ class ClaudeService: ObservableObject {
         urlRequest.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         urlRequest.httpBody = try JSONEncoder().encode(request)
 
-        let (data, response) = try await URLSession.shared.data(for: urlRequest)
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw ClaudeError.apiError("Extraction request failed")
-        }
-
+        // tb-rag-ondevice-009: retry + backoff + observability (shared helper).
+        let data = try await performWithRetry(urlRequest)
         let decoded = try JSONDecoder().decode(TicTalkResponse.self, from: data)
         let rawJSON = decoded.response.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -652,16 +640,91 @@ class ClaudeService: ObservableObject {
             )
         }
     }
+
+    // MARK: - Reliability: retry + exponential backoff (tb-rag-ondevice-009)
+
+    /// Perform a proxy request with bounded retries and exponential backoff.
+    ///
+    /// Retries ONLY transient failures — network dropouts and 429/5xx responses —
+    /// so a genuine 4xx (bad auth, bad request) fails fast without hammering the
+    /// proxy. Every attempt is logged (metadata only) via RAGObservability; no
+    /// message content is ever recorded, preserving the on-device PII contract.
+    ///
+    /// - Returns: the 200 response body on success.
+    /// - Throws: `ClaudeError.network` / `.httpStatus` once retries are exhausted.
+    private func performWithRetry(_ urlRequest: URLRequest, maxAttempts: Int = 3) async throws -> Data {
+        var lastLabel = "unknown"
+        for attempt in 1...maxAttempts {
+            let start = Date()
+            do {
+                let (data, response) = try await URLSession.shared.data(for: urlRequest)
+                let ms = Int(Date().timeIntervalSince(start) * 1000)
+                guard let http = response as? HTTPURLResponse else {
+                    throw ClaudeError.apiError("No HTTP response")
+                }
+                if http.statusCode == 200 {
+                    RAGObservability.shared.logClaude(kind: .claudeRequest, latencyMs: ms, attempt: attempt)
+                    return data
+                }
+                // Transient server-side conditions → back off and retry.
+                if (http.statusCode == 429 || (500...599).contains(http.statusCode)), attempt < maxAttempts {
+                    lastLabel = "http_\(http.statusCode)"
+                    RAGObservability.shared.logClaude(kind: .claudeRetry, latencyMs: ms, attempt: attempt, errorLabel: lastLabel)
+                    try await Self.backoff(attempt: attempt)
+                    continue
+                }
+                // Non-retryable status (or out of attempts) → surface.
+                let body = String(data: data, encoding: .utf8) ?? "unknown"
+                RAGObservability.shared.logClaude(kind: .claudeError, latencyMs: ms, attempt: attempt, errorLabel: "http_\(http.statusCode)")
+                throw ClaudeError.httpStatus(http.statusCode, body)
+            } catch let urlError as URLError {
+                lastLabel = "url_\(urlError.code.rawValue)"
+                if Self.retryableURLCodes.contains(urlError.code), attempt < maxAttempts {
+                    RAGObservability.shared.logClaude(kind: .claudeRetry, latencyMs: nil, attempt: attempt, errorLabel: lastLabel)
+                    try await Self.backoff(attempt: attempt)
+                    continue
+                }
+                RAGObservability.shared.logClaude(kind: .claudeError, latencyMs: nil, attempt: attempt, errorLabel: lastLabel)
+                throw ClaudeError.network(urlError.localizedDescription)
+            }
+        }
+        // Exhausted all attempts on a retryable condition.
+        throw ClaudeError.network("Failed after \(maxAttempts) attempts (\(lastLabel))")
+    }
+
+    /// URLError codes worth retrying — transient connectivity blips, not permanent config errors.
+    private static let retryableURLCodes: Set<URLError.Code> = [
+        .timedOut, .networkConnectionLost, .cannotConnectToHost,
+        .cannotFindHost, .dnsLookupFailed, .notConnectedToInternet,
+    ]
+
+    /// Exponential backoff with jitter: ~0.5s, ~1.0s, ~2.0s (± up to 250ms).
+    private static func backoff(attempt: Int) async throws {
+        let base = 0.5 * pow(2.0, Double(attempt - 1))
+        let jitter = Double.random(in: 0...0.25)
+        let seconds = base + jitter
+        try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+    }
 }
 
 // MARK: - Errors
 
 enum ClaudeError: Error, LocalizedError {
     case apiError(String)
+    /// Transient network failure (surfaced after retries are exhausted).
+    case network(String)
+    /// Non-200 HTTP status from the proxy (surfaced after retries for 429/5xx).
+    case httpStatus(Int, String)
 
     var errorDescription: String? {
         switch self {
-        case .apiError(let msg): return "API Error: \(msg)"
+        case .apiError(let msg):
+            return "API Error: \(msg)"
+        case .network:
+            // User-facing: keep it warm and non-technical (Ziggy's voice handles the rest).
+            return "I couldn't reach the internet just now. Mind trying again in a moment? 💙"
+        case .httpStatus(let code, _):
+            return "I had a little trouble connecting (\(code)). Try again in a moment? 💙"
         }
     }
 }
