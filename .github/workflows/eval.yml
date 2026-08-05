@@ -1,0 +1,49 @@
+name: eval
+
+# Operationalized RAG + guardrail eval. Runs the EXACT shipping RAG core against
+# the golden set on every push/PR and FAILS the build if a metric regresses below
+# its documented floor (Eval/thresholds.json). NLEmbedding is Apple-only, so this
+# must run on a macOS runner.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "TicBuddy/Services/RAG/**"
+      - "Eval/**"
+      - ".github/workflows/eval.yml"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  rag-eval:
+    runs-on: macos-14
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain (recorded for reproducibility)
+        run: |
+          sw_vers
+          swift --version
+          python3 --version
+
+      - name: Validate golden set
+        run: python3 Eval/validate_goldenset.py
+
+      - name: RAG self-test (retrieval + guardrail assertions)
+        run: bash Tools/run_rag_selftest.sh
+
+      - name: Run eval (regenerate metrics)
+        run: bash Eval/run_eval.sh
+
+      - name: Regression gate (fail if any metric below floor)
+        run: python3 Eval/check_thresholds.py
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: Eval/results/

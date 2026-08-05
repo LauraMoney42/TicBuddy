@@ -1,0 +1,13 @@
+{
+  "_comment": "Regression FLOORS, not targets. CI fails if a measured metric drops below its floor. Set with tolerance below the committed baseline because on-device NLEmbedding output can shift slightly across macOS/Xcode versions (a CI runner is not the same host as a dev machine). Raise these deliberately as the system improves; never lower them to make a red build pass.",
+  "guardrail": {
+    "precision": 0.85,
+    "recall": 0.85,
+    "f1": 0.88
+  },
+  "retrieval": {
+    "hit_rate@3": 0.55,
+    "hit_rate@5": 0.68,
+    "mrr": 0.52
+  }
+}

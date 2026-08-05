@@ -1,5 +1,7 @@
 # Evaluation — On-Device RAG + Safety Guardrail
 
+[![eval](https://github.com/LauraMoney42/TicBuddy/actions/workflows/eval.yml/badge.svg)](https://github.com/LauraMoney42/TicBuddy/actions/workflows/eval.yml)
+
 > _TicBuddy is a personal / portfolio project, not clinical software. Nothing here is medical advice._
 
 This folder is a **reproducible evaluation harness** for TicBuddy's on-device retrieval and its layered domain/safety guardrail. It measures the **exact shipping stack** — Apple `NLEmbedding` (512-dim, on-device) over a 35-chunk curated CBIT corpus, hybrid semantic + lexical retrieval, and a layered keyword + embedding-floor guardrail — against a hand-labeled golden set. The harness only measures; those measurements then drove **targeted, re-measured fixes**.
