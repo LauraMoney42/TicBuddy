@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# TicBuddy — reproduce the on-device RAG + guardrail evaluation.
+#
+# Compiles the EXACT shipping RAG core (no mocks, no substitute embedding model)
+# together with the eval harness, runs it against Eval/goldenset.json, and
+# regenerates Eval/results/eval_results.json and Eval/results/EVAL_REPORT.md.
+#
+# Single command:  ./Eval/run_eval.sh
+# Requires: macOS + Xcode/Swift toolchain (NLEmbedding is Apple-only).
+set -euo pipefail
+cd "$(dirname "$0")/.."   # repo root, so relative paths resolve
+
+mkdir -p Eval/results
+BIN="$(mktemp -d)/ticbuddy-eval"
+
+swiftc -O \
+  TicBuddy/Services/RAG/CBITCorpus.swift \
+  TicBuddy/Services/RAG/OnDeviceEmbedder.swift \
+  TicBuddy/Services/RAG/TextMatch.swift \
+  TicBuddy/Services/RAG/OnDeviceRAGIndex.swift \
+  TicBuddy/Services/RAG/DomainGuardrail.swift \
+  Eval/EvalHarness.swift \
+  -o "$BIN"
+
+exec "$BIN" Eval/goldenset.json Eval/results
