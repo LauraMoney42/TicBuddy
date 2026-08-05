@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" role="img" aria-label="Before vs after: guardrail F1 0.86 to 1.00; retrieval hit@3 0.67 to 0.71; recall@5 0.62 to 0.69; MRR 0.63 to 0.64.">
+  <rect x="0" y="0" width="720" height="400" rx="12" fill="#fcfcfb"/>
+  <!-- title -->
+  <text x="32" y="40" font-size="19" font-weight="700" fill="#0b0b0b">Eval-driven improvements — before vs after</text>
+  <text x="32" y="61" font-size="13" fill="#52514e">Measured on the shipped on-device stack. Guardrail on 38 queries; retrieval on 21 in-domain queries.</text>
+
+  <!-- legend -->
+  <rect x="486" y="30" width="13" height="13" rx="3" fill="#b8b7b0"/>
+  <text x="504" y="41" font-size="13" fill="#52514e">Before</text>
+  <rect x="565" y="30" width="13" height="13" rx="3" fill="#2a78d6"/>
+  <text x="583" y="41" font-size="13" fill="#52514e">After</text>
+
+  <!-- y gridlines + labels (0..1) -->
+  <g font-size="11" fill="#8a8981" text-anchor="end">
+    <line x1="60" y1="320" x2="700" y2="320" stroke="#dedcd5"/>
+    <text x="52" y="324">0.0</text>
+    <line x1="60" y1="257.5" x2="700" y2="257.5" stroke="#eeece7"/>
+    <text x="52" y="261.5">0.25</text>
+    <line x1="60" y1="195" x2="700" y2="195" stroke="#eeece7"/>
+    <text x="52" y="199">0.5</text>
+    <line x1="60" y1="132.5" x2="700" y2="132.5" stroke="#eeece7"/>
+    <text x="52" y="136.5">0.75</text>
+    <line x1="60" y1="70" x2="700" y2="70" stroke="#eeece7"/>
+    <text x="52" y="74">1.0</text>
+  </g>
+
+  <!-- Group A: Guardrail F1  (0.857 -> 1.000) -->
+  <rect x="92"  y="105.75" width="44" height="214.25" rx="4" fill="#b8b7b0"/>
+  <rect x="144" y="70"     width="44" height="250"    rx="4" fill="#2a78d6"/>
+  <text x="114" y="98"  font-size="12" fill="#52514e" text-anchor="middle">0.86</text>
+  <text x="166" y="90"  font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">1.00</text>
+  <text x="140" y="342" font-size="12.5" fill="#0b0b0b" text-anchor="middle" font-weight="600">Guardrail F1</text>
+
+  <!-- Group B: Retrieval hit@3  (0.667 -> 0.714) -->
+  <rect x="252" y="153.25" width="44" height="166.75" rx="4" fill="#b8b7b0"/>
+  <rect x="304" y="141.5"  width="44" height="178.5"  rx="4" fill="#2a78d6"/>
+  <text x="274" y="146" font-size="12" fill="#52514e" text-anchor="middle">0.67</text>
+  <text x="326" y="134" font-size="12" font-weight="700" fill="#2a78d6" text-anchor="middle">0.71</text>
+  <text x="300" y="342" font-size="12.5" fill="#0b0b0b" text-anchor="middle" font-weight="600">Retrieval hit@3</text>
+
+  <!-- Group C: Retrieval recall@5  (0.619 -> 0.690) -->
+  <rect x="412" y="165.25" width="44" height="154.75" rx="4" fill="#b8b7b0"/>
+  <rect x="464" y="147.5"  width="44" height="172.5"  rx="4" fill="#2a78d6"/>
+  <text x="434" y="158" font-size="12" fill="#52514e" text-anchor="middle">0.62</text>
+  <text x="486" y="140" font-size="12" font-weight="700" fill="#2a78d6" text-anchor="middle">0.69</text>
+  <text x="460" y="342" font-size="12.5" fill="#0b0b0b" text-anchor="middle" font-weight="600">Retrieval recall@5</text>
+
+  <!-- Group D: Retrieval MRR  (0.626 -> 0.643) -->
+  <rect x="572" y="163.5"  width="44" height="156.5"  rx="4" fill="#b8b7b0"/>
+  <rect x="624" y="159.25" width="44" height="160.75" rx="4" fill="#2a78d6"/>
+  <text x="594" y="156" font-size="12" fill="#52514e" text-anchor="middle">0.63</text>
+  <text x="646" y="152" font-size="12" font-weight="700" fill="#2a78d6" text-anchor="middle">0.64</text>
+  <text x="620" y="342" font-size="12.5" fill="#0b0b0b" text-anchor="middle" font-weight="600">Retrieval MRR</text>
+
+  <!-- baseline -->
+  <line x1="60" y1="320" x2="700" y2="320" stroke="#c9c8c1" stroke-width="1.5"/>
+
+  <text x="32" y="378" font-size="11.5" fill="#8a8981">Higher is better (0–1). Reproduce: ./Eval/run_eval.sh · Honest note: small labeled set; see Limitations.</text>
+</svg>
