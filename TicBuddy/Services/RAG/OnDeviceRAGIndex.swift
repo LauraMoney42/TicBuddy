@@ -53,10 +53,18 @@ final class OnDeviceRAGIndex: @unchecked Sendable {
     private let embedder: OnDeviceEmbedder
     private let corpus: [CBITChunk]
 
-    /// Parallel to `corpus`: the embedded vector for each chunk. Empty if the
-    /// on-device model was unavailable at build time.
+    /// Parallel to `alignedCorpus`: the BODY-ONLY embedded vector for each chunk.
+    /// The domain guardrail's signals (max/centroid similarity) are computed from
+    /// these, so they are intentionally left unchanged by the retrieval-only title
+    /// augmentation below — the guardrail's calibrated behavior is preserved exactly.
     private var vectors: [[Double]] = []
-    /// Mean of all chunk vectors — the corpus centroid.
+    /// Parallel to `alignedCorpus`: retrieval embeddings that ALSO include each
+    /// chunk's section title (e.g. "Co-occurring Conditions. Conditions that…").
+    /// Used ONLY for retrieval ranking, so a query that names a topic matches the
+    /// right chunk semantically even when the body wording differs. Falls back to
+    /// the body vector if the augmented text fails to embed.
+    private var retrievalVectors: [[Double]] = []
+    /// Mean of all BODY-ONLY chunk vectors — the corpus centroid (guardrail input).
     private var centroid: [Double] = []
     private var built = false
     private let buildLock = NSLock()
@@ -93,27 +101,27 @@ final class OnDeviceRAGIndex: @unchecked Sendable {
             return
         }
 
-        var vecs: [[Double]] = []
-        vecs.reserveCapacity(corpus.count)
-        for chunk in corpus {
-            if let v = embedder.vector(for: chunk.text) {
-                vecs.append(v)
-            } else {
-                // Keep index aligned only with embeddable chunks. In practice the
-                // sentence model embeds every chunk, so this branch is defensive.
-                vecs.append([])
-            }
-        }
-        // Drop any degenerate (empty) vectors and keep chunks aligned.
-        var alignedVecs: [[Double]] = []
+        var bodyVecs: [[Double]] = []
+        var retVecs: [[Double]] = []
         var alignedChunks: [CBITChunk] = []
-        for (i, v) in vecs.enumerated() where !v.isEmpty {
-            alignedVecs.append(v)
-            alignedChunks.append(corpus[i])
+        bodyVecs.reserveCapacity(corpus.count)
+        for chunk in corpus {
+            // Body-only vector (guardrail input). Skip any chunk the model can't
+            // embed so the index stays aligned; in practice every chunk embeds.
+            guard let bv = embedder.vector(for: chunk.text), !bv.isEmpty else { continue }
+            // Retrieval vector = section title + body, so topic-label queries match.
+            // Fall back to the body vector if the augmented text fails to embed.
+            let augmented = chunk.section + ". " + chunk.text
+            let rv = embedder.vector(for: augmented) ?? bv
+            bodyVecs.append(bv)
+            retVecs.append(rv.isEmpty ? bv : rv)
+            alignedChunks.append(chunk)
         }
-        self.vectors = alignedVecs
+        self.vectors = bodyVecs
+        self.retrievalVectors = retVecs
         self.alignedCorpus = alignedChunks
-        self.centroid = Self.mean(of: alignedVecs)
+        // Centroid stays body-only so the guardrail's centroid signal is unchanged.
+        self.centroid = Self.mean(of: bodyVecs)
     }
 
     /// Corpus filtered to only chunks that embedded successfully; parallel to `vectors`.
@@ -141,16 +149,20 @@ final class OnDeviceRAGIndex: @unchecked Sendable {
         ticType: String? = nil
     ) -> [ScoredChunk] {
         build()
-        guard !vectors.isEmpty, let qv = embedder.vector(for: query) else { return [] }
+        guard !retrievalVectors.isEmpty, let qv = embedder.vector(for: query) else { return [] }
 
         var scored: [ScoredChunk] = []
-        scored.reserveCapacity(vectors.count)
-        for (i, v) in vectors.enumerated() {
+        scored.reserveCapacity(retrievalVectors.count)
+        for (i, v) in retrievalVectors.enumerated() {
             let semantic = OnDeviceEmbedder.cosine(qv, v)
             // HYBRID: blend a sparse lexical (term-overlap) signal with the dense
             // semantic score. Weighted so semantic leads but exact-term questions
             // (which the embedding under-scores) still surface the right chunk.
-            let lexical = TextMatch.overlapFraction(query: query, in: alignedCorpus[i].text)
+            // Lexical overlap also considers the section title, so a query that names
+            // the topic ("what conditions co-occur…") matches the right chunk even
+            // when the body wording differs.
+            let lexical = TextMatch.overlapFraction(query: query,
+                                                    in: alignedCorpus[i].section + " " + alignedCorpus[i].text)
             let hybrid = semantic + Self.lexicalWeight * lexical
             let boosted = hybrid + metadataBoost(alignedCorpus[i], sessionStage: sessionStage, ticType: ticType)
             scored.append(ScoredChunk(chunk: alignedCorpus[i], score: boosted))
