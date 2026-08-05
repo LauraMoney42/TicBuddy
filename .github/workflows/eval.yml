@@ -32,6 +32,9 @@ jobs:
       - name: Validate golden set
         run: python3 Eval/validate_goldenset.py
 
+      - name: Scorer unit tests (metric math)
+        run: bash Eval/run_scorer_tests.sh
+
       - name: RAG self-test (retrieval + guardrail assertions)
         run: bash Tools/run_rag_selftest.sh
 

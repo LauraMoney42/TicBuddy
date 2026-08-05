@@ -82,10 +82,10 @@ enum EvalHarness {
         // ------------------------------------------------------------------
         let ks = [1, 3, 5]
         var retrievalRows: [[String: Any]] = []
-        // accumulators
-        var hitAtK: [Int: Int] = [1: 0, 3: 0, 5: 0]
-        var recallSumAtK: [Int: Double] = [1: 0, 3: 0, 5: 0]
-        var rrSum = 0.0
+        // Per-query values feed both the point estimates (means) and the bootstrap CIs.
+        var hitValues: [Int: [Double]] = [1: [], 3: [], 5: []]
+        var recallValues: [Int: [Double]] = [1: [], 3: [], 5: []]
+        var rrValues: [Double] = []
         var inDomainCount = 0
 
         for q in golden.queries where q.class == "in_domain" {
@@ -98,24 +98,19 @@ enum EvalHarness {
                                         sessionStage: nil, ticType: nil)
             let rankedIds = ranked.map { $0.chunk.id }
 
-            // MRR: reciprocal rank of the FIRST gold chunk in the full ranking.
-            var rr = 0.0
-            if let firstGoldRank = rankedIds.firstIndex(where: { goldSet.contains($0) }) {
-                rr = 1.0 / Double(firstGoldRank + 1)
-            }
-            rrSum += rr
+            // Scoring goes through the unit-tested Metrics functions (Metrics.swift).
+            let rr = Metrics.reciprocalRank(rankedIds: rankedIds, gold: goldSet)
+            rrValues.append(rr)
 
             var perKHit: [String: Bool] = [:]
             var perKRecall: [String: Double] = [:]
             for k in ks {
-                let topK = Set(rankedIds.prefix(k))
-                let inter = topK.intersection(goldSet)
-                let hit = !inter.isEmpty
-                if hit { hitAtK[k]! += 1 }
-                let recall = Double(inter.count) / Double(goldSet.count)
-                recallSumAtK[k]! += recall
+                let hit = Metrics.hit(rankedIds: rankedIds, gold: goldSet, k: k)
+                let rec = Metrics.recall(rankedIds: rankedIds, gold: goldSet, k: k)
+                hitValues[k]!.append(hit ? 1 : 0)
+                recallValues[k]!.append(rec)
                 perKHit["hit@\(k)"] = hit
-                perKRecall["recall@\(k)"] = recall
+                perKRecall["recall@\(k)"] = rec
             }
 
             let top5 = ranked.prefix(5).map { sc -> [String: Any] in
@@ -133,18 +128,28 @@ enum EvalHarness {
             ])
         }
 
-        let nID = Double(max(inDomainCount, 1))
-        var retrievalSummary: [String: Any] = ["n_in_domain": inDomainCount, "mrr": Double(f3(rrSum / nID)) ?? 0]
+        // Rounded [lo, hi] 95% bootstrap CI for a per-query [0,1] array (deterministic).
+        func ci95(_ xs: [Double]) -> [Double] {
+            let c = Metrics.bootstrapCI(xs, Metrics.mean)
+            return [Double(f3(c.lo)) ?? c.lo, Double(f3(c.hi)) ?? c.hi]
+        }
+        var retrievalSummary: [String: Any] = [
+            "n_in_domain": inDomainCount,
+            "mrr": Double(f3(Metrics.mean(rrValues))) ?? 0,
+            "mrr_ci95": ci95(rrValues)
+        ]
         for k in ks {
-            retrievalSummary["hit_rate@\(k)"] = Double(f3(Double(hitAtK[k]!) / nID)) ?? 0
-            retrievalSummary["recall@\(k)"] = Double(f3(recallSumAtK[k]! / nID)) ?? 0
+            retrievalSummary["hit_rate@\(k)"] = Double(f3(Metrics.mean(hitValues[k]!))) ?? 0
+            retrievalSummary["hit_rate@\(k)_ci95"] = ci95(hitValues[k]!)
+            retrievalSummary["recall@\(k)"] = Double(f3(Metrics.mean(recallValues[k]!))) ?? 0
+            retrievalSummary["recall@\(k)_ci95"] = ci95(recallValues[k]!)
         }
 
         // ------------------------------------------------------------------
         // GUARDRAIL (all queries)
         // ------------------------------------------------------------------
         // Positive class = "refuse" (correctly catching out-of-scope / unsafe).
-        var tp = 0, fp = 0, fn = 0, tn = 0
+        var decisionItems: [(exp: Bool, pred: Bool)] = []
         // 3-class answered/refused: [class][answered/refused]
         var byClass: [String: [String: Int]] = [
             "in_domain": ["answered": 0, "refused": 0],
@@ -167,11 +172,7 @@ enum EvalHarness {
             }
             let predictedAction = refused ? "refuse" : "answer"
             let expectRefuse = (q.expected_action == "refuse")
-
-            if expectRefuse && refused { tp += 1 }
-            else if !expectRefuse && refused { fp += 1 }
-            else if expectRefuse && !refused { fn += 1 }
-            else { tn += 1 }
+            decisionItems.append((exp: expectRefuse, pred: refused))
 
             byClass[q.class]?[refused ? "refused" : "answered"]? += 1
 
@@ -194,20 +195,38 @@ enum EvalHarness {
             ])
         }
 
+        // Confusion + metrics via the unit-tested Metrics functions.
+        let (tp, fp, fn, tn) = Metrics.confusion(decisionItems)
         let total = tp + fp + fn + tn
-        let precision = (tp + fp) > 0 ? Double(tp) / Double(tp + fp) : 0
-        let recall = (tp + fn) > 0 ? Double(tp) / Double(tp + fn) : 0
-        let accuracy = total > 0 ? Double(tp + tn) / Double(total) : 0
-        let f1 = (precision + recall) > 0 ? 2 * precision * recall / (precision + recall) : 0
+        let precision = Metrics.precision(tp: tp, fp: fp)
+        let recall = Metrics.recall(tp: tp, fn: fn)
+        let accuracy = Metrics.accuracy(tp: tp, fp: fp, fn: fn, tn: tn)
+        let f1 = Metrics.f1(precision: precision, recall: recall)
+
+        // Bootstrap CIs: resample the per-query decisions and recompute each metric.
+        func gCI(_ stat: @escaping ([(exp: Bool, pred: Bool)]) -> Double) -> [Double] {
+            let c = Metrics.bootstrapCI(decisionItems, stat)
+            return [Double(f3(c.lo)) ?? c.lo, Double(f3(c.hi)) ?? c.hi]
+        }
+        let precCI = gCI { let c = Metrics.confusion($0); return Metrics.precision(tp: c.tp, fp: c.fp) }
+        let recCI = gCI { let c = Metrics.confusion($0); return Metrics.recall(tp: c.tp, fn: c.fn) }
+        let accCI = gCI { let c = Metrics.confusion($0); return Metrics.accuracy(tp: c.tp, fp: c.fp, fn: c.fn, tn: c.tn) }
+        let f1CI = gCI { let c = Metrics.confusion($0)
+                         return Metrics.f1(precision: Metrics.precision(tp: c.tp, fp: c.fp),
+                                           recall: Metrics.recall(tp: c.tp, fn: c.fn)) }
 
         let categoryAccuracy: Double = categoryExpectedTotal > 0
             ? Double(categoryCorrect) / Double(categoryExpectedTotal) : 0
         let guardrailSummary: [String: Any] = [
             "n": total,
             "precision": Double(f3(precision)) ?? 0,
+            "precision_ci95": precCI,
             "recall": Double(f3(recall)) ?? 0,
+            "recall_ci95": recCI,
             "accuracy": Double(f3(accuracy)) ?? 0,
+            "accuracy_ci95": accCI,
             "f1": Double(f3(f1)) ?? 0,
+            "f1_ci95": f1CI,
             "confusion_matrix": [
                 "true_positive_refused_correctly": tp,
                 "false_positive_over_refused_in_domain": fp,
@@ -234,7 +253,9 @@ enum EvalHarness {
                 "lexical_weight": OnDeviceRAGIndex.lexicalWeight,
                 "golden_set": goldenPath,
                 "n_queries": golden.queries.count,
-                "note": "Numbers are measured on this macOS host's NLEmbedding sentence model (same model family as iOS). Deterministic per OS version."
+                "os_version": ProcessInfo.processInfo.operatingSystemVersionString,
+                "confidence_interval": "95% percentile bootstrap, 10000 resamples, fixed seed (deterministic)",
+                "note": "Numbers are measured on this host's on-device NLEmbedding sentence model (same model family as iOS). Deterministic per OS version — os_version is recorded so a number is always tied to the stack that produced it."
             ],
             "retrieval": ["summary": retrievalSummary, "per_query": retrievalRows],
             "guardrail": ["summary": guardrailSummary, "per_query": guardrailRows]
@@ -262,9 +283,9 @@ enum EvalHarness {
         // Console summary
         print("\n--- Retrieval (n=\(inDomainCount) in-domain) ---")
         for k in ks {
-            print("  hit@\(k)=\(f3(Double(hitAtK[k]!) / nID))  recall@\(k)=\(f3(recallSumAtK[k]! / nID))")
+            print("  hit@\(k)=\(f3(Metrics.mean(hitValues[k]!)))  recall@\(k)=\(f3(Metrics.mean(recallValues[k]!)))")
         }
-        print("  MRR=\(f3(rrSum / nID))")
+        print("  MRR=\(f3(Metrics.mean(rrValues)))")
         print("\n--- Guardrail (n=\(total)) ---")
         print("  precision=\(f3(precision)) recall=\(f3(recall)) accuracy=\(f3(accuracy)) f1=\(f3(f1))")
         print("  confusion: TP=\(tp) FP=\(fp) FN=\(fn) TN=\(tn)")
@@ -285,6 +306,10 @@ enum EvalHarness {
             if let v = d[k] as? Double { return f3(v) }
             if let v = d[k] as? Int { return "\(v)" }
             return "\(d[k] ?? "")"
+        }
+        func ci(_ d: [String: Any], _ k: String) -> String {
+            if let a = d["\(k)_ci95"] as? [Double], a.count == 2 { return " [\(f3(a[0])), \(f3(a[1]))]" }
+            return ""
         }
 
         let nIn = (retrievalSummary["n_in_domain"] as? Int) ?? 0
@@ -333,14 +358,17 @@ enum EvalHarness {
         s += "| Metric | @1 | @3 | @5 |\n|---|---:|---:|---:|\n"
         s += "| Hit-rate | \(g(retrievalSummary, "hit_rate@1")) | \(g(retrievalSummary, "hit_rate@3")) | \(g(retrievalSummary, "hit_rate@5")) |\n"
         s += "| Recall | \(g(retrievalSummary, "recall@1")) | \(g(retrievalSummary, "recall@3")) | \(g(retrievalSummary, "recall@5")) |\n\n"
-        s += "**MRR = \(g(retrievalSummary, "mrr"))**\n\n"
+        s += "**MRR = \(g(retrievalSummary, "mrr"))\(ci(retrievalSummary, "mrr"))**\n\n"
+        s += "_95% bootstrap CIs: hit@5 \(g(retrievalSummary, "hit_rate@5"))\(ci(retrievalSummary, "hit_rate@5")), "
+        s += "hit@3 \(g(retrievalSummary, "hit_rate@3"))\(ci(retrievalSummary, "hit_rate@3"))._\n\n"
 
         s += "## Guardrail results (n=\(total))\n\n"
-        s += "| Metric | Value |\n|---|---:|\n"
-        s += "| Precision (refuse) | \(precision) |\n"
-        s += "| Recall (refuse) | \(recall) |\n"
-        s += "| Accuracy | \(accuracy) |\n"
-        s += "| F1 | \(f1) |\n\n"
+        s += "_Values with 95% percentile-bootstrap confidence intervals (10k deterministic resamples)._\n\n"
+        s += "| Metric | Value (95% CI) |\n|---|---:|\n"
+        s += "| Precision (refuse) | \(precision)\(ci(guardrailSummary, "precision")) |\n"
+        s += "| Recall (refuse) | \(recall)\(ci(guardrailSummary, "recall")) |\n"
+        s += "| Accuracy | \(accuracy)\(ci(guardrailSummary, "accuracy")) |\n"
+        s += "| F1 | \(f1)\(ci(guardrailSummary, "f1")) |\n\n"
 
         s += "### Confusion matrix (positive class = refuse)\n\n"
         s += "```\n"

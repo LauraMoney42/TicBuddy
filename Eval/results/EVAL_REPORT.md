@@ -30,16 +30,20 @@ Small by design (a curated smoke-test set, not a large benchmark). See _Limitati
 | Hit-rate | 0.442 | 0.615 | 0.750 |
 | Recall | 0.423 | 0.587 | 0.740 |
 
-**MRR = 0.583**
+**MRR = 0.583 [0.476, 0.690]**
+
+_95% bootstrap CIs: hit@5 0.750 [0.635, 0.865], hit@3 0.615 [0.481, 0.750]._
 
 ## Guardrail results (n=105)
 
-| Metric | Value |
+_Values with 95% percentile-bootstrap confidence intervals (10k deterministic resamples)._
+
+| Metric | Value (95% CI) |
 |---|---:|
-| Precision (refuse) | 0.942 |
-| Recall (refuse) | 0.925 |
-| Accuracy | 0.933 |
-| F1 | 0.933 |
+| Precision (refuse) | 0.942 [0.870, 1.000] |
+| Recall (refuse) | 0.925 [0.848, 0.982] |
+| Accuracy | 0.933 [0.886, 0.981] |
+| F1 | 0.933 [0.879, 0.978] |
 
 ### Confusion matrix (positive class = refuse)
 

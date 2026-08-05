@@ -27,6 +27,7 @@ swiftc -O \
   TicBuddy/Services/RAG/TextMatch.swift \
   TicBuddy/Services/RAG/OnDeviceRAGIndex.swift \
   TicBuddy/Services/RAG/DomainGuardrail.swift \
+  Eval/Metrics.swift \
   Eval/EvalHarness.swift \
   -o "$BIN"
 

@@ -1159,6 +1159,10 @@
     ],
     "summary" : {
       "accuracy" : 0.93300000000000005,
+      "accuracy_ci95" : [
+        0.88600000000000001,
+        0.98099999999999998
+      ],
       "category_accuracy_secondary" : {
         "correct" : 28,
         "of_refused_with_expected_category" : 49,
@@ -1171,13 +1175,26 @@
         "true_positive_refused_correctly" : 49
       },
       "f1" : 0.93300000000000005,
+      "f1_ci95" : [
+        0.879,
+        0.97799999999999998
+      ],
       "n" : 105,
       "positive_class" : "refuse",
       "precision" : 0.94199999999999995,
-      "recall" : 0.92500000000000004
+      "precision_ci95" : [
+        0.87,
+        1
+      ],
+      "recall" : 0.92500000000000004,
+      "recall_ci95" : [
+        0.84799999999999998,
+        0.98199999999999998
+      ]
     }
   },
   "meta" : {
+    "confidence_interval" : "95% percentile bootstrap, 10000 resamples, fixed seed (deterministic)",
     "corpus_chunks" : 35,
     "domain_floor" : 0.38,
     "embedding_dim" : 512,
@@ -1185,7 +1202,8 @@
     "indexed_chunks" : 35,
     "lexical_weight" : 0.29999999999999999,
     "n_queries" : 105,
-    "note" : "Numbers are measured on this macOS host's NLEmbedding sentence model (same model family as iOS). Deterministic per OS version."
+    "note" : "Numbers are measured on this host's on-device NLEmbedding sentence model (same model family as iOS). Deterministic per OS version — os_version is recorded so a number is always tied to the stack that produced it.",
+    "os_version" : "Version 26.3 (Build 25D125)"
   },
   "retrieval" : {
     "per_query" : [
@@ -3588,13 +3606,41 @@
     ],
     "summary" : {
       "hit_rate@1" : 0.442,
+      "hit_rate@1_ci95" : [
+        0.308,
+        0.57699999999999996
+      ],
       "hit_rate@3" : 0.61499999999999999,
+      "hit_rate@3_ci95" : [
+        0.48099999999999998,
+        0.75
+      ],
       "hit_rate@5" : 0.75,
+      "hit_rate@5_ci95" : [
+        0.63500000000000001,
+        0.86499999999999999
+      ],
       "mrr" : 0.58299999999999996,
+      "mrr_ci95" : [
+        0.47599999999999998,
+        0.68999999999999995
+      ],
       "n_in_domain" : 52,
       "recall@1" : 0.42299999999999999,
+      "recall@1_ci95" : [
+        0.28799999999999998,
+        0.55800000000000005
+      ],
       "recall@3" : 0.58699999999999997,
-      "recall@5" : 0.73999999999999999
+      "recall@3_ci95" : [
+        0.45200000000000001,
+        0.72099999999999997
+      ],
+      "recall@5" : 0.73999999999999999,
+      "recall@5_ci95" : [
+        0.61499999999999999,
+        0.85599999999999998
+      ]
     }
   }
 }
