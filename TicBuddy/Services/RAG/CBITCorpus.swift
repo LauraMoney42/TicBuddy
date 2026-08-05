@@ -184,4 +184,58 @@ enum CBITCorpus {
 
     /// Total number of curated chunks. Cited in docs so the resume can be specific.
     static var count: Int { chunks.count }
+
+    // MARK: - Provenance
+    //
+    // Honest source attribution for each chunk, traced back into RESEARCH.md at the
+    // granularity the source actually supports. Kept as an id-keyed map (NOT embedded
+    // in the chunk text) so provenance never affects retrieval or the eval.
+    //
+    // HONESTY: only chunk 10 pins to a specific primary work (the CBIT RCT figures).
+    // Most chunks map to a RESEARCH.md section whose corpus-level references are the
+    // Tourette Association of America CBIT materials, Woods 2011, and AAN 2019.
+    // App-authored material (kid-friendly metaphors, communication principles, the
+    // week-by-week schedule, the AI safety policy, and the vocabulary map) is labeled
+    // as having NO primary clinical source rather than inventing one — the honest state
+    // until a clinician reviews and signs off on each page.
+    static let sources: [Int: String] = [
+        1:  "RESEARCH.md: Epidemiology (general TS facts; no single primary source pinned; corpus refs TAA, AAN 2019)",
+        2:  "RESEARCH.md: Epidemiology — wax-and-wane (no single primary source pinned)",
+        3:  "RESEARCH.md: Tic Types — motor (no single primary source pinned)",
+        4:  "RESEARCH.md: Tic Types — vocal (no single primary source pinned)",
+        5:  "RESEARCH.md: Premonitory Urge (80-90% figure not inline-cited; corpus refs TAA / general TS literature)",
+        6:  "RESEARCH.md: Premonitory Urge — foundation of CR training (no single primary source pinned)",
+        7:  "RESEARCH.md: What Makes Tics Worse (no single primary source pinned)",
+        8:  "RESEARCH.md: What Helps ('strongest behavioral evidence' aligns with AAN 2019)",
+        9:  "RESEARCH.md: Common Co-occurring Conditions (no single primary source pinned)",
+        10: "Piacentini/Woods, JAMA 2010, 303(19):1929-1937 — RCT figures pinned inline; first-line/Level 1 per AAN 2019",
+        11: "RESEARCH.md: CBIT Protocol — Psychoeducation (corpus refs TAA CBIT materials / Woods 2011)",
+        12: "RESEARCH.md: CBIT Protocol — Awareness Training (corpus refs TAA CBIT materials / Woods 2011)",
+        13: "RESEARCH.md: CBIT Protocol — Awareness Training key principle (no single primary source pinned)",
+        14: "RESEARCH.md: CBIT Protocol — Competing Response Training (corpus refs TAA CBIT materials / Woods 2011)",
+        15: "RESEARCH.md: CBIT Protocol — Competing Response process (corpus refs TAA CBIT materials / Woods 2011)",
+        16: "RESEARCH.md: CBIT Protocol — Universal Competing Responses (corpus refs TAA CBIT materials)",
+        17: "RESEARCH.md: CBIT Protocol — CR-by-tic-type table (corpus refs TAA CBIT training materials)",
+        18: "RESEARCH.md: CBIT Protocol — CR-by-tic-type table (corpus refs TAA CBIT training materials)",
+        19: "RESEARCH.md: CBIT Protocol — CR-by-tic-type table (corpus refs TAA CBIT training materials)",
+        20: "RESEARCH.md: CBIT Protocol — CR-by-tic-type table (corpus refs TAA CBIT training materials)",
+        21: "RESEARCH.md: CBIT Protocol — CR-by-tic-type table (corpus refs TAA CBIT training materials)",
+        22: "RESEARCH.md: CBIT Protocol — Function-Based Assessment (corpus refs TAA CBIT materials / Woods 2011)",
+        23: "RESEARCH.md: CBIT Protocol — Relaxation Training (corpus refs TAA CBIT materials / Woods 2011)",
+        24: "RESEARCH.md: CBIT Protocol — Social Support Component (corpus refs TAA CBIT materials / Woods 2011)",
+        25: "RESEARCH.md: Neuroplasticity — The Science (simplified; no single primary source pinned)",
+        26: "RESEARCH.md: Neuroplasticity — Kid-Friendly Metaphors (app-authored framing; no primary clinical source)",
+        27: "RESEARCH.md: Communication Principles (app-authored guidance; no single primary source cited)",
+        28: "RESEARCH.md: Communication Principles (app-authored guidance; no single primary source cited)",
+        29: "RESEARCH.md: Week-by-Week App Implementation — Week 1 (app implementation; no per-week primary source)",
+        30: "RESEARCH.md: Week-by-Week App Implementation — Week 2 (app implementation; no per-week primary source)",
+        31: "RESEARCH.md: Week-by-Week App Implementation — Weeks 3-4 (app implementation; no per-week primary source)",
+        32: "RESEARCH.md: Week-by-Week App Implementation — Weeks 5-12 (app implementation; no per-week primary source)",
+        33: "RESEARCH.md: Safety Guidelines for AI (app AI safety policy; no primary clinical source)",
+        34: "RESEARCH.md: Safety Guidelines for AI (app AI safety policy; no primary clinical source)",
+        35: "RESEARCH.md: Language Guidelines (app-authored term mapping; no primary clinical source)",
+    ]
+
+    /// Honest provenance string for a chunk id, if known.
+    static func source(for id: Int) -> String? { sources[id] }
 }
