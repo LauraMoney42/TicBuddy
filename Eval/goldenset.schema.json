@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/LauraMoney42/TicBuddy/Eval/goldenset.schema.json",
+  "title": "TicBuddy eval golden set",
+  "description": "Formal schema for Eval/goldenset.json. The runnable gate is Eval/validate_goldenset.py, which also enforces cross-field and corpus-referential checks a JSON Schema cannot express (unique ids, gold_chunks in corpus range, class/action consistency).",
+  "type": "object",
+  "required": ["queries"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "description": { "type": "string" },
+    "labeling_notes": { "type": "string" },
+    "queries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/query" }
+    }
+  },
+  "$defs": {
+    "query": {
+      "type": "object",
+      "required": ["id", "class", "expected_action", "query"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "class": { "enum": ["in_domain", "off_domain", "medical_unsafe"] },
+        "expected_action": { "enum": ["answer", "refuse"] },
+        "query": { "type": "string", "minLength": 1 },
+        "gold_chunks": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 },
+          "minItems": 1
+        },
+        "expected_category": {
+          "enum": ["medication", "diagnosis", "side_effects", "diet_weight", "unrelated"]
+        },
+        "rationale": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "class": { "const": "in_domain" } } },
+          "then": {
+            "required": ["gold_chunks"],
+            "properties": { "expected_action": { "const": "answer" } }
+          }
+        },
+        {
+          "if": { "properties": { "class": { "enum": ["off_domain", "medical_unsafe"] } } },
+          "then": {
+            "required": ["expected_category"],
+            "properties": { "expected_action": { "const": "refuse" } }
+          }
+        }
+      ]
+    }
+  }
+}

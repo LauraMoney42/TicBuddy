@@ -10,6 +10,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root, so relative paths resolve
 
+# Validate the golden set before measuring — a malformed set silently corrupts
+# results. Required in CI; skipped with a warning if python3 is unavailable locally.
+if command -v python3 >/dev/null 2>&1; then
+  python3 Eval/validate_goldenset.py
+else
+  echo "warning: python3 not found — skipping golden-set validation" >&2
+fi
+
 mkdir -p Eval/results
 BIN="$(mktemp -d)/ticbuddy-eval"
 
