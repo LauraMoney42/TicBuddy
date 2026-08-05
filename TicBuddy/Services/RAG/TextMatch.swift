@@ -85,6 +85,12 @@ enum TextMatch {
         "competing response","power move","premonitory urge","brain training",
         "throat clearing","vocal tic","motor tic","the feeling before","signal feeling",
         "eye blink","head jerk","tic disorder",
+        // CBIT weekly-program vocabulary: a question naming a program week or one of
+        // the app's kid-friendly week names is in-domain (fixes prior over-refusal of
+        // "what should we focus on in week 1/2?", which named no other domain term and
+        // fell below the embedding floor). Covers the whole 4-week program, not just
+        // the two queries that failed.
+        "week 1","week 2","week 3","week 4","detective mode","signal spotter",
     ]
 
     /// True if the text explicitly names domain vocabulary.

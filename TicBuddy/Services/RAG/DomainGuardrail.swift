@@ -187,6 +187,13 @@ final class DomainGuardrail: @unchecked Sendable {
         "diagnose me", "diagnose my child", "what disorder do i have",
         "what condition do i have", "am i autistic", "do i have autism",
         "is this autism", "is this a diagnosis", "is this normal for tourette",
+        // Person-diagnosis phrasings that name domain vocabulary ("tic disorder",
+        // "tourette") and previously slipped past to the domain-lexicon ALLOW-path.
+        // The keyword classifier runs before that allow-path, so enriching it here
+        // closes the leak. Kept to the "does <person> have <condition>" shape so
+        // general education ("do kids with tics often have adhd?") is NOT caught.
+        "does my son have tourette", "does my daughter have tourette",
+        "have a tic disorder", "has a tic disorder", "diagnosed with", "get a diagnosis",
     ]
 
     private let sideEffectPhrases: [String] = [
@@ -201,6 +208,11 @@ final class DomainGuardrail: @unchecked Sendable {
         "sugar free", "food and tics", "what foods cause tics", "does diet affect tics",
         "nutrition for tics", "supplement for tics", "omega 3 for tics",
         "magnesium for tics", "vitamin for tics",
+        // General diet-cure claims about tics (any named diet, not just gluten-for-tics).
+        // Fixes the prior leak of "does a gluten free diet reduce tics?" and generalizes
+        // to other fad diets. These belong with a clinician/dietitian, not this app.
+        "gluten free", "gluten-free", "keto diet", "special diet",
+        "diet reduce tics", "diet for tics", "diet cure",
     ]
 
     private let unrelatedPhrases: [String] = [
@@ -211,6 +223,11 @@ final class DomainGuardrail: @unchecked Sendable {
         "book a flight", "order food", "stock price", "cryptocurrency", "crypto",
         "bitcoin", "invest in", "investment", "politics", "who should i vote",
         "write code for me", "program a", "french revolution", "fix a flat", "flat tire",
+        // Coding requests (previously "write me some python code" sat just above the
+        // embedding floor with no keyword match and leaked through). Covers common
+        // coding phrasings/languages, not just the one query that failed.
+        "python", "javascript", "write code", "some code", "write a program",
+        "coding", "write me code",
     ]
 
     // MARK: - Redirect messages (warm, age-neutral)
