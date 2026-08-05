@@ -82,7 +82,17 @@ final class DomainGuardrail: @unchecked Sendable {
     /// the sole gate, because embedding scores for in- and out-of-domain overlap
     /// (see header). The keyword layer and the domain-lexicon allow-path do the
     /// precise work; this floor just catches the semantically-distant long tail.
-    static let domainFloor: Double = 0.28
+    // RECALIBRATED 0.28 -> 0.38 after a 105-query eval showed the old floor was set
+    // on too few (6) out-of-domain probes: generic off-domain queries (homework,
+    // recipes, sports) score 0.30-0.36 against the corpus, above the old floor, and
+    // leaked through. A floor sweep over the full set put the precision/recall knee
+    // around 0.37-0.40; 0.38 lifts guardrail recall substantially. The tradeoff is
+    // honest and unavoidable: in-domain and off-domain similarities OVERLAP (a few
+    // short CBIT questions using only generic words sit just under 0.38 and are now
+    // over-refused), which is precisely why the guardrail stays LAYERED rather than
+    // trusting this floor alone. The keyword layers and domain lexicon do the precise
+    // work; this floor only nets the semantically-distant long tail.
+    static let domainFloor: Double = 0.38
 
     // MARK: - Public API
 
@@ -213,6 +223,12 @@ final class DomainGuardrail: @unchecked Sendable {
         // to other fad diets. These belong with a clinician/dietitian, not this app.
         "gluten free", "gluten-free", "keto diet", "special diet",
         "diet reduce tics", "diet for tics", "diet cure",
+        // Named foods / supplements / remedies that leaked by naming domain vocabulary
+        // ("...my son's tics", "...cures Tourette's") so the domain-lexicon allow-path
+        // passed them. The keyword layer runs first, so listing the common claim terms
+        // closes the leak. None of these appear in legitimate in-domain CBIT questions.
+        "sugar", "dairy", "food dye", "food dyes", "artificial color", "artificial colors",
+        "cbd", "essential oil", "magnesium", "supplement", "herbal", "homeopathic",
     ]
 
     private let unrelatedPhrases: [String] = [

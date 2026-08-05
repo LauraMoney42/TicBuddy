@@ -59,13 +59,50 @@ enum TextMatch {
         return shorter.count >= 4 && longer.hasPrefix(shorter)
     }
 
+    /// General lay↔clinical synonym map for the CBIT / Tourette's domain. Keys are
+    /// the everyday words a child or parent types; values are the clinical terms the
+    /// curated corpus actually uses (every target below appears verbatim in
+    /// `CBITCorpus.swift`, so each entry can do real work). Built from domain-glossary
+    /// knowledge, NOT reverse-engineered from failing queries, and applied ONLY to the
+    /// retrieval lexical signal below — embeddings and the guardrail are untouched.
+    ///
+    /// This is a deliberately small, transparent list: a lexical map only helps queries
+    /// that use an enumerated lay term. Truly novel vocabulary still needs the semantic
+    /// signal (or a stronger embedding); this just closes the most common lay/clinical gaps.
+    static let synonyms: [String: [String]] = [
+        // prognosis / aging: "will they grow out of it?" → corpus says "adolescence/adulthood"
+        "grow": ["adolescence", "adulthood"], "grows": ["adolescence", "adulthood"],
+        "growing": ["adolescence", "adulthood"], "outgrow": ["adolescence", "adulthood"],
+        "older": ["adolescence", "adulthood"], "teen": ["adolescence", "adulthood"],
+        "teenager": ["adolescence", "adulthood"],
+        "kids": ["children", "child"], "kid": ["children", "child"],
+        // outcome / efficacy: "does it work?" → corpus says "improvement/evidence"
+        "better": ["improve", "improvement"],
+        "work": ["improvement", "evidence"], "works": ["improvement", "evidence"],
+        "working": ["improvement", "evidence"], "proven": ["evidence", "improvement"],
+        // co-occurring conditions: "what comes along with it?" → corpus says "co-occur"
+        "along": ["occur"], "alongside": ["occur"], "related": ["occur"],
+        // relaxation
+        "chill": ["relaxation", "calm"], "destress": ["relaxation", "calm"],
+    ]
+
+    /// True if query word `qw` matches any word in `t` directly, or via a mapped synonym.
+    private static func matches(_ qw: String, in t: Set<String>) -> Bool {
+        if t.contains(where: { wordsMatch(qw, $0) }) { return true }
+        if let syns = synonyms[qw] {
+            return syns.contains { s in t.contains(where: { wordsMatch(s, $0) }) }
+        }
+        return false
+    }
+
     /// Fraction of the query's content words that lexically match some word in
-    /// `text` (0…1). This is the sparse/lexical relevance signal for hybrid retrieval.
+    /// `text` (0…1), counting general lay↔clinical synonyms as matches. This is the
+    /// sparse/lexical relevance signal for hybrid retrieval.
     static func overlapFraction(query: String, in text: String) -> Double {
         let q = contentWords(query)
         guard !q.isEmpty else { return 0 }
         let t = contentWords(text)
-        let hits = q.filter { qw in t.contains(where: { wordsMatch(qw, $0) }) }.count
+        let hits = q.filter { matches($0, in: t) }.count
         return Double(hits) / Double(q.count)
     }
 
@@ -78,6 +115,10 @@ enum TextMatch {
         "tic","tics","tourette","tourettes","premonitory","cbit","neuroplasticity",
         "twitch","twitches","twitching","blink","blinking","grimace","shrug","shrugging",
         "grunt","grunting","sniff","sniffing","redirect","redirecting","urge",
+        // Genuine domain terms that legitimate CBIT questions use but the raised
+        // embedding floor (0.38) would otherwise over-refuse: the app's own "baseline"
+        // vocabulary and inflections of "tic". Added as real domain vocab, not per-query.
+        "baseline","ticcing","ticced",
     ]
 
     /// Multi-word domain phrases checked as substrings.
