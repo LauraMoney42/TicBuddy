@@ -11,9 +11,30 @@ A friendly, child-accessible iOS app helping people with Tourette Syndrome manag
 
 ## Tech Stack
 - **iOS**: SwiftUI (iPhone first)
-- **AI**: Anthropic Claude API (claude-3-5-haiku for chat — fast + affordable)
+- **AI**: Anthropic Claude API (via a proxy that holds the key server-side)
+- **On-device RAG**: Apple `NLEmbedding` (512-dim) over a curated 35-chunk CBIT corpus,
+  hybrid semantic + lexical retrieval, injected into the Claude prompt as grounding —
+  see [Docs/RAG_AND_GUARDRAIL.md](Docs/RAG_AND_GUARDRAIL.md)
+- **Domain guardrail**: layered (keyword classifier + embedding-distance floor +
+  system-prompt refusal) so Ziggy stays on the CBIT / tic domain
 - **Storage**: UserDefaults + Core Data for tic logs
 - **Architecture**: MVVM
+- **Privacy**: PII scrubbed before any API call; retrieval, embeddings, and the
+  guardrail run fully on-device — no message text leaves the phone for grounding
+
+## On-Device RAG & Guardrail (interview-relevant)
+Ziggy's answers are grounded in a curated Tourette's/CBIT research corpus **without
+sending anything off-device to do it**:
+- **35 chunks** derived from [RESEARCH.md](RESEARCH.md) (Woods/Piacentini JAMA 2010,
+  Tourette Association of America, Chang 2016, AAN 2019).
+- **Embeddings on-device** via `NLEmbedding.sentenceEmbedding` (no network/API key).
+- **Hybrid retrieval** (dense cosine + sparse term-overlap) — the lexical signal exists
+  because Apple's embeddings measurably under-score short keyword queries.
+- **Layered guardrail**, not a single cosine threshold — because measured in- and
+  out-of-domain similarities *overlap* (0.250–0.523 vs 0.202–0.341).
+- **Reliability**: retry/backoff on the Claude call + PII-safe request logging.
+- **Tested**: `./Tools/run_rag_selftest.sh` compiles the exact shipping code and asserts
+  retrieval + refusal behavior. All assertions pass.
 
 ## CBIT Protocol (Research-Based)
 - **Week 1**: Awareness only — notice the premonitory urge, log the tic, no redirection yet

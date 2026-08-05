@@ -1,3 +1,54 @@
+## 2026-07-25 — tb-rag-ondevice On-Device RAG + Layered Domain Guardrail
+Replaced the aspirational remote RAG with a genuine, tested, fully on-device pipeline.
+
+### Added
+- **On-device RAG core** (`TicBuddy/Services/RAG/`, no app-type dependencies so it is
+  independently testable):
+  - `CBITCorpus.swift` — **35 curated chunks** derived from `RESEARCH.md` (Woods/Piacentini
+    JAMA 2010, Tourette Association of America, Chang 2016, AAN 2019), with phase/tic-type
+    metadata.
+  - `OnDeviceEmbedder.swift` — Apple `NLEmbedding.sentenceEmbedding` (512-dim), fully
+    on-device; cosine similarity. No network, no API key.
+  - `TextMatch.swift` — lexical term-overlap (prefix-stemmed) + domain lexicon for hybrid
+    search and guardrail allow-path.
+  - `OnDeviceRAGIndex.swift` — in-memory brute-force cosine index + corpus centroid;
+    hybrid retrieval `score = cosine + 0.30·lexical ± metadataBoost`; top-k with a floor.
+  - `DomainGuardrail.swift` — **layered** guardrail: (1) deterministic keyword/phrase
+    classifier, (2) domain-lexicon allow-path, (3) embedding-distance floor (0.28),
+    (4) system-prompt refusal backstop. Chosen because measured in/out-of-domain
+    embedding scores OVERLAP (in-domain 0.250–0.523 vs out-of-domain 0.202–0.341), so a
+    single cosine threshold is not defensible.
+  - `RAGObservability.swift` — PII-safe request logging (metadata only: decision,
+    similarities, retrieved count, latency, retries, coarse error labels) → ring buffer +
+    `os.Logger`. No network I/O, no message text.
+- `TicBuddy/Services/ZiggyRetrievalService.swift` — app-facing orchestrator bridging
+  app models (ZiggyVoiceProfile/CBITPhase/TicCategory) to the RAG core; runs guardrail,
+  retrieves, formats the `KNOWLEDGE CONTEXT` block; warms the index at launch.
+- **Reliability** in `ClaudeService.swift`: `performWithRetry` — 3 attempts with
+  exponential backoff + jitter (~0.5/1.0/2.0s), retrying only transient failures
+  (network dropouts, 429, 5xx); richer `ClaudeError` cases; per-attempt observability.
+  Applied to all three proxy call sites.
+- `Tools/RAGSelfTest.swift` + `Tools/run_rag_selftest.sh` — compiles the EXACT shipping
+  RAG core and asserts retrieval quality + guardrail allow/refuse. **All assertions pass**
+  (4 retrieval, 5 in-domain allow, 6 out-of-domain refuse; e.g. "cryptocurrency" and
+  "medication dosage for tics" refused, "what is the premonitory urge?" allowed).
+- `Docs/RAG_AND_GUARDRAIL.md` — full design writeup with the measured calibration.
+
+### Changed
+- `ChatViewModel.swift` — send flow now runs the on-device guardrail BEFORE any API call
+  (out-of-scope → warm redirect, no API cost) and injects on-device grounding instead of
+  the remote block.
+- `PROJECT_OVERVIEW.md` — documented the on-device RAG + guardrail and privacy posture.
+
+### Removed
+- `ZiggyRAGService.swift` — legacy remote proxy client (Voyage AI + Supabase pgvector).
+  It was not on-device, depended on infra not shipped with the app (no migrations/corpus
+  committed), and silently returned nil when unconfigured (i.e. no retrieval in practice).
+- `ZiggyOutOfScopeClassifier.swift` — keyword-only guardrail that was defined but **never
+  called** (dead code); its logic is consolidated into `DomainGuardrail`.
+
+- Files affected: added TicBuddy/Services/RAG/{CBITCorpus,OnDeviceEmbedder,TextMatch,OnDeviceRAGIndex,DomainGuardrail,RAGObservability}.swift, TicBuddy/Services/ZiggyRetrievalService.swift, Tools/{RAGSelfTest.swift,run_rag_selftest.sh}, Docs/RAG_AND_GUARDRAIL.md; modified TicBuddy/Services/ClaudeService.swift, TicBuddy/ViewModels/ChatViewModel.swift, PROJECT_OVERVIEW.md; removed TicBuddy/Services/ZiggyRAGService.swift, TicBuddy/Services/ZiggyOutOfScopeClassifier.swift
+
 ## 2026-03-28 — tb-mvp2-098 Session Scheduling Feature (atomic)
 - SessionSchedulerService.swift: scheduleNotification() now fires day-before session day (wrap Sun→Sat); notification copy updated to "Your TicBuddy session is tomorrow — find a quiet 15 min"; formattedSchedule changed to "DayName · reminder the day before"
 - EveningCheckInService.swift: default reminderHour changed from 19 → 20 (7 PM → 8 PM); updated header comment and @Published var doc comment
