@@ -1,0 +1,7 @@
+# Code owners — reviewers auto-requested on matching changes.
+# The eval, its dataset, and the RAG core that ships to children are sensitive:
+# require the owner's review.
+
+/Eval/                        @LauraMoney42
+/TicBuddy/Services/RAG/       @LauraMoney42
+/.github/workflows/           @LauraMoney42

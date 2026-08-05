@@ -106,11 +106,19 @@ The value of the harness is that it turns "seems fine" into a specific, prioriti
 | File | What |
 |---|---|
 | `goldenset.json` | The labeled golden set (input, 105 queries). |
-| `EvalHarness.swift` | The `@main` eval tool; computes metrics and renders both outputs. |
-| `run_eval.sh` | One-command reproduce: compile real RAG core + harness, run, regenerate outputs. |
+| `goldenset.schema.json` / `validate_goldenset.py` | Schema + dependency-free validator (gates every run). |
+| `EvalHarness.swift` | The `@main` eval tool; computes metrics + CIs and renders both outputs. |
+| `Metrics.swift` / `ScorerTests.swift` | Pure, unit-tested scorer (hit@k, recall, MRR, confusion, bootstrap CIs). |
+| `run_eval.sh` / `run_scorer_tests.sh` | One-command reproduce for the eval and the scorer tests. |
+| `thresholds.json` / `check_thresholds.py` | Regression floors + the CI gate. |
 | `make_chart.py` | Regenerates `results/before_after.png` (needs matplotlib; presentation only). |
-| `results/eval_results.json` | Machine-readable metrics (generated). |
-| `results/EVAL_REPORT.md` | Human-readable report with tables + confusion matrix (generated). |
+| `results/eval_results.json` / `results/EVAL_REPORT.md` | Machine- and human-readable metrics (generated). |
+| `EVAL_CARD.md` / `CONTRIBUTING.md` | Model-card-style summary + contribution rules. |
+| `ENTERPRISE_READINESS.md` | Roadmap for remaining production-hardening items. |
+
+## CI & governance
+
+Every push/PR runs the eval on a macOS runner and **fails the build if any metric drops below its floor** (`thresholds.json`) — see the badge up top. The pipeline is: validate golden set → scorer unit tests → RAG self-test → run eval → threshold gate. Methodology, intended use, dataset provenance, the safety operating point, and limitations are documented in the [eval card](EVAL_CARD.md); contribution rules (append-don't-renumber, never tune-to-the-metric) are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Limitations
 

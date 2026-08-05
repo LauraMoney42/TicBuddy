@@ -1,10 +1,10 @@
 # Enterprise Readiness — Eval Harness Roadmap
 
-> Status: **planned** (not yet implemented). Created 2026-08-05.
-> This document is the backlog for hardening the TicBuddy RAG + guardrail eval to
-> production/enterprise standards. Each item is written to be turnkey: what, why,
-> concrete steps, and acceptance criteria. Nothing here is done yet — see _Current
-> state_ for what already meets the bar.
+> Status: **items 1–4 implemented 2026-08-05.** Created 2026-08-05.
+> This document was the backlog for hardening the TicBuddy RAG + guardrail eval to
+> production/enterprise standards. Items 1–4 are now done (marked ✅ below); the
+> remaining work is in _Out of scope for this roadmap_ (groundedness judge, clinician
+> sign-off, dataset scale-up). Each item keeps its original steps + acceptance criteria.
 
 ## Guiding principles (do not regress these)
 
@@ -25,10 +25,10 @@
 | Documented limitations, provenance, calibration rationale | ✅ |
 | Layered safety guardrail with data-driven operating point | ✅ |
 | Logical, attributed commit history | ✅ |
-| Automated CI / regression gating | ❌ → item 1 |
-| Dataset schema + validation | ❌ → item 2 |
-| Metric uncertainty (confidence intervals) + scorer tests | ❌ → item 3 |
-| Eval card / governance documentation | ❌ → item 4 |
+| Automated CI / regression gating | ✅ item 1 |
+| Dataset schema + validation | ✅ item 2 |
+| Metric uncertainty (confidence intervals) + scorer tests | ✅ item 3 |
+| Eval card / governance documentation | ✅ item 4 |
 
 ## Backlog (prioritized)
 
@@ -41,7 +41,7 @@
 
 ---
 
-## 1. CI + regression gate (P1)
+## 1. CI + regression gate (P1)  ✅ DONE
 
 **Why.** Enterprise evals are *operationalized* — they run automatically and block
 regressions, rather than being run by hand. Today nothing re-runs the eval or fails a
@@ -71,7 +71,7 @@ with a clear message naming the metric and the delta. Green badge on `main`.
 
 ---
 
-## 2. Golden-set schema + validation (P1)
+## 2. Golden-set schema + validation (P1)  ✅ DONE
 
 **Why.** `goldenset.json` is hand-edited; a malformed row, an out-of-range chunk id, a
 duplicate id, or a missing `expected_category` can silently corrupt a measurement.
@@ -95,7 +95,7 @@ fails validation with a specific, actionable message; a valid set passes silentl
 
 ---
 
-## 3. Confidence intervals + scorer unit tests (P2)
+## 3. Confidence intervals + scorer unit tests (P2)  ✅ DONE
 
 **Why.** Point estimates on n=52/105 overstate certainty. Current ML-eval best practice
 reports uncertainty. And the metric math itself should be tested, or the numbers can't be
@@ -119,7 +119,7 @@ pass and would catch an off-by-one in rank handling; results JSON records the en
 
 ---
 
-## 4. Eval card + governance (P2)
+## 4. Eval card + governance (P2)  ✅ DONE
 
 **Why.** A model/eval card is the responsible-AI norm for a shipped evaluation, especially
 for a children's health context. It is the reviewer-facing summary of intent, method, and
