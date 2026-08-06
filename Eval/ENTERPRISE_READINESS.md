@@ -151,8 +151,8 @@ method, and limits without reading code.
 
 ## Out of scope for this roadmap (tracked elsewhere)
 
-- **Groundedness (LLM-judge) eval** — measures answer faithfulness; requires an API key /
-  network, so it is a separate online eval, not part of the offline gate. See README.
+- **Groundedness (LLM-judge) eval** — ✅ built (`groundedness_judge.py`, faithfulness 0.83).
+  A separate online eval (needs an API key), reported alongside the offline gate, not inside it.
 - **Corpus clinician sign-off** — the highest-value *content* step; provenance (`sources`)
   is now in place to support it.
 - **Dataset scale-up + multi-annotator agreement** — grow toward several hundred queries

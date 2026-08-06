@@ -59,6 +59,7 @@
 | Guardrail F1 | 0.93 [0.88, 0.98] |
 | Retrieval hit@5 | 0.75 [0.64, 0.87] |
 | Retrieval MRR | 0.58 [0.48, 0.69] |
+| Groundedness (faithfulness, online) | 0.83 · relevance 4.63/5 (n=52) |
 
 Numbers are host/OS-dependent (on-device model); `os_version` is recorded in the results JSON.
 
@@ -72,10 +73,11 @@ over-refusals, 4 borderline leaks) are inherent and documented rather than paper
 
 ## Not measured (known gaps)
 
-- **Answer groundedness / faithfulness** (the *writer*) — requires an online LLM judge with
-  an API key; tracked in `README.md` and `ENTERPRISE_READINESS.md`.
 - **Clinician sign-off** of corpus content — provenance (`CBITCorpus.sources`) is in place to
   support it, but it has not happened.
+- **Answer groundedness is measured but online/subjective** (0.83 faithfulness; see above) —
+  it needs an API key, is non-deterministic, and self-judges within one model family; it is a
+  secondary signal, not part of the offline CI gate.
 
 ## Maintenance & versioning
 
