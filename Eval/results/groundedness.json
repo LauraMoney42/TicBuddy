@@ -1,0 +1,914 @@
+{
+  "per_query": [
+    {
+      "answer": "Great question! For an eye-blinking tic, your Power Move (we call it a competing response) is:\n\n1. Do one **slow, controlled blink**.\n2. Then hold your eyes **open in a relaxed way** \u2014 not squeezed, not straining, just easy and open.\n\nKeep holding that relaxed open-eyed look until the urge fades. Nice and steady \u2014 you've got this! \ud83d\ude0a\n\nIf you want help figuring out how long to hold it or when to use it, your CBIT provider is the best person to ask.",
+      "id": "in-01",
+      "query": "How do I do a Power Move for my eye blinking tic?",
+      "retrieved_chunks": [
+        17,
+        3,
+        18,
+        21
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The core instruction \by ssustered by relaxed, sustained eye opening matches passage [1] exactly, and the answer directly and completely addresses the user's question about the eye-blink competing response. The only unsupported element is the added detail about holding until the urge fades, which is a duration/mechanism claim not present in any passage; the encouragement and 'ask your CBIT provider' note are not factual claims.",
+        "relevance": 5,
+        "unsupported_claims": [
+          "Hold the relaxed open-eyed position until the urge fades (the passages describe 'sustained, relaxed eye opening' but say nothing about holding it until an urge subsides)"
+        ]
+      }
+    },
+    {
+      "answer": "That feeling has a name \u2014 it's called the **premonitory urge**! \ud83c\udf1f\n\nIt's a tense, uncomfortable, pressure-y feeling that shows up right before a tic. Lots of kids call it \"the feeling before,\" a \"signal feeling,\" or a warning feeling. Some people say it's kind of like when you need to sneeze \u2014 that build-up feeling. When you do the tic, the feeling goes away for a little while.\n\nAnd guess what? You're definitely not alone \u2014 about 8 or 9 out of every 10 people with Tourette's notice this feeling too. Some people feel it super strongly, and some barely notice it. Both are totally normal!\n\nNoticing that signal feeling is actually a superpower, because it tells you when to start your competing response \u2014 right at the first sign of the urge. \ud83d\udcaa",
+      "id": "in-02",
+      "query": "What is that feeling I get right before a tic?",
+      "retrieved_chunks": [
+        5,
+        15,
+        30,
+        17
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer names and describes the premonitory urge, its sneeze-like quality, temporary relief after the tic, and the 80-90% statistic (rendered as 8-9 out of 10), all from passage [1]. Variation in how strongly people feel it comes from passage [3]'s normalization, and using the competing response at the first sign of the urge comes from passage [2]. No unsupported factual claims; encouragement and 'superpower' framing are motivational, not factual. It directly and completely answers the child's question.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! \ud83d\udc9b Stress and anxiety are actually the *most common* trigger for tics getting louder or more frequent \u2014 so what you're noticing is really common, not something you're doing wrong.\n\nOther things that can bump tics up: excitement (even happy stuff!), being tired or not sleeping well, being sick, lots of screen time, boredom, and even *thinking* about your tics.\n\nThe good news: in CBIT you can learn relaxation and stress-management skills for exactly this, and we can look at which situations are toughest for you and make a plan for each one. Tics going up during a stressful or sick stretch is normal \u2014 it doesn't mean you're going backward.\n\nIf you want help figuring out your specific stress triggers, your CBIT provider is a great person to work through that with! \ud83c\udf1f",
+      "id": "in-03",
+      "query": "Why do my tics get worse when I'm stressed?",
+      "retrieved_chunks": [
+        7,
+        22,
+        13,
+        32
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Every factual claim maps to the passages: stress/anxiety as the most common trigger and the list of other triggers (excitement, fatigue/poor sleep, illness, screen time, boredom, monitoring tics) come from [1]; relaxation and stress-management work in CBIT comes from [4]; identifying tough situations and making a per-situation plan comes from [2]; and the normalization that worsening with stress or illness is expected/not backsliding is supported by [3] and [4]. Reassurance and the suggestion to consult the CBIT provider are not factual claims. The answer directly and completely addresses why tics worsen under stress and what to do about it.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Week 1 is **Detective Mode** \u2014 you're a tic detective! \ud83d\udd0d\n\nHere's the mission:\n- **Log your tics** \u2014 jot them down when they show up\n- **Describe them** \u2014 what does each one look or feel like?\n- **Notice when they happen** \u2014 any patterns?\n\nWe're *not* doing competing responses yet \u2014 that comes later. Right now it's all about noticing.\n\nThis is also a great week to talk about what tics are, how everybody's tics are different, and to remember: you are definitely not alone in this. \ud83d\udc9b",
+      "id": "in-04",
+      "query": "What should we focus on in week 1?",
+      "retrieved_chunks": [
+        29,
+        30,
+        2,
+        15
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer restates passage [1] accurately: Week 1 is Detective Mode focused on awareness training (log tics, describe them, notice when they happen), explicitly notes competing responses are not introduced yet, and includes the conversation points about what tics are, individual differences, and not being alone. The playful framing ('tic detective', emojis) is tone, not factual claims. It directly and fully answers the question about week 1 focus.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! \ud83c\udf1f For a throat-clearing tic, try slow breathing in and out through your **nose** with your mouth closed and your throat nice and relaxed.\n\nKeep it going until the urge fades \u2014 you've got this! \ud83d\udcaa",
+      "id": "in-05",
+      "query": "What's a good competing response for throat clearing?",
+      "retrieved_chunks": [
+        20,
+        17,
+        19,
+        18
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The core recommendation \nmouth closed, throat relaxed, slow nasal breathing \nmatches passage [1] exactly and directly answers the question about a throat-clearing competing response. However, the added directive to maintain the response until the urge subsides is a substantive procedural claim not found in any passage, so the answer is not fully grounded.",
+        "relevance": 5,
+        "unsupported_claims": [
+          "Keep it going until the urge fades (instruction on duration of the competing response is not stated in the passages)"
+        ]
+      }
+    },
+    {
+      "answer": "Great question! For a head-jerk tic, the competing response is:\n\n\ud83c\udf1f **Tighten your neck muscles gently** \u2014 squeeze them so they're firm but *nothing moves* on the outside.\n\ud83c\udf1f **Add a slight chin tuck** \u2014 tuck your chin down just a little.\n\nHold it steady while the urge is there, and keep going until the urge fades. You've got this! \ud83d\udcaa\n\nIf it feels tricky or uncomfortable, check in with your CBIT provider so they can practice it with you.",
+      "id": "in-06",
+      "query": "My head jerk tic keeps happening, what can I try?",
+      "retrieved_chunks": [
+        18,
+        19,
+        17,
+        21
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The core content \u2014 isometric neck tension with no visible movement plus a slight downward chin tuck \u2014 matches passage [1] exactly and directly answers the question about a head-jerk tic. However, the answer adds procedural guidance about holding the response until the urge subsides, which no passage states; the passages only name the competing responses without specifying duration or urge-based timing. Encouragement and the 'check with your CBIT provider' disclaimer are ignored as non-factual.",
+        "relevance": 5,
+        "unsupported_claims": [
+          "Hold the competing response steady while the urge is present and continue until the urge fades (duration/how-long guidance is not stated in the passages)"
+        ]
+      }
+    },
+    {
+      "answer": "For a shoulder-shrug tic, the competing response is **shoulder depression** \u2014 gently push your shoulders firmly and steadily *down*, and hold them there. \ud83d\udcaa\n\nKeep holding that steady downward press until the urge fades. You've got this!\n\nIf it feels tricky or uncomfortable, check in with your CBIT provider \u2014 they can help you fine-tune it.",
+      "id": "in-07",
+      "query": "How can I calm down a shoulder shrug tic?",
+      "retrieved_chunks": [
+        19,
+        18,
+        3,
+        21
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's core factual claim \u2014 that the competing response for a shoulder-shrug tic is shoulder depression, pushing the shoulders firmly and steadily down \u2014 matches passage [1] exactly. The instruction to hold until the urge fades is standard competing-response framing/coaching rather than a distinct factual assertion beyond the passages, and the provider check-in is a disclaimer. The answer directly and completely addresses how to calm a shoulder shrug tic.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "That's a great question! \ud83c\udf1f My notes here only give me *examples* of competing responses \u2014 like pushing your shoulders down for a shoulder-shrug tic, or slow nasal breathing with your mouth closed for a grunting tic \u2014 but they don't explain the rules for what makes one *good*.\n\nSo I'm not sure on that one. Your CBIT provider or doctor would be the perfect person to ask \u2014 they can explain it and help you pick one that fits your tic just right. \ud83d\udc99",
+      "id": "in-08",
+      "query": "What makes a good competing response?",
+      "retrieved_chunks": [
+        17,
+        19,
+        21,
+        18
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The two examples cited (shoulder depression/pushing shoulders down for shoulder-shrug tic; slow rhythmic nasal breathing with mouth closed for grunting tic) are directly supported by passages [2] and [3]. The answer correctly acknowledges the passages contain only examples, not criteria for what makes a competing response good, and makes no unsupported factual claims. Relevance is moderate: it honestly signals the limitation and redirects appropriately, but does not actually answer the question about criteria for a good competing response, though the examples offer partial implicit insight.",
+        "relevance": 3,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Here's the scoop:\n\nTics run on circuits deep in your brain, and every time a tic happens, that pathway gets a little more worn in \u2014 kind of like a rut in the mud, or train tracks that a train keeps rolling down. \ud83d\ude82\n\nCBIT (\"brain training\") builds a **new** track. When you notice the signal feeling and do your Power Move instead, your brain starts learning a different route. Your brain is a bit like Play-Doh \u2014 it reshapes with practice!\n\nThis takes time \u2014 usually about **8 to 12 weeks** for the change to really settle in. And it's real: scientists can actually see the difference on brain scans after CBIT.\n\nOne important thing: success isn't \"no more tics.\" Success is **practicing consistently**. That's the win. \ud83d\udcaa\n\nIf you want more detail about your own brain and tics, your CBIT provider is the best person to ask!",
+      "id": "in-09",
+      "query": "How does CBIT actually change the brain?",
+      "retrieved_chunks": [
+        25,
+        26,
+        11,
+        35
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All factual claims \u2014 basal ganglia-thalamocortical circuits described as deep brain circuits, the rut/train-track analogy, building a competing pathway, Play-Doh framing, the 8-12 week consolidation window, fMRI visibility of changes, and success defined as consistent practice rather than tic elimination \u2014 are directly supported by passages [1]-[4]. Terminology like 'signal feeling,' 'Power Move,' and 'brain training' matches passage [4]. The answer directly and fully explains the neuroplasticity mechanism the question asks about, in age-appropriate language.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! CBIT stands for Comprehensive Behavioral Intervention for Tics \u2014 and it has the **strongest evidence** of any behavioral approach for tics. \ud83c\udf1f\n\nHere's how it works:\n\n**It starts with learning.** Your CBIT provider explains what Tourette's is (nothing to be ashamed of!) and how CBIT works \u2014 your brain can learn and change. That's called neuroplasticity, and it's pretty cool.\n\n**Then comes awareness training.** This is the first big phase. You learn to:\n- Describe each of your tics in detail\n- Notice a tic *while* it's happening, not after\n- Spot the situations or feelings that come right before tics\n- Catch that very first tiny movement\n- Recognize the \"premonitory urge\" \u2014 that build-up feeling before a tic\n\n**Heads up:** early on, you might notice *more* tics. That's totally normal and expected! It doesn't mean things are getting worse \u2014 it means your awareness skills are switching on. \ud83d\udc4f\n\nSome other things that help tics ease up: relaxation, calm focused activities where you get in a \"flow,\" exercise, an accepting mindset, and family and teachers who understand.\n\nOne important thing \u2014 in CBIT, **success means practic",
+      "id": "in-10",
+      "query": "What is CBIT and does it actually work?",
+      "retrieved_chunks": [
+        13,
+        8,
+        11,
+        12
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The answer accurately reflects the passages on CBIT's evidence base, psychoeducation/neuroplasticity rationale, the four awareness-training steps, the expected temporary increase in noticed tics, complementary tic-easing factors, and the definition of success as consistent practice. The only unsupported factual element is the expansion of the CBIT acronym, which does not appear in any passage. Relevance is high: it explains what CBIT is and addresses efficacy via the 'strongest behavioral evidence' claim, though the response is cut off mid-sentence and does not fully close the loop on outcomes.",
+        "relevance": 4,
+        "unsupported_claims": [
+          "CBIT stands for Comprehensive Behavioral Intervention for Tics (the acronym expansion is not given in the source passages)"
+        ]
+      }
+    },
+    {
+      "answer": "Great question! There are two main kinds of motor tics:\n\n**Simple motor tics** \u2014 these use just one muscle group, like:\n- eye blinking\n- eye rolling\n- head jerking\n- shoulder shrugging\n- facial grimacing\n- nose wrinkling\n\n**Complex motor tics** \u2014 these are bigger movements that use several muscles working together, like:\n- touching objects or yourself\n- jumping\n- spinning\n- copying someone else's movements (that one's called echopraxia!)\n\nLots of kids have a mix of both \u2014 everyone's tics look a little different, and that's totally okay. \ud83d\udc9b",
+      "id": "in-11",
+      "query": "What are the different kinds of motor tics?",
+      "retrieved_chunks": [
+        3,
+        29,
+        22,
+        30
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The two-category breakdown and all listed examples (simple: eye blinking, eye rolling, head jerking, shoulder shrugging, facial grimacing, nose wrinkling; complex: touching objects or self, jumping, spinning, echopraxia) match passage [1] exactly, including the definitions of single muscle group vs. coordinated multi-muscle movements. The closing statement that 'everyone's tics look a little different' is loosely supported by passage [2]'s note that everyone is different, but the prevalence claim that 'lots of kids have a mix of both' is a factual assertion about co-occurrence that no passage supports. Reassurance and warmth were not counted against the answer. The response directly and completely answers the question about kinds of motor tics.",
+        "relevance": 5,
+        "unsupported_claims": [
+          "Lots of kids have a mix of both simple and complex motor tics"
+        ]
+      }
+    },
+    {
+      "answer": "Great question! \ud83c\udfa4 Vocal tics are tics that make sounds.\n\n**Simple vocal tics** are little sounds, like:\n- throat clearing\n- sniffing\n- grunting\n- coughing\n- squeaking\n- humming\n\n**Complex vocal tics** are words or phrases, like:\n- repeating what someone else says (echolalia)\n- repeating your *own* words (palilalia)\n- blurting out swear words (coprolalia) \u2014 this one is actually pretty rare, only about 10\u201315% of people with tics have it\n\nNone of these are your fault \u2014 tics just happen! If you've got questions about your own tics, your CBIT provider is a great person to ask. \ud83d\udc9b",
+      "id": "in-12",
+      "query": "What are vocal tics?",
+      "retrieved_chunks": [
+        4,
+        7,
+        3,
+        34
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer accurately reproduces passage [1]'s content on simple and complex vocal tics, including the 10\u201315% coprolalia rarity figure. The framing 'tics that make sounds' is a reasonable restatement, and 'not your fault / tics just happen' reflects the involuntary nature noted in the passage and is encouragement rather than a novel factual claim. The response fully answers the question with clear, age-appropriate detail.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "That's a great question \u2014 but I don't actually have info in my notes about how tics change as kids grow up. That one's perfect for your CBIT provider or doctor, and they'll know your story best! \ud83d\udc9b\n\nWhat I *can* tell you: CBIT is a really well-tested way to help with tics \u2014 in a big study, about half the kids got meaningfully better, and it stuck six months later. And if you've been noticing *more* tics lately while doing awareness work, that's normal and expected \u2014 it means you're getting good at spotting them, not that things are getting worse.",
+      "id": "in-13",
+      "query": "Do tics get better as kids grow up?",
+      "retrieved_chunks": [
+        34,
+        13,
+        10,
+        30
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer correctly declines to answer the natural-history question since passages don't cover it, and its factual claims (CBIT trial ~52.5% meaningful improvement, effects maintained at six-month follow-up, temporary increase in noticed tics early in CBIT being expected) are all supported by passages [3] and [2]. It doesn't answer the actual question about tics improving with age, but it appropriately redirects and offers related supported information, so relevance is high but not full.",
+        "relevance": 4,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question \u2014 and good news: that's totally expected! \ud83d\udcab\n\nWhen you start paying attention to your tics (like a detective on a case), you *notice* more of them. It doesn't mean your tics are getting worse \u2014 it means your noticing skills are getting stronger! That's exactly what Detective Mode is supposed to do.\n\nSome kids notice this a lot at first, and it usually settles down. You're doing the work right. Keep logging! \ud83d\udd75\ufe0f",
+      "id": "in-14",
+      "query": "Why do I notice more tics now that I started paying attention?",
+      "retrieved_chunks": [
+        30,
+        34,
+        13,
+        29
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's factual content maps directly onto the passages: passage [3] states that increased awareness may temporarily increase tic frequency early in CBIT and that noticing more tics signals awareness work, not worsening; the 'usually settles down' phrasing is supported by 'temporarily.' Referencing 'Detective Mode' as awareness/logging work matches passage [4], and the note that some kids experience this more than others aligns with the normalization in [1]. No unsupported facts; the answer directly and fully addresses why more tics are noticed after paying attention.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Lots of kids with Tourette's have other things going on too \u2014 you're definitely not alone. The most common ones are:\n\n- **ADHD** \u2014 about 50\u201360 out of 100 kids\n- **OCD** \u2014 about 20\u201360 out of 100\n- **Anxiety** \u2014 about 30\u201340 out of 100\n- **Learning differences** \u2014 about 20\u201330 out of 100\n\nSo if any of those sound like you, that's really common and totally okay. If you're wondering whether you have any of them, your CBIT provider or doctor is the best person to ask! \ud83d\udc9b",
+      "id": "in-15",
+      "query": "What other conditions come along with Tourette's?",
+      "retrieved_chunks": [
+        30,
+        9,
+        4,
+        17
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All four co-occurring conditions and their percentage ranges (ADHD 50-60%, OCD 20-60%, anxiety 30-40%, learning disabilities 20-30%) match passage [2] exactly. The reference to a CBIT provider or doctor is an encouragement/referral disclaimer, not a factual claim. The answer directly and completely addresses the question about conditions co-occurring with Tourette's.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Here's what the CBIT playbook says for grown-ups:\n\n\ud83c\udf1f **Praise the noticing, not the quiet.** Parents can cheer when a kid notices an urge or uses their competing response \u2014 not for \"tic-free\" time. Catching a tic counts as a win, even if no redirect happens!\n\n\ud83c\udf31 **No shame, ever.** Tics aren't your fault, and grown-ups shouldn't ask you to just \"stop\" or \"control\" them.\n\n\ud83c\udf0a **Remember tics wax and wane.** Some days are bumpier than others, and that's totally normal \u2014 not a sign anyone did something wrong.\n\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67 Families also work on not accidentally rewarding tics (like extra attention right after one), and teachers can be told if you and your family want that.\n\nAnything more specific about your family's situation is a great thing to bring up with your CBIT provider \u2014 they can help tailor it just for you! \ud83d\udc9b",
+      "id": "in-16",
+      "query": "How should parents respond when their kid tics?",
+      "retrieved_chunks": [
+        34,
+        30,
+        24,
+        27
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The answer directly and completely addresses how parents should respond: praise noticing and competing-response use rather than tic-free time, never shame or demand control, normalize wax-and-wane, reduce inadvertent reinforcement, and optionally inform teachers \u2014 all drawn from passages [3] and [4]. The only unsupported element is the concrete illustration of inadvertent reinforcement as 'extra attention right after one,' which is a plausible but unstated specific added beyond the source. Encouraging tone and the provider referral are not counted as factual claims.",
+        "relevance": 5,
+        "unsupported_claims": [
+          "Specific example that inadvertent reinforcement looks like 'extra attention right after' a tic \u2014 the passages mention reducing inadvertent reinforcement but do not describe this mechanism or example."
+        ]
+      }
+    },
+    {
+      "answer": "Week 2 is **Signal Spotter** week! \ud83d\udd75\ufe0f It's all about noticing the *premonitory urge* \u2014 that little feeling or signal some kids get right before a tic shows up.\n\nHere's what you'll do:\n- Log your tics as they happen\n- Note whether you felt that \"here-it-comes\" feeling beforehand\n\nSome people feel the urge a lot, some barely at all \u2014 both are totally normal!\n\nOne heads-up: paying more attention to tics can make it seem like you're having *more* of them for a bit. That's expected \u2014 it just means the awareness work is doing its job, not that anything's getting worse. \ud83d\udcaa",
+      "id": "in-17",
+      "query": "What do we work on in week 2?",
+      "retrieved_chunks": [
+        32,
+        30,
+        10,
+        13
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All factual claims map to the passages: Week 2 as 'Signal Spotter' focused on premonitory-urge recognition, logging tics and noting whether the urge was felt beforehand, and normalizing that some feel the urge more than others [2]. The note that increased awareness may temporarily increase apparent tic frequency and that this is expected rather than worsening comes from [4]. The answer directly and completely addresses what week 2 involves.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! I don't have a general all-purpose breathing exercise in my notes \u2014 but I *do* have breathing \"competing responses\" for a few specific tics:\n\n\ud83c\udf2c\ufe0f **Grunting tic:** slow, rhythmic breathing in and out through your nose, mouth closed.\n\n\ud83c\udf2c\ufe0f **Throat-clearing tic:** slow nasal breathing, mouth closed, throat loose and relaxed.\n\n\ud83c\udf2c\ufe0f **Sniffing tic:** one slow, controlled breath *out* through your nose, then back to regular nose breathing.\n\nIf you're looking for a general calming or relaxation breathing exercise (not tied to one tic), I'm not sure about that one \u2014 that's a perfect thing to ask your CBIT provider or doctor about! \ud83d\udc99",
+      "id": "in-18",
+      "query": "Give me a breathing technique to help with tics",
+      "retrieved_chunks": [
+        21,
+        3,
+        20,
+        17
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Each breathing technique listed matches passages [1] and [3] closely: grunting tic (slow rhythmic nasal breathing, mouth closed), throat-clearing (slow nasal breathing, mouth closed, throat relaxed), and sniffing (controlled slow nasal exhale then return to regular nasal breathing). The answer appropriately flags the absence of a general-purpose relaxation breathing exercise rather than inventing one, and the referral suggestion is a disclaimer, not a factual claim. It directly and fully addresses the request for a breathing technique for tics.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "The premonitory urge is what I like to call **\"the feeling before\"** \u2014 a signal feeling that shows up right before a tic happens. \ud83d\udd75\ufe0f\n\nSome kids feel it super clearly, and some barely notice it at all \u2014 both are totally normal! Kids under 10 often notice it less, and that's okay.\n\nLearning to spot that signal feeling is a big deal in brain training (CBIT), because noticing it early is what helps you use a Power Move later on. That's what Detective Mode is all about \u2014 just noticing, no pressure.\n\nIf you want to know more about *your* signal feelings, your CBIT provider is a great person to ask!",
+      "id": "in-19",
+      "query": "What is the premonitory urge?",
+      "retrieved_chunks": [
+        30,
+        35,
+        6,
+        12
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All factual claims map to the passages: 'the feeling before'/'signal feeling' kid-friendly terms, Power Move as competing response, CBIT as brain training, Detective Mode as awareness/noticing (passage 2); variation in how much people feel the urge and normalizing it (passage 1); children under 10 having less awareness (passage 3); noticing the urge before the tic being foundational to competing response training (passages 3-4). The provider suggestion is a disclaimer, not a factual claim. The answer directly and completely defines the premonitory urge in age-appropriate terms.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! \ud83e\udde0\n\nThink of a tic like a path worn into mud \u2014 your brain has walked that same route so many times it's become a deep rut. CBIT helps your brain build a *new* path, so it learns a different way to go.\n\nThat new path usually needs about **8 to 12 weeks** of practice to really settle in. Scientists have even taken pictures of brains (with fMRI scans) after CBIT and can see the changes!\n\nSo be patient with yourself \u2014 and remember, success isn't about tics disappearing. Success is **practicing consistently**. That's the win! \ud83c\udf1f",
+      "id": "in-20",
+      "query": "How long does CBIT take to rewire the brain?",
+      "retrieved_chunks": [
+        25,
+        11,
+        13,
+        34
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All factual claims \u2014 the mud-rut/competing pathway analogy, 8-12 week consolidation, fMRI-visible changes, and success defined as consistent practice rather than tic elimination \u2014 are directly supported by passages [1] and [2]. The encouragement and emojis are non-factual framing. The answer directly and completely addresses the timeframe question.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Week 3 is **Power Move Intro**! \ud83e\uddb8\n\nThat's when you learn your very first Power Move (a competing response) \u2014 something you do instead of the tic. You'll pick one, practice it, and keep track of when you use it.\n\nTwo things to remember: it's totally normal for it to feel hard at first, and your brain IS changing even when you can't tell yet. \ud83d\udcaa",
+      "id": "gen-01",
+      "query": "What happens in week 3?",
+      "retrieved_chunks": [
+        12,
+        31,
+        29,
+        30
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All factual claims \u2014 that week 3 is 'Power Move Intro', that it introduces the first competing response, that the child chooses a Power Move, practices it, and logs its use, and that it is normal for it to feel hard at first while the brain is changing even when not obvious \u2014 are directly supported by passage [2]. The answer directly and fully addresses what happens in week 3.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "That's a great question \u2014 but I'm not sure about it, since it's not something I have information on. What I *can* tell you is that tics naturally wax and wane: they change in type, how often they show up, and how strong they feel over time. A tougher week isn't a sign your child is failing \u2014 it's just the ups and downs of how tics work.\n\nFor questions about the long-run picture, your CBIT provider or doctor is the best person to ask. They know your child's story! \ud83d\udc99",
+      "id": "syn-01",
+      "query": "Will my child outgrow their tics?",
+      "retrieved_chunks": [
+        34,
+        30,
+        2,
+        27
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All factual content \u2014 that tics wax and wane in type, frequency, and severity, and that a harder week reflects fluctuation rather than the child failing \u2014 is directly supported by passage [3]. The answer appropriately declines to assert anything about long-term prognosis, which the passages do not cover, and refers to a provider (a disclaimer, not a factual claim). Relevance is high but not perfect: it does not directly answer whether the child will outgrow tics, though it honestly acknowledges the limitation and offers the closest related information available.",
+        "relevance": 4,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question \u2014 and honestly, I don't have research or success-rate info in what I know, so I can't say for sure. That's a perfect one for your CBIT provider or doctor!\n\nWhat I *can* share: CBIT is built on the idea of **neuroplasticity** \u2014 your brain can learn new patterns with practice. \ud83e\udde0 And in CBIT, \"success\" isn't about making tics vanish. Success = practicing your skills consistently. That's the win! \u2b50",
+      "id": "syn-02",
+      "query": "Is CBIT proven to actually help tics?",
+      "retrieved_chunks": [
+        34,
+        11,
+        12,
+        13
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Both factual claims \u2014 that CBIT's rationale is grounded in neuroplasticity and that success is defined as consistent practice rather than elimination of tics \u2014 come directly from passage [2]. The answer appropriately declines to assert efficacy data, which the passages do not contain. Relevance is moderate: it honestly acknowledges it cannot answer the efficacy question and redirects to a provider, offering only tangential context rather than addressing whether CBIT is proven effective.",
+        "relevance": 3,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "That's a great question, but my notes here don't cover what other conditions show up alongside Tourette's \u2014 so I'm not sure. \ud83d\udc9b Your CBIT provider or doctor would be the perfect person to ask!\n\nIf you want, I *can* help with things like competing responses for shrug, blink, grimace, or grunting tics, or spotting that \"urge\" feeling before a tic.",
+      "id": "syn-03",
+      "query": "What conditions show up alongside Tourette's?",
+      "retrieved_chunks": [
+        19,
+        17,
+        30,
+        21
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer makes no factual claims beyond accurately describing what the passages cover (competing responses for shoulder shrug, eye blink, facial grimace, grunting tics, and premonitory-urge recognition). It correctly abstains rather than hallucinating comorbidity information. However, it does not answer the question about co-occurring conditions, so relevance is low; it earns a 2 rather than 1 because it appropriately acknowledges the gap and redirects to available, adjacent content.",
+        "relevance": 2,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Here's what my notes say helps tics calm down:\n\n\ud83c\udf0a **Feeling relaxed and calm**\n\ud83c\udfaf **Flow-state activities** \u2014 those things where you get so focused you kind of forget about everything else\n\ud83c\udfc3 **Physical exercise** \u2014 moving your body!\n\ud83d\udc9b **An acceptance mindset** \u2014 not fighting the tics or getting mad at yourself for them\n\ud83c\udfe0 **Understanding people around you** \u2014 family and teachers who get it\n\nAnd the biggest one: **CBIT** \u2014 the thing we're doing together! It has the strongest evidence of any behavioral approach out there.\n\nIt also helps to know what makes tics *louder*, so you can watch for those: stress and anxiety (the most common one), big excitement, being tired, being sick, lots of screen time, boredom, and watching or worrying about your tics.\n\nAnything on that list you want to talk about more?",
+      "id": "in-21",
+      "query": "What actually helps tics calm down?",
+      "retrieved_chunks": [
+        8,
+        7,
+        19,
+        21
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Every factual claim maps to the passages: relaxation, flow-state activity, exercise, acceptance mindset, and family/teacher understanding come from [1], as does CBIT having the strongest behavioral evidence. The list of worsening factors (stress/anxiety as most common, excitement, fatigue, illness, screen time, boredom, monitoring tics) comes from [2], with some items simply omitted rather than invented. Rephrasings like 'flow-state activities' and 'acceptance mindset' are faithful paraphrases. References to 'the thing we're doing together' are relational framing, not factual assertions. The answer directly and completely addresses what helps tics calm down, with useful added context on triggers.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "When CBIT starts, the very first part is called **psychoeducation** \u2014 a big word for \"learning about your brain and tics!\" Your therapist will:\n\n1. **Explain Tourette syndrome** in a kind way \u2014 nothing about it makes you weird or bad. \ud83e\udde0\n2. **Explain why CBIT works** \u2014 your brain can learn and change (that's called neuroplasticity!).\n3. **Set realistic expectations** \u2014 and here's my favorite part: success means *practicing consistently*, not making every tic disappear. You don't have to be perfect to be doing great!\n\nAfter that, the next step is awareness training \u2014 getting to know your tics really well. Want to hear about that part? \ud83d\ude0a",
+      "id": "in-22",
+      "query": "When CBIT starts, what does the therapist explain first?",
+      "retrieved_chunks": [
+        11,
+        12,
+        34,
+        15
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer directly names psychoeducation as the first CBIT component and lists its three elements (non-stigmatizing explanation of Tourette syndrome, neuroplasticity-based rationale, realistic expectations with success defined as consistent practice), all of which appear in passage [1]. The follow-up mention of awareness training as the next step is supported by passage [2], which identifies it as the first CBIT phase of skills training. Encouraging phrasing and the offer to continue are motivational, not factual claims. The question is fully answered.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Here's your step-by-step Power Move plan! \ud83d\udcaa\n\n1. **Pick your tic** \u2014 start with the one that bugs you the most, and choose the Power Move that goes with it.\n2. **Practice when you're calm** \u2014 try it when you *don't* feel an urge at all. Just get your body used to the move.\n3. **Practice with the urge** \u2014 next, try it when you *do* feel that itchy, buzzy urge coming.\n4. **Catch it early** \u2014 use your Power Move at the *very first* sign of the urge or the start of the tic movement.\n5. **Hold it** \u2014 keep it going for one full minute, or until the urge fades away, whichever takes longer.\n\nTwo things to remember: it's totally normal for this to feel hard at first, and your brain is changing even when you can't tell yet. \ud83e\udde0\u2728\n\nIf you want help picking which Power Move fits your tic, just ask me!",
+      "id": "in-23",
+      "query": "Walk me through how to actually practice a Power Move step by step",
+      "retrieved_chunks": [
+        31,
+        19,
+        18,
+        15
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's five steps mirror passage [4] exactly (identify best competing response for most bothersome tic, practice without urge, practice with urge, use at first sign of premonitory urge or early tic movement, hold one full minute or until urge passes, whichever is longer), and the closing reassurance about it feeling hard at first and the brain changing even when not obvious comes directly from passage [1]. Descriptive flourishes like 'itchy, buzzy urge' are paraphrase of the premonitory urge rather than new factual claims, and the offer to help pick a move is not a factual assertion. The response directly and completely answers the request for a step-by-step practice walkthrough.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Grunting is what we call a *simple vocal tic* \u2014 just a simple sound, like throat clearing or sniffing. [4]\n\nFor a grunting tic, the competing response is: **slow, rhythmic breathing through your nose with your mouth closed.** [1]\n\nSo when you feel that grunt coming, close your lips and take slow, steady breaths in and out through your nose. Nice and smooth, like a calm ocean wave. \ud83c\udf0a\n\nPractice it with your CBIT provider so you get super comfy with it \u2014 you've got this! \ud83d\udcaa",
+      "id": "in-24",
+      "query": "how do I deal with a grunting sound tic",
+      "retrieved_chunks": [
+        21,
+        19,
+        17,
+        4
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Both factual claims are supported: passage [4] lists grunting as a simple vocal tic alongside throat clearing and sniffing, and passage [1] gives the competing response as slow rhythmic nasal breathing with the mouth closed. The elaboration about closing lips and breathing in/out through the nose is a restatement of [1], and the 'ocean wave' phrasing plus encouragement to practice with a provider are motivational/disclaimer content, not factual claims. The answer directly and completely addresses how to manage a grunting tic.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Hi! That makes a lot of sense \u2014 school can stack up several things that make tics show up more: stress or anxiety (the most common trigger), boredom, and situations where kids feel watched or judged. Being tired can add to it too.\n\nA few gentle ideas from what I know:\n- Look for the pattern together \u2014 is it busiest before a test? During quiet reading? When she feels others might be looking?\n- Keep the message shame-free. Tics aren't her fault, and they're not something she's supposed to just stop.\n- Celebrate noticing! If she catches a tic coming, that already counts as a win, even if nothing else happens.\n- Remember tics wax and wane \u2014 a rough school week is the disorder fluctuating, not your daughter failing.\n- Sleep and rest matter, since being tired can crank things up.\n\nFor building an actual school plan (like accommodations or specific CBIT strategies to use in class), that's a great one for her CBIT provider or doctor \u2014 they can tailor it to her. \ud83d\udc9b",
+      "id": "in-25",
+      "query": "My daughter's tics are always worse at school, how do we plan for that?",
+      "retrieved_chunks": [
+        27,
+        7,
+        2,
+        33
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Every factual claim maps to the passages: stress/anxiety as the most common trigger, boredom, socially judged situations, and fatigue/poor sleep all come from [2]; the shame-free framing and 'celebrate noticing' come from [1]; the wax-and-wane statement including 'the disorder fluctuating, not the child failing' comes from [3]; and the referral to a provider matches [4]. The mention of 'CBIT provider' and 'accommodations' is framed as a referral/suggestion rather than a factual assertion about the child's condition, so it is treated as a disclaimer-type statement rather than a hallucinated fact. Relevance is high \u2014 it explains why school worsens tics and offers pattern-tracking, sleep, and communication steps \u2014 but it stops short of concrete planning detail (e.g., specific school supports), deferring that to the provider, so not a full 5.",
+        "relevance": 4,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! My notes here tell me that tics often ease when you're calm and relaxed, doing focused \"flow\" activities, or moving your body with exercise \u2014 but they don't spell out any specific relaxation exercises that CBIT teaches. \ud83e\udd14\n\nSo I'm not sure about that one! Your CBIT provider or doctor would be the best person to ask \u2014 they can show you exactly which ones to practice.\n\nWhat I *can* tell you about is the first CBIT step, awareness training, if you'd like to hear about that! \ud83c\udf1f",
+      "id": "in-26",
+      "query": "What relaxation exercises does CBIT teach?",
+      "retrieved_chunks": [
+        8,
+        13,
+        12,
+        11
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer accurately reflects passage [1] (tics ease with relaxation, flow-state activity, physical exercise) and correctly notes that the passages don't specify particular relaxation exercises taught in CBIT. It also correctly identifies awareness training as the first CBIT phase, consistent with [3]. No unsupported factual claims. Relevance is high \u2014 it honestly addresses that the specific information isn't available and offers a related next step \u2014 but it cannot fully answer the question asked, so not a 5.",
+        "relevance": 4,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Hi! I'm Ziggy \ud83d\udc4b Here's how I'd explain it:\n\n**Your brain is like a trail in the grass.** Right now, your tic has walked the same path so many times that it's a nice easy trail. Brain training is you making a *brand new* trail!\n\n**Step 1: Become a tic detective. \ud83d\udd0d** You learn to describe your tic really well and spot it *while* it's happening \u2014 not after. You also notice that little \"here it comes\" feeling before the tic (we call that the urge). Detectives also notice *when* and *where* tics like to show up.\n\n**Step 2: Learn your Power Move. \ud83d\udcaa** That's a move you do instead of the tic. For example, if your tic is an eye blink, your Power Move might be one slow, controlled blink and then keeping your eyes relaxed and open.\n\n**Step 3: Practice it!** First when you *don't* feel the urge (easy mode), then *when* you do feel it. You use it at the very first sign of the urge, and hold it for one whole minute \u2014 or until the urge fades, whichever is longer.\n\n**Here's the coolest part:** even when it feels hard and nothing seems different, your brain IS changing. That new tr",
+      "id": "in-27",
+      "query": "Can you explain brain training in a fun way for my 8 year old?",
+      "retrieved_chunks": [
+        15,
+        17,
+        12,
+        31
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Every factual element maps to the passages: awareness training as 'tic detective' (describing the tic, noticing it as it happens, the premonitory urge, and antecedent situations) comes from [3]; the eye-blink Power Move (slow controlled blink then relaxed sustained opening) comes from [2]; the practice sequence (practice without the urge, then with the urge, use at first sign, hold one full minute or until the urge passes, whichever is longer) comes from [1]; and the reassurance that the brain is changing even when it isn't obvious and that it feels hard at first comes from [4]. The 'trail in the grass' framing is an illustrative metaphor rather than a factual assertion, and 'Power Move' terminology matches [4]. Relevance is high \u2014 it is an age-appropriate, engaging explanation \u2014 but the response is cut off mid-sentence, leaving the final point incomplete.",
+        "relevance": 4,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Here's what helps most:\n\n\ud83c\udf1f **Cheer the practice, not the tic count.** Success = he practiced today, not that his tics disappeared. That takes the pressure off and keeps him from feeling like he \"failed\" on a tic-y day.\n\n\ud83c\udfaf **Tie it to what *he* cares about.** Maybe it's playing his sport, hanging out with friends, or feeling comfy at school. When the reason comes from inside him, the motivation sticks way better than reminders from grown-ups.\n\nSo instead of \"Did you do your exercises?\" you might try, \"How's your practice going for [his goal]?\"\n\nIf you want ideas tailored to your son specifically, his CBIT provider is a great person to ask. You're doing a good thing by supporting him! \ud83d\udcaa",
+      "id": "in-28",
+      "query": "How do I keep my son motivated to keep practicing?",
+      "retrieved_chunks": [
+        34,
+        19,
+        18,
+        28
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's factual content \u2014 framing success as consistent practice rather than tic elimination, and tying motivation to the child's own goals (sports, friendships, school) for intrinsic drive \u2014 is directly supported by passage [4]. The suggested phrasing example and encouragement are practical framing rather than new factual claims, and the referral to the CBIT provider is a disclaimer. It directly and fully addresses how to keep the child motivated to practice.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "In the later weeks, you keep building on what you've learned! Here's what that looks like:\n\n\ud83d\udd75\ufe0f **Add more competing responses** \u2014 for other tic types, not just the first one you worked on.\n\n\ud83c\udfeb **Practice in harder places** \u2014 trickier spots and situations, step by step.\n\n\ud83d\udcd3 **Keep your logging streak going** \u2014 daily logging until it feels automatic.\n\n\ud83d\ude0c **Relaxation & stress skills** \u2014 ways to calm your body and handle stress.\n\n\ud83d\udee1\ufe0f **Maintenance plan** \u2014 what to do if tics get bumpier when you're sick or stressed. That's totally normal, and you'll have a plan ready!\n\nIf you want to know more about your specific plan, your CBIT provider is the best person to ask. You've got this! \ud83d\udcaa",
+      "id": "in-29",
+      "query": "What happens in the last few weeks of the program?",
+      "retrieved_chunks": [
+        12,
+        15,
+        29,
+        32
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Every factual element of the answer maps directly to passage [4]: adding competing responses for more tic types, practicing in progressively harder environments, daily-logging streaks toward automaticity, relaxation and stress management, and maintenance for tic worsening with illness or stress. The 'that's totally normal' framing and the encouragement/ask-your-provider lines are reassurance rather than factual claims. The answer directly and fully addresses what happens in the later weeks of the program.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Nope \u2014 I'm not able to give medical advice or tell you what any diagnosis is. I also can't say anything about starting or stopping medicine.\n\nWhat I *can* do is be your buddy for brain training (CBIT) \u2014 practicing Detective Mode (noticing your signal feelings) and Power Moves, plus learning cool stuff about tics. \ud83e\udde0\u2728\n\nFor anything medical \u2014 medicine, side effects, or diagnosis questions \u2014 your doctor or CBIT provider is the right person to ask. They've got you!",
+      "id": "in-30",
+      "query": "Can this app give me medical advice or a diagnosis?",
+      "retrieved_chunks": [
+        33,
+        34,
+        35,
+        15
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer accurately restates the safety scope from passage [1] (no diagnosis, no medication start/stop advice, no medical advice, refer to doctor for medication, side effects, diagnosis), and correctly describes the assistant's role from [2] (CBIT skills practice, encouragement, psychoeducation about tics) using the kid-friendly terms defined in [3] ('brain training', 'Detective Mode', 'Power Moves', 'signal feeling'). No unsupported factual claims; mentioning a 'CBIT provider' aligns with the doctor/therapist referral guidance. It directly and fully answers the question.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "I'm really glad you're asking. Here's what the CBIT approach suggests:\n\n**Lead with support, not fixing.** Let them know feeling down about tics makes sense, and that tics are *not* their fault \u2014 nothing they did caused them, and they aren't something they're failing to control.\n\n**Normalize the ups and downs.** Tics naturally wax and wane \u2014 they change in type, how often they show up, and how strong they are. A rough week is the tics fluctuating, not your kid failing at anything.\n\n**Celebrate the small wins.** Just *noticing* a tic counts as a win, even if nothing else happens after.\n\n**Make sure they have a trusted adult to talk to** \u2014 you, another family member, or their CBIT provider.\n\nOne important thing: if you see any sign of self-harm or your child talks about hurting themselves, please connect them with a trusted adult or a crisis line right away (in the US, call or text **988**), and loop in their doctor.\n\nFor ongoing low mood or hopelessness, their CBIT provider or doctor is the best person to bring this to \u2014 that's a bit beyond what I can help with here. \ud83d\udc9b",
+      "id": "in-31",
+      "query": "My kid feels really down and hopeless about their tics, what do I say?",
+      "retrieved_chunks": [
+        34,
+        27,
+        7,
+        2
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The answer closely tracks the passages: tics not being the child's fault and not framed as controllable [2], the wax-and-wane normalization including a harder week being fluctuation rather than failure [4], celebrating noticing as a win [2], directing to a trusted adult and crisis line for self-harm signs and deferring counseling of distress/hopelessness to providers [1]. The one unsupported factual detail is the specific '988' crisis number, which does not appear in any passage. Relevance is high: it directly gives the parent concrete language and framing for a child feeling down and hopeless about tics, plus appropriate escalation guidance.",
+        "relevance": 5,
+        "unsupported_claims": [
+          "In the US, call or text 988 for a crisis line (specific number not mentioned in the source passages)"
+        ]
+      }
+    },
+    {
+      "answer": "\"Baseline\" is just a fancy word for **your starting point** \u2014 where things are right now, before you begin your brain training. \ud83c\udf1f\n\nIt's like marking the spot at the start of a race so you can look back later and see how far you've come. It's not a grade or a score \u2014 just a starting line!\n\nIf you want to know more about how your own starting point was measured, your CBIT provider can walk you through it.",
+      "id": "in-32",
+      "query": "what does baseline or starting point mean",
+      "retrieved_chunks": [
+        35,
+        19,
+        17,
+        21
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's core claim \\u2014 that a baseline is 'your starting point' \\u2014 comes directly from passage [1], which also supports referring to CBIT as 'brain training.' The race-starting-line comparison and the reassurance that it isn't a grade are explanatory framing/encouragement rather than factual assertions, and the suggestion to ask the CBIT provider is a disclaimer. No unsupported factual content is introduced. The response directly and completely answers the question in child-friendly language.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "That's a good question, but I don't actually have that info in my toolbox! \ud83e\uddf0 I know lots about tics, signal feelings, and Power Moves \u2014 but not how many kids have Tourette's.\n\nYour CBIT provider or doctor would know that one, so it's a great question to bring to them!",
+      "id": "in-33",
+      "query": "How common is Tourette's in kids?",
+      "retrieved_chunks": [
+        34,
+        28,
+        35,
+        5
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer makes no factual claims beyond correctly noting it lacks prevalence data; the passages indeed contain no prevalence-in-children statistics (only that 80-90% of people with Tourette's report the premonitory urge). It is thus fully grounded. However, it does not answer the question at all, only redirecting to a provider, so relevance is low.",
+        "relevance": 2,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Nope! That's a big myth. \ud83d\udc9b\n\nSwearing tics (the fancy word is **coprolalia**) are actually pretty rare \u2014 only about 10 to 15 out of every 100 people with Tourette's have them.\n\nMost tics are much more ordinary sounds, like throat clearing, sniffing, humming, coughing, or squeaking. Some people repeat words they hear other people say, or repeat their own words.\n\nAnd remember \u2014 whatever kind of tic someone has, it's not their fault and it's not something they're choosing. Tics just happen! \ud83c\udf1f",
+      "id": "in-34",
+      "query": "Does everyone with Tourette's swear uncontrollably?",
+      "retrieved_chunks": [
+        4,
+        21,
+        34,
+        27
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer correctly states coprolalia is rare (10-15% of cases, restated as 10-15 out of 100), lists simple vocal tics (throat clearing, sniffing, grunting-adjacent sounds, humming, coughing, squeaking) and complex ones (echolalia, palilalia) as in passage [1], and echoes the passage [4] principle that tics are not the child's fault and not chosen. No unsupported factual claims; it directly and fully answers the question.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "That's a great question \u2014 but I don't have info about copying other people's movements in what I know, so I don't want to guess. Your son's CBIT provider or doctor would be the best person to ask about that!\n\nWhat I *can* help with is the fun stuff: noticing tics (we call it Detective Mode \ud83d\udd75\ufe0f), spotting \"the feeling before,\" and practicing Power Moves. And one thing I always want kids to know \u2014 tics aren't anyone's fault, and just *noticing* one is already a win.",
+      "id": "in-35",
+      "query": "My son keeps copying other people's movements, what is that?",
+      "retrieved_chunks": [
+        30,
+        34,
+        27,
+        35
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Every factual statement in the answer maps to the passages: 'Detective Mode' as the kid-friendly term for noticing/awareness training and 'the feeling before'/'Power Moves' come from passage [4], and the claims that tics are not the child's fault and that noticing a tic counts as a win come from passage [3]. The referral to a provider is a disclaimer, not a factual claim, so it is ignored. Relevance is moderate: the passages contain nothing about echopraxia/copying movements, and the answer correctly declines to speculate and redirects to a provider, but it therefore does not actually answer the parent's question about what the copying behavior is; it only offers adjacent CBIT support.",
+        "relevance": 3,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Yep \u2014 that's a real thing! \ud83d\ude34 Tics often get worse when you're tired or not sleeping well, and also when you're sick or have a fever.\n\nOther common tic-boosters are stress or worry (the biggest one), excitement \u2014 even happy excitement! \u2014 lots of screen time, boredom, and being in situations where you feel like people are watching or judging.\n\nSo if your tics are extra busy on a sleepy day or a sick day, that's not you doing anything wrong. It's just your body being extra tired. Rest is a good friend to your tics! \ud83d\udc99",
+      "id": "in-36",
+      "query": "Does being tired or sick make tics worse?",
+      "retrieved_chunks": [
+        7,
+        13,
+        34,
+        22
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer directly answers the question (yes, fatigue/poor sleep and illness/fever worsen tics) and its listed triggers \u2014 stress/anxiety as the most common, excitement including positive events, screen time, boredom, and socially judged situations \u2014 all come from passage [1]. The reassurance that it isn't the child's fault and that rest helps is supportive framing/implication of the fatigue trigger rather than an unsupported factual claim.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Yes! \ud83c\udf89 CBIT works for kids ages 9 and up (and can even be adapted for younger kids). It's usually about 8 sessions over 10 weeks, and it's a first-line treatment \u2014 in a big study, about 52% of kids got meaningfully better compared to 18% who didn't do it.\n\nYour CBIT provider can help figure out the best plan for your kiddo!",
+      "id": "in-37",
+      "query": "Is my 9 year old old enough for CBIT?",
+      "retrieved_chunks": [
+        15,
+        10,
+        13,
+        26
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All factual claims \u2014 CBIT works for ages 9 and up, adaptable for younger children, ~8 sessions over 10 weeks, first-line treatment, and the 52.5% vs 18.5% improvement rates from the RCT \u2014 are directly supported by passage [2]. The answer directly and completely answers whether a 9-year-old is old enough.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "For a facial grimace tic, your competing response is a **relaxed, neutral face with a gentle lip press**. \ud83d\ude0a\n\nSo when you feel that grimace coming, let your face go soft and calm, and press your lips together gently \u2014 nice and easy. Hold it until the urge fades.\n\nYou've got this! And if it feels tricky to do, your CBIT provider can practice it with you.",
+      "id": "in-38",
+      "query": "How do I redirect a facial grimace tic?",
+      "retrieved_chunks": [
+        17,
+        3,
+        19,
+        21
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The core recommendation \u2014 a relaxed neutral face with a gentle lip press as the competing response for a facial grimace tic \u2014 is directly supported by passage [1], and the answer fully addresses the question. However, the instruction to hold the response until the urge fades adds procedural detail (including the premise of a premonitory urge and hold duration) that no passage supports. The encouragement and provider referral are not counted as factual claims.",
+        "relevance": 5,
+        "unsupported_claims": [
+          "Hold the competing response until the urge fades (guidance on duration of holding the competing response is not stated in the passages)"
+        ]
+      }
+    },
+    {
+      "answer": "Hey, I've got you! \ud83d\udcaa For an arm-jerk tic, the competing response is to **tense your arm firmly against your body** \u2014 hold it snug at your side and keep that muscle tight instead of letting the jerk happen.\n\nYour CBIT provider can help you figure out exactly how long to hold it and when to use it, so it's worth asking them next time you chat!",
+      "id": "in-39",
+      "query": "what can I do about an arm that keeps jerking",
+      "retrieved_chunks": [
+        18,
+        19,
+        17,
+        3
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The core factual claim \u2014 that the competing response for an arm-jerk tic is to tense the arm firmly against the body \u2014 is directly supported by passage [1]. The added phrasing ('hold it snug at your side', 'keep that muscle tight') is a restatement of that same instruction rather than a new fact. The reference to a CBIT provider for timing details is a defer-to-clinician disclaimer, not a factual assertion, and is excluded from scoring. The answer directly and completely addresses the user's question about a jerking arm.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question \u2014 but I want to be honest with you: my notes cover competing responses for shoulder shrugs, eye blinks, facial grimaces, and grunting, but they don't say anything about a **sniffing** tic. So I'm not sure, and I don't want to guess. \ud83e\udd14\n\nThat's a perfect one to bring to your CBIT provider or doctor \u2014 they can help you pick a competing response that fits a sniffing tic just right.\n\nOne thing I *can* share: whatever competing response you and your provider choose, the practice steps are always the same \u2014 practice it when you're calm and not feeling the urge, then practice it when the urge shows up, use it at the very first sign of the urge, and hold it for one full minute or until the urge passes (whichever is longer).\n\nYou've got this! \ud83d\udcaa",
+      "id": "in-40",
+      "query": "best way to handle a sniffing tic?",
+      "retrieved_chunks": [
+        19,
+        17,
+        15,
+        21
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "All factual content is traceable to the passages: the list of covered tics (shoulder shrug [1], eye blink/facial grimace [2], grunting [4]) is accurate, and the five-step practice sequence \u2014 practicing without the urge, with the urge, using it at the first sign of the premonitory urge, and holding for one full minute or until the urge passes, whichever is longer \u2014 matches passage [3] verbatim in substance. The admission that no sniffing-tic competing response appears in the sources is correct; nothing is invented. Relevance is high but not maximal: the answer cannot supply the specific competing response the question asks for, though it appropriately redirects to a provider and transfers the generalizable training procedure.",
+        "relevance": 4,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question \u2014 that's exactly what Detective Mode is all about! \ud83d\udd75\ufe0f\n\nHere's the deal: this week your only job is **noticing**, not stopping. Tics aren't your fault, and you don't have to control them.\n\nTry this:\n- **Log your tics** \u2014 jot down or tell someone when one happens\n- **Describe it** \u2014 what did it feel like? Where in your body?\n- **Notice the \"when\"** \u2014 what were you doing right before?\n\nTwo important things:\n1. **Catching a tic = winning.** Even if nothing else happens, you noticed. That's the whole point!\n2. You might notice *more* tics at first. That's totally expected \u2014 it means your detective skills are getting sharper, not that things are getting worse. Tics naturally wax and wane anyway.\n\nYou're not alone in this, and everyone's tics look different. Keep being a detective! \ud83d\udd0d",
+      "id": "in-41",
+      "query": "How can I get better at catching my tics as they happen?",
+      "retrieved_chunks": [
+        27,
+        13,
+        34,
+        29
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Every factual element maps to the passages: awareness-only focus with logging, describing, and noticing timing (P4); no competing responses/not framing tics as controllable and 'catching a tic counts as winning' plus wax-and-wane normalization (P1); the temporary increase in noticed tics being expected rather than worsening (P2); and 'everyone is different / not alone' (P4). The 'what were you doing right before' prompt is a reasonable restatement of 'notice when they happen.' The answer directly and completely addresses how to get better at catching tics as they occur.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Yes, that's okay! Lots of kids feel \"the feeling before\" a tic \u2014 that tense, pressure-y feeling kind of like needing to sneeze \u2014 but about 10\u201320% of people with Tourette's don't notice it, and younger kids especially often don't. \ud83d\udc9b\n\nNothing is wrong with your kid, and it's definitely not their fault. Tics also naturally come and go \u2014 bigger some weeks, quieter others. That's just how they work.\n\nIf you ever notice them starting to catch that \"signal feeling,\" that's a win all by itself \u2014 even if nothing else happens! And your CBIT provider is the best person to ask about what to expect as they grow.",
+      "id": "in-42",
+      "query": "My little kid doesn't seem to feel any warning before tics, is that normal?",
+      "retrieved_chunks": [
+        27,
+        5,
+        33,
+        7
+      ],
+      "verdict": {
+        "grounded": false,
+        "rationale": "The answer directly addresses whether lacking a premonitory urge is normal, and most content is grounded: the description of the urge as tension/pressure like needing to sneeze, the 'feeling before'/'signal feeling' phrasing, the ~10-20% figure inferred from the stated 80-90% who report it, the not-the-child's-fault framing, the wax-and-wane pattern, and celebrating noticing as a win. However, it adds an age-specific claim that younger children especially tend not to notice the urge, which appears nowhere in the passages. The provider referral is an appropriate disclaimer and not counted as a factual claim.",
+        "relevance": 5,
+        "unsupported_claims": [
+          "Younger kids especially often don't notice the premonitory urge (age-related lack of awareness is not stated in the passages)"
+        ]
+      }
+    },
+    {
+      "answer": "Yes! \ud83d\udcaa There's a muscle trick that works for most tics: **isometric tension in the muscle opposite your tic** \u2014 that means squeezing that muscle tight and holding steady, without any big movement.\n\nAnd the other super-flexible one is **slow belly breathing** (diaphragmatic breathing) \u2014 it's the most versatile of all.\n\nYour CBIT provider can help you figure out exactly which muscle to squeeze for your tic. You've got this! \ud83c\udf1f",
+      "id": "in-43",
+      "query": "Is there a muscle-tensing trick that works for most tics?",
+      "retrieved_chunks": [
+        16,
+        17,
+        19,
+        18
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's core claims \u2014 that isometric tension in the muscle opposing the tic is a universal competing response, and that slow diaphragmatic (belly) breathing is the most versatile \u2014 come directly from passage [1]. The description of isometric tension as holding steady without visible movement is consistent with passage [4]. The reference to a CBIT provider is a routine 'ask your provider' disclaimer, which is not treated as a factual claim. The answer directly and fully addresses the question about a muscle-tensing trick applicable to most tics.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "That's totally your call \u2014 telling the teacher is optional in CBIT, not required. \ud83d\ude0a\n\nSome families find it helps because the teacher can be part of the support team \u2014 noticing and praising when your child uses their competing response (rather than praising \"no tics\"). Other families choose to keep it private. Both are okay.\n\nIf you'd like help deciding what to actually say to a teacher, that's a great thing to talk through with your CBIT provider \u2014 I'm not sure of the specifics beyond what I've shared here.",
+      "id": "in-44",
+      "query": "Should I tell my child's teacher about the tics?",
+      "retrieved_chunks": [
+        34,
+        27,
+        30,
+        24
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's factual content \u2014 that informing teachers is optional in CBIT and that support persons notice and praise competing-response use rather than tic-free time \u2014 is directly supported by passage [4]. The statement that some families keep it private is a framing of the optional nature rather than a distinct factual claim, and the suggestion to consult the provider is a disclaimer. The answer directly and fully addresses whether to tell the teacher.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Tics naturally **wax and wane** \u2014 that means they shift on their own in what kind they are, how often they show up, and how strong they feel. It happens over time, and it's just part of how tics work.\n\nSo if you have a harder week, that is *not* you failing! That's just the tics doing their up-and-down thing. You're still doing your job. \ud83d\udc9b\n\nSometimes tics also get louder when you're sick or stressed \u2014 your CBIT provider can help you plan for those times too.",
+      "id": "in-45",
+      "query": "Why do the tics change so much from one week to the next?",
+      "retrieved_chunks": [
+        32,
+        2,
+        15,
+        30
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The wax-and-wane fluctuation in type, frequency, and severity is supported by passage [2], as is the reassurance that a harder week is the disorder fluctuating rather than the child failing. The mention of tics worsening with illness or stress is supported by passage [1] (maintenance covers what to do when tics worsen with illness or stress). The reference to a CBIT provider is a supportive disclaimer, not a factual claim. The answer directly and fully addresses why tics change week to week.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question! Not everyone \u2014 but most people do. About 80 to 90 out of every 100 people with Tourette's notice a \"feeling before\" their tic. It's like that itchy, tense, gotta-do-it feeling \u2014 kind of like when you need to sneeze. Doing the tic makes it go away for a little while.\n\nSome kids feel it super strongly, some feel it just a little, and some don't notice it at all. All of those are totally okay and normal! \ud83c\udf1f\n\nThat's actually what Week 2 \u2014 Signal Spotter \u2014 is all about: noticing whether you get that signal feeling before your tics. Want to try spotting one together?",
+      "id": "in-46",
+      "query": "Does everyone with tics feel an urge before them?",
+      "retrieved_chunks": [
+        30,
+        5,
+        12,
+        34
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's factual claims all trace to the passages: the 80-90% figure for people with Tourette syndrome reporting the premonitory urge [2], the sneeze analogy and tension sensation [2], tic performance temporarily relieving it [2], variability in how strongly people feel it ('some people feel it more than others') [1], and Week 2 Signal Spotter focusing on noticing the feeling beforehand [1]. The implication that some may not notice it follows from the 80-90% figure and the normalization framing. It directly and fully answers the question.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Yes! \ud83e\udde0\u2728 Brain scans called fMRI can show changes after CBIT \u2014 it's real proof your brain training is working.\n\nHere's the cool part: your brain is kind of like Play-Doh. When you do a tic over and over, it wears a path \u2014 like a rut in the mud, or a train always taking the same old track. When you practice your Power Moves, your brain starts building a *new* track. That takes about 8 to 12 weeks of practice to really settle in, so keep going!\n\nAnd remember \u2014 winning at CBIT means practicing consistently, not making every tic disappear. \ud83d\udcaa",
+      "id": "in-47",
+      "query": "Can you actually see CBIT changes on a brain scan?",
+      "retrieved_chunks": [
+        26,
+        25,
+        11,
+        35
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "Every factual claim maps to the passages: fMRI changes visible after CBIT and the 8-12 week consolidation window (passage 2), the Play-Doh and train-track metaphors (passage 1), the rut-in-mud pathway analogy (passage 2), 'Power Moves' as the kid-friendly term for competing responses (passage 4), and success defined as consistent practice rather than tic elimination (passage 3). The slight embellishment that fMRI is 'real proof your brain training is working' is encouraging framing consistent with passage 2's claim rather than a new factual assertion. The answer directly and completely answers the yes/no question about visible brain scan changes and adds relevant context.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    },
+    {
+      "answer": "Great question \u2014 and I'm glad you asked. \ud83d\udc9b\n\nTelling a kid to \"stop ticcing\" isn't helpful, and here's why: tics aren't your child's fault, and they're not something a kid can just decide to control or stop. Framing it that way can bring shame, and shame is something we always want to steer clear of.\n\nWhat *does* help:\n- **Celebrate noticing.** If your child catches a tic \u2014 or even the feeling right before one \u2014 that's a win, all by itself. No redirect needed.\n- **Normalize the ups and downs.** Tics naturally wax and wane. Some weeks are louder, some quieter. That's just how tics work, not a sign anyone did something wrong.\n\nIf you'd like ideas for how to word things day-to-day, your CBIT provider can help tailor that to your kiddo!",
+      "id": "in-48",
+      "query": "Is it bad to just tell my kid to stop ticcing?",
+      "retrieved_chunks": [
+        27,
+        34,
+        5,
+        6
+      ],
+      "verdict": {
+        "grounded": true,
+        "rationale": "The answer's factual claims \u2014 that tics are not the child's fault, should never be framed as something to control or stop, that shaming should be avoided, that noticing a tic (including the premonitory urge, per passage 3/4) counts as a win even without a redirect, and that tics wax and wane \u2014 all map directly onto passage [1] (and [3] for 'the feeling right before'). Statements like 'some weeks louder, some quieter' are a plain-language gloss on the wax-and-wane pattern rather than a new fact, and the suggestion to consult a CBIT provider is a disclaimer, not a factual claim. The answer directly and fully addresses the question of whether telling a child to stop ticcing is bad, explains why, and offers supported alternatives.",
+        "relevance": 5,
+        "unsupported_claims": []
+      }
+    }
+  ],
+  "summary": {
+    "faithfulness_rate": 0.827,
+    "mean_relevance": 4.63,
+    "model": "claude-opus-5",
+    "n_judged": 52,
+    "note": "Online, subjective, non-deterministic secondary metric. Generator and judge share a model family (self-judging bias). Not part of the offline reproducible gate.",
+    "topk": 4
+  }
+}

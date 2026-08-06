@@ -29,3 +29,8 @@ fastlane/test_output
 # Misc
 *.moved-aside
 *.orig
+
+# Secrets — never commit
+.anthropic_key
+*.key
+.env
